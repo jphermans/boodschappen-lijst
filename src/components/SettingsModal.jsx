@@ -1,9 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { X, Palette, Moon, Sun } from 'lucide-react';
+import { X, Palette, Moon, Sun, Link2, Smartphone, QrCode } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { getDeviceInfo, generateLinkCode, linkToMasterDevice, unlinkFromMasterDevice, isLinkedToMaster } from '../utils/deviceUID';
 
 const SettingsModal = ({ onClose }) => {
+  const [showQR, setShowQR] = useState(false);
+  const [scanCode, setScanCode] = useState('');
+  const [isLinking, setIsLinking] = useState(false);
+  
   const {
     theme,
     toggleTheme,
@@ -13,6 +18,27 @@ const SettingsModal = ({ onClose }) => {
     updateColor,
     resetColors,
   } = useTheme();
+  
+  const deviceInfo = getDeviceInfo();
+  
+  const handleDeviceLink = () => {
+    if (isLinkedToMaster()) {
+      unlinkFromMasterDevice();
+      window.location.reload();
+    } else {
+      setShowQR(!showQR);
+    }
+  };
+  
+  const handleScanCode = () => {
+    if (scanCode.trim()) {
+      const masterDevice = parseLinkCode(scanCode.trim());
+      if (masterDevice) {
+        linkToMasterDevice(masterDevice);
+        window.location.reload();
+      }
+    }
+  };
 
   const presetColors = [
     { name: 'Blauw', value: '#3b82f6' },
@@ -165,12 +191,73 @@ const SettingsModal = ({ onClose }) => {
             </button>
           </div>
 
-          <div className="pt-4 border-t border-gray-200 dark:border-gray-700"
-          >
-            <p className="text-sm text-gray-600 dark:text-gray-400"
-            >
-              Device ID: {localStorage.getItem('boodschappenlijst_device_uid')?.substring(0, 8)}...
-            </p>
+          <div className="pt-4 border-t border-gray-200 dark:border-gray-700 space-y-4">
+            <div>
+              <h3 className="text-lg font-medium text-[rgb(var(--card-text))] mb-3 flex items-center">
+                <Link2 className="w-5 h-5 mr-2" />
+                Apparaat koppelen
+              </h3>
+              
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-[rgb(var(--text-color))]/80">
+                      Status: {deviceInfo.isMaster ? 'Hoofdapparaat' : 'Gekoppeld'}
+                    </p>
+                    <p className="text-xs text-[rgb(var(--text-color))]/60">
+                      ID: {deviceInfo.deviceId.substring(0, 8)}...
+                    </p>
+                  </div>
+                  <button
+                    onClick={handleDeviceLink}
+                    className={`px-3 py-1 rounded-lg text-sm transition-colors ${
+                      isLinkedToMaster()
+                        ? 'bg-red-500 text-white hover:bg-red-600'
+                        : 'bg-primary text-white hover:bg-primary/90'
+                    }`}
+                  >
+                    {isLinkedToMaster() ? 'Ontkoppelen' : 'Koppelen'}
+                  </button>
+                </div>
+                
+                {showQR && (
+                  <div className="space-y-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                    <div>
+                      <p className="text-sm text-[rgb(var(--text-color))]/80 mb-2">
+                        Scan deze QR-code op een ander apparaat:
+                      </p>
+                      <div className="flex justify-center mb-2">
+                        <div className="bg-white dark:bg-gray-100 p-2 rounded-lg shadow">
+                          <QRCode
+                            value={generateLinkCode()}
+                            size={150}
+                            level="H"
+                            bgColor="#ffffff"
+                            fgColor="#000000"
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <input
+                          type="text"
+                          value={scanCode}
+                          onChange={(e) => setScanCode(e.target.value)}
+                          placeholder="Of vul code handmatig in..."
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:text-white text-sm"
+                        />
+                        <button
+                          onClick={handleScanCode}
+                          disabled={!scanCode.trim()}
+                          className="w-full px-3 py-2 bg-secondary text-white rounded-lg hover:bg-secondary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
+                        >
+                          Apparaat koppelen
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </motion.div>
