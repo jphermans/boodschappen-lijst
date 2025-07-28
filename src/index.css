@@ -9,14 +9,14 @@
 }
 
 [data-theme="dark"] {
-  --color-primary: 96 165 250;
-  --color-secondary: 192 132 252;
-  --color-accent: 244 114 182;
-  --bg-color: 17 24 39;
-  --text-color: 243 244 246;
-  --border-color: 75 85 99;
-  --card-bg: 31 41 55;
-  --card-text: 243 244 246;
+  --color-primary: 59 130 246;
+  --color-secondary: 139 92 246;
+  --color-accent: 236 72 153;
+  --bg-color: 15 23 42; /* Dark navy blue */
+  --text-color: 226 232 240;
+  --border-color: 51 65 85;
+  --card-bg: 30 41 59; /* Darker slate */
+  --card-text: 226 232 240;
 }
 
 [data-theme="light"] {

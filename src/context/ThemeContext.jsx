@@ -31,9 +31,9 @@ export const ThemeProvider = ({ children }) => {
     
     // Apply theme-specific colors
     if (savedTheme === 'dark') {
-      document.documentElement.style.setProperty('--color-primary', hexToRgb('#60a5fa'));
-      document.documentElement.style.setProperty('--color-secondary', hexToRgb('#c084fc'));
-      document.documentElement.style.setProperty('--color-accent', hexToRgb('#f472b6'));
+      document.documentElement.style.setProperty('--color-primary', hexToRgb('#3b82f6'));
+      document.documentElement.style.setProperty('--color-secondary', hexToRgb('#8b5cf6'));
+      document.documentElement.style.setProperty('--color-accent', hexToRgb('#ec4899'));
     } else {
       document.documentElement.style.setProperty('--color-primary', hexToRgb(savedPrimary));
       document.documentElement.style.setProperty('--color-secondary', hexToRgb(savedSecondary));
@@ -43,9 +43,9 @@ export const ThemeProvider = ({ children }) => {
 
   useEffect(() => {
     if (theme === 'dark') {
-      document.documentElement.style.setProperty('--color-primary', hexToRgb('#60a5fa'));
-      document.documentElement.style.setProperty('--color-secondary', hexToRgb('#c084fc'));
-      document.documentElement.style.setProperty('--color-accent', hexToRgb('#f472b6'));
+      document.documentElement.style.setProperty('--color-primary', hexToRgb('#3b82f6'));
+      document.documentElement.style.setProperty('--color-secondary', hexToRgb('#8b5cf6'));
+      document.documentElement.style.setProperty('--color-accent', hexToRgb('#ec4899'));
     } else {
       document.documentElement.style.setProperty('--color-primary', hexToRgb(primaryColor));
       document.documentElement.style.setProperty('--color-secondary', hexToRgb(secondaryColor));
