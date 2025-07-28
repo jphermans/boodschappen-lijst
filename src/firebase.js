@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, onSnapshot, query, where } from 'firebase/firestore';
 
 // Firebase configuratie via environment variables
 const firebaseConfig = {
@@ -44,8 +44,88 @@ const initializeFirebase = async () => {
   }
 };
 
+// Firestore helpers
+const shoppingListsRef = collection(db, 'shoppingLists');
+
+// Shopping list operations
+const createShoppingList = async (listData) => {
+  try {
+    const docRef = await addDoc(shoppingListsRef, {
+      ...listData,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    });
+    return docRef.id;
+  } catch (error) {
+    console.error('Error creating shopping list:', error);
+    throw error;
+  }
+};
+
+const getShoppingLists = async (deviceUID) => {
+  try {
+    const q = query(shoppingListsRef, where('deviceUID', '==', deviceUID));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+  } catch (error) {
+    console.error('Error getting shopping lists:', error);
+    throw error;
+  }
+};
+
+const updateShoppingList = async (listId, updates) => {
+  try {
+    const listRef = doc(db, 'shoppingLists', listId);
+    await updateDoc(listRef, {
+      ...updates,
+      updatedAt: new Date()
+    });
+  } catch (error) {
+    console.error('Error updating shopping list:', error);
+    throw error;
+  }
+};
+
+const deleteShoppingList = async (listId) => {
+  try {
+    await deleteDoc(doc(db, 'shoppingLists', listId));
+  } catch (error) {
+    console.error('Error deleting shopping list:', error);
+    throw error;
+  }
+};
+
+const subscribeToShoppingLists = (deviceUID, callback) => {
+  try {
+    const q = query(shoppingListsRef, where('deviceUID', '==', deviceUID));
+    return onSnapshot(q, (snapshot) => {
+      const lists = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      callback(lists);
+    });
+  } catch (error) {
+    console.error('Error subscribing to shopping lists:', error);
+    throw error;
+  }
+};
+
 // Exporteer functionaliteit
-export { app, db, isConnected, initializeFirebase };
+export { 
+  app, 
+  db, 
+  isConnected, 
+  initializeFirebase,
+  createShoppingList,
+  getShoppingLists,
+  updateShoppingList,
+  deleteShoppingList,
+  subscribeToShoppingLists
+};
 
 // Firestore security rules voorbeeld (plaats in firestore.rules):
 /*
@@ -60,18 +140,8 @@ service cloud.firestore {
         && request.resource.data.deviceUID == request.auth.uid;
     }
     
-    // Items binnen lijsten
-    match /shoppingLists/{listId}/items/{itemId} {
-      allow read, write: if request.auth == null
-        && get(/databases/$(database)/documents/shoppingLists/$(listId)).data.deviceUID == request.auth.uid;
-    }
-    
-    // Gedeelde lijsten via QR code
-    match /sharedLists/{shareId} {
-      allow read: if true; // Iedereen kan gedeelde lijsten lezen
-      allow write: if request.auth == null 
-        && request.resource.data.deviceUID == request.auth.uid;
-    }
+    // Items worden opgeslagen binnen de shoppingList document
+    // Geen aparte subcollectie nodig
   }
 }
 */

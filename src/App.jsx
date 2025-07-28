@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Settings, Plus, List, Share2, Trash2, Check, Wifi } from 'lucide-react';
 import { useTheme } from './context/ThemeContext';
 import { getDeviceUID } from './utils/deviceUID';
-import { initializeFirebase, isConnected } from './firebase';
+import { initializeFirebase, isConnected, createShoppingList, getShoppingLists, deleteShoppingList, subscribeToShoppingLists } from './firebase';
 import ShoppingList from './components/ShoppingList';
 import SettingsModal from './components/SettingsModal';
 import QRShareModal from './components/QRShareModal';
@@ -25,10 +25,20 @@ function App() {
     initializeFirebase().then(({ error }) => {
       if (error) {
         setFirebaseError(error);
+      } else {
+        // Load shopping lists from Firebase
+        loadShoppingLists();
+        
+        // Subscribe to real-time updates
+        const unsubscribe = subscribeToShoppingLists(deviceUID, (firebaseLists) => {
+          setLists(firebaseLists);
+        });
+        
+        return () => unsubscribe();
       }
       setIsLoading(false);
     });
-  }, []);
+  }, [deviceUID]);
 
   const retryConnection = () => {
     setIsLoading(true);
@@ -45,24 +55,39 @@ function App() {
     console.log('Device UID:', deviceUID);
   }, [deviceUID]);
 
-  const createList = () => {
-    if (newListName.trim()) {
-      const newList = {
-        id: crypto.randomUUID(),
-        name: newListName.trim(),
-        items: [],
-        createdAt: new Date(),
-        deviceUID: deviceUID
-      };
-      setLists([...lists, newList]);
-      setNewListName('');
+  const loadShoppingLists = async () => {
+    try {
+      const firebaseLists = await getShoppingLists(deviceUID);
+      setLists(firebaseLists);
+    } catch (error) {
+      console.error('Error loading shopping lists:', error);
     }
   };
 
-  const deleteList = (listId) => {
-    setLists(lists.filter(list => list.id !== listId));
-    if (selectedList?.id === listId) {
-      setSelectedList(null);
+  const createList = async () => {
+    if (newListName.trim()) {
+      try {
+        const newList = {
+          name: newListName.trim(),
+          items: [],
+          deviceUID: deviceUID
+        };
+        await createShoppingList(newList);
+        setNewListName('');
+      } catch (error) {
+        console.error('Error creating shopping list:', error);
+      }
+    }
+  };
+
+  const deleteList = async (listId) => {
+    try {
+      await deleteShoppingList(listId);
+      if (selectedList?.id === listId) {
+        setSelectedList(null);
+      }
+    } catch (error) {
+      console.error('Error deleting shopping list:', error);
     }
   };
 

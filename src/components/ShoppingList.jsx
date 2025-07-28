@@ -1,12 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Plus, Check, Trash2, Share2 } from 'lucide-react';
+import { doc, updateDoc, onSnapshot } from 'firebase/firestore';
+import { db } from '../firebase';
 
 const ShoppingList = ({ list, onBack, onUpdateList }) => {
   const [newItem, setNewItem] = useState('');
   const [filter, setFilter] = useState('all');
+  const [currentList, setCurrentList] = useState(list);
 
-  const addItem = () => {
+  useEffect(() => {
+    setCurrentList(list);
+    
+    // Subscribe to real-time updates for this list
+    const unsubscribe = onSnapshot(doc(db, 'shoppingLists', list.id), (doc) => {
+      if (doc.exists()) {
+        setCurrentList({ id: doc.id, ...doc.data() });
+      }
+    });
+
+    return () => unsubscribe();
+  }, [list.id]);
+
+  const addItem = async () => {
     if (newItem.trim()) {
       const newItemObj = {
         id: crypto.randomUUID(),
@@ -15,51 +31,54 @@ const ShoppingList = ({ list, onBack, onUpdateList }) => {
         addedAt: new Date(),
       };
       
-      const updatedList = {
-        ...list,
-        items: [...list.items, newItemObj],
-      };
+      const updatedItems = [...currentList.items, newItemObj];
+      await updateDoc(doc(db, 'shoppingLists', currentList.id), {
+        items: updatedItems,
+        updatedAt: new Date()
+      });
       
-      onUpdateList(updatedList);
       setNewItem('');
     }
   };
 
-  const toggleItem = (itemId) => {
-    const updatedList = {
-      ...list,
-      items: list.items.map(item =>
-        item.id === itemId ? { ...item, completed: !item.completed } : item
-      ),
-    };
-    onUpdateList(updatedList);
+  const toggleItem = async (itemId) => {
+    const updatedItems = currentList.items.map(item =>
+      item.id === itemId ? { ...item, completed: !item.completed } : item
+    );
+    
+    await updateDoc(doc(db, 'shoppingLists', currentList.id), {
+      items: updatedItems,
+      updatedAt: new Date()
+    });
   };
 
-  const deleteItem = (itemId) => {
-    const updatedList = {
-      ...list,
-      items: list.items.filter(item => item.id !== itemId),
-    };
-    onUpdateList(updatedList);
+  const deleteItem = async (itemId) => {
+    const updatedItems = currentList.items.filter(item => item.id !== itemId);
+    
+    await updateDoc(doc(db, 'shoppingLists', currentList.id), {
+      items: updatedItems,
+      updatedAt: new Date()
+    });
   };
 
-  const clearCompleted = () => {
-    const updatedList = {
-      ...list,
-      items: list.items.filter(item => !item.completed),
-    };
-    onUpdateList(updatedList);
+  const clearCompleted = async () => {
+    const updatedItems = currentList.items.filter(item => !item.completed);
+    
+    await updateDoc(doc(db, 'shoppingLists', currentList.id), {
+      items: updatedItems,
+      updatedAt: new Date()
+    });
   };
 
-  const filteredItems = list.items.filter(item => {
+  const filteredItems = currentList.items.filter(item => {
     if (filter === 'all') return true;
     if (filter === 'active') return !item.completed;
     if (filter === 'completed') return item.completed;
     return true;
   });
 
-  const completedCount = list.items.filter(item => item.completed).length;
-  const totalCount = list.items.length;
+  const completedCount = currentList.items.filter(item => item.completed).length;
+  const totalCount = currentList.items.length;
 
   return (
     <motion.div
@@ -77,7 +96,7 @@ const ShoppingList = ({ list, onBack, onUpdateList }) => {
               <ArrowLeft className="w-5 h-5" />
             </button>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-              {list.name}
+              {currentList.name}
             </h2>
           </div>
           <button
@@ -181,7 +200,7 @@ const ShoppingList = ({ list, onBack, onUpdateList }) => {
           </div>
         )}
 
-        {list.items.length === 0 && (
+        {currentList.items.length === 0 && (
           <div className="text-center py-12">
             <p className="text-gray-500 dark:text-gray-400">
               Je boodschappenlijst is leeg. Voeg items toe om te beginnen!
