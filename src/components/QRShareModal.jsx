@@ -78,7 +78,7 @@ const QRShareModal = ({ listId, onClose }) => {
             </p>
             
             <div className="flex justify-center mb-4">
-              <div className="bg-white p-4 rounded-lg shadow-lg">
+              <div className="bg-white p-4 rounded-lg shadow-lg border border-[rgb(var(--border-color))]/20">
                 <QRCode
                   id="qr-code"
                   value={shareUrl}

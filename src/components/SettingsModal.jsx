@@ -239,7 +239,7 @@ const SettingsModal = ({ onClose }) => {
                         Scan deze QR-code op een ander apparaat:
                       </p>
                       <div className="flex justify-center mb-2">
-                        <div className="bg-white p-2 rounded-lg shadow">
+                        <div className="bg-white p-2 rounded-lg shadow border border-[rgb(var(--border-color))]/20">
                           <QRCode
                             value={generateLinkCode()}
                             size={150}

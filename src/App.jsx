@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Settings, Plus, List, Share2, Trash2, Check, Wifi } from 'lucide-react';
+import { Settings, Plus, List, Share2, Trash2, Check, Wifi, QrCode } from 'lucide-react';
 import { useTheme } from './context/ThemeContext';
 import { useToast } from './context/ToastContext';
 import { useUndo } from './context/UndoContext';
@@ -9,6 +9,7 @@ import { initializeFirebase, isConnected, createShoppingList, getShoppingLists, 
 import ShoppingList from './components/ShoppingList';
 import SettingsModal from './components/SettingsModal';
 import QRShareModal from './components/QRShareModal';
+import QRScannerModal from './components/QRScannerModal';
 import ConnectionError from './components/ConnectionError';
 import ToastContainer from './components/Toast';
 import UndoBar from './components/UndoBar';
@@ -22,6 +23,7 @@ function App() {
   const [selectedList, setSelectedList] = useState(null);
   const [showSettings, setShowSettings] = useState(false);
   const [showShare, setShowShare] = useState(false);
+  const [showScanner, setShowScanner] = useState(false);
   const [shareListId, setShareListId] = useState(null);
   const [deviceUID] = useState(getDeviceUID());
   const [firebaseError, setFirebaseError] = useState(null);
@@ -140,6 +142,30 @@ function App() {
     info('Deel de QR-code of link om je lijst te delen! 📤');
   };
 
+  const handleScanSuccess = async (scannedData) => {
+    try {
+      // Extract list ID from the scanned URL or data
+      let listId = null;
+      
+      if (scannedData.includes('/shared/')) {
+        listId = scannedData.split('/shared/')[1];
+      } else if (scannedData.includes('#')) {
+        listId = scannedData.split('#')[1];
+      } else {
+        listId = scannedData;
+      }
+
+      if (listId) {
+        // For now, just show success message
+        // In a real implementation, you'd fetch the shared list from Firebase
+        success(`Gedeelde lijst gevonden: ${listId}`, 3000);
+        info('Functionaliteit om gedeelde lijsten te importeren komt binnenkort! 🚧', 4000);
+      }
+    } catch (err) {
+      error('Fout bij verwerken van gescande code');
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[rgb(var(--bg-color))]">
@@ -169,7 +195,14 @@ function App() {
               Boodschappenlijst
             </h1>
           </div>
-          <div className="flex items-center space-x-2 sm:space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-3">
+            <button
+              onClick={() => setShowScanner(true)}
+              className="flex items-center justify-center p-3 rounded-xl bg-gradient-to-r from-secondary to-accent hover:opacity-90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+              aria-label="QR-code scannen"
+            >
+              <QrCode className="w-5 h-5" />
+            </button>
             <button
               onClick={toggleTheme}
               className="flex items-center justify-center p-3 rounded-xl bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
@@ -269,9 +302,20 @@ function App() {
                 className="text-center py-12"
               >
                 <List className="w-16 h-16 text-[rgb(var(--text-color))]/40 mx-auto mb-4" />
-                <p className="text-[rgb(var(--text-color))]/60">
+                <p className="text-[rgb(var(--text-color))]/60 mb-6">
                   Je hebt nog geen boodschappenlijsten. Maak er een aan om te beginnen!
                 </p>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+                  <button
+                    onClick={() => setShowScanner(true)}
+                    className="flex items-center justify-center px-6 py-3 bg-gradient-to-r from-secondary to-accent hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                  >
+                    <QrCode className="w-5 h-5 mr-2" />
+                    <span className="font-medium">Scan gedeelde lijst</span>
+                  </button>
+                  <span className="text-[rgb(var(--text-color))]/40 text-sm">of</span>
+                  <span className="text-[rgb(var(--text-color))]/60 text-sm">Maak hierboven een nieuwe lijst aan</span>
+                </div>
               </motion.div>
             )}
           </div>
@@ -289,9 +333,22 @@ function App() {
       </main>
 
       {isOffline && (
-        <div className="fixed bottom-4 right-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-2 rounded-lg shadow-lg flex items-center space-x-2">
+        <div className="fixed bottom-20 right-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-2 rounded-lg shadow-lg flex items-center space-x-2">
           <Wifi className="w-4 h-4" />
           <span className="text-sm">Offline mode</span>
+        </div>
+      )}
+
+      {/* Floating QR Scanner Button for Mobile */}
+      {!selectedList && lists.length > 0 && (
+        <div className="fixed bottom-6 right-6 lg:hidden">
+          <button
+            onClick={() => setShowScanner(true)}
+            className="flex items-center justify-center w-14 h-14 bg-gradient-to-r from-secondary to-accent hover:opacity-90 text-white rounded-full shadow-xl hover:shadow-2xl transform hover:scale-110 transition-all duration-200"
+            aria-label="QR-code scannen"
+          >
+            <QrCode className="w-6 h-6" />
+          </button>
         </div>
       )}
 
@@ -306,6 +363,13 @@ function App() {
             setShowShare(false);
             setShareListId(null);
           }}
+        />
+      )}
+
+      {showScanner && (
+        <QRScannerModal
+          onClose={() => setShowScanner(false)}
+          onScanSuccess={handleScanSuccess}
         />
       )}
 

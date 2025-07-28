@@ -57,7 +57,7 @@ const ConnectionError = ({ error, onRetry }) => {
         <div className="space-y-4">
           <button
             onClick={onRetry}
-            className="w-full px-4 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+            className="w-full px-4 py-3 bg-primary hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
           >
             {errorInfo.action}
           </button>
