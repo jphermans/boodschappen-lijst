@@ -2,15 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Settings, Plus, List, Share2, Trash2, Check, Wifi } from 'lucide-react';
 import { useTheme } from './context/ThemeContext';
+import { useToast } from './context/ToastContext';
+import { useUndo } from './context/UndoContext';
 import { getDeviceUID } from './utils/deviceUID';
 import { initializeFirebase, isConnected, createShoppingList, getShoppingLists, deleteShoppingList, subscribeToShoppingLists } from './firebase';
 import ShoppingList from './components/ShoppingList';
 import SettingsModal from './components/SettingsModal';
 import QRShareModal from './components/QRShareModal';
 import ConnectionError from './components/ConnectionError';
+import ToastContainer from './components/Toast';
+import UndoBar from './components/UndoBar';
 
 function App() {
   const { theme, toggleTheme } = useTheme();
+  const { toasts, removeToast, success, error, info } = useToast();
+  const { undoActions, addUndoAction, executeUndo, removeUndoAction } = useUndo();
   const [lists, setLists] = useState([]);
   const [newListName, setNewListName] = useState('');
   const [selectedList, setSelectedList] = useState(null);
@@ -73,28 +79,43 @@ function App() {
         };
         await createShoppingList(newList);
         setNewListName('');
+        success(`Lijst "${newListName.trim()}" is aangemaakt! 🎉`);
       } catch (error) {
         console.error('Error creating shopping list:', error);
+        error('Er ging iets mis bij het aanmaken van de lijst');
       }
     }
   };
 
   const deleteList = async (listId) => {
     try {
+      const listToDelete = lists.find(l => l.id === listId);
       await deleteShoppingList(listId);
+      
       if (selectedList?.id === listId) {
         setSelectedList(null);
       }
+      
+      // Add undo action
+      addUndoAction({
+        message: `Lijst "${listToDelete?.name}" verwijderd`,
+        undoFunction: async () => {
+          await createShoppingList(listToDelete);
+          success(`Lijst "${listToDelete?.name}" hersteld! 🎉`);
+        }
+      });
+      
+      success(`Lijst "${listToDelete?.name}" is verwijderd`);
     } catch (error) {
       console.error('Error deleting shopping list:', error);
+      error('Er ging iets mis bij het verwijderen van de lijst');
     }
   };
 
   const handleShare = (listId) => {
-    console.log('handleShare called with listId:', listId);
     setShareListId(listId);
     setShowShare(true);
-    console.log('Share modal should now be visible:', { shareListId: listId, showShare: true });
+    info('Deel de QR-code of link om je lijst te delen! 📤');
   };
 
   if (isLoading) {
@@ -158,7 +179,7 @@ function App() {
               <h2 className="text-xl font-semibold text-[rgb(var(--card-text))] mb-4">
                 Nieuwe lijst maken
               </h2>
-              <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-2">
+              <div className="flex flex-col lg:flex-row space-y-3 lg:space-y-0 lg:space-x-2">
                 <input
                   type="text"
                   value={newListName}
@@ -170,7 +191,7 @@ function App() {
                 <button
                   onClick={createList}
                   disabled={!newListName.trim()}
-                  className="w-full sm:w-auto flex items-center justify-center px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200"
+                  className="w-full lg:w-auto flex items-center justify-center px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200"
                 >
                   <Plus className="w-5 h-5 mr-2" />
                   <span className="font-medium">Aanmaken</span>
@@ -265,6 +286,13 @@ function App() {
           }}
         />
       )}
+
+      <ToastContainer toasts={toasts} removeToast={removeToast} />
+      <UndoBar 
+        undoActions={undoActions} 
+        executeUndo={executeUndo} 
+        removeUndoAction={removeUndoAction} 
+      />
     </div>
   );
 }

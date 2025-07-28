@@ -3,11 +3,18 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Plus, Check, Trash2, Share2 } from 'lucide-react';
 import { doc, updateDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase';
+import { useToast } from '../context/ToastContext';
+import { useUndo } from '../context/UndoContext';
+import { getSuggestions, getPopularItems } from '../utils/groceryItems';
 
 const ShoppingList = ({ list, onBack, onShare }) => {
+  const { success, error } = useToast();
+  const { addUndoAction } = useUndo();
   const [newItem, setNewItem] = useState('');
   const [filter, setFilter] = useState('all');
   const [currentList, setCurrentList] = useState(list);
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   useEffect(() => {
     setCurrentList(list);
@@ -22,23 +29,62 @@ const ShoppingList = ({ list, onBack, onShare }) => {
     return () => unsubscribe();
   }, [list.id]);
 
-  const addItem = async () => {
-    if (newItem.trim()) {
-      const newItemObj = {
-        id: crypto.randomUUID(),
-        name: newItem.trim(),
-        completed: false,
-        addedAt: new Date(),
-      };
-      
-      const updatedItems = [...currentList.items, newItemObj];
-      await updateDoc(doc(db, 'shoppingLists', currentList.id), {
-        items: updatedItems,
-        updatedAt: new Date()
-      });
-      
-      setNewItem('');
+  const addItem = async (itemName = newItem.trim()) => {
+    if (itemName) {
+      try {
+        const newItemObj = {
+          id: crypto.randomUUID(),
+          name: itemName,
+          completed: false,
+          addedAt: new Date(),
+        };
+        
+        const updatedItems = [...currentList.items, newItemObj];
+        await updateDoc(doc(db, 'shoppingLists', currentList.id), {
+          items: updatedItems,
+          updatedAt: new Date()
+        });
+        
+        setNewItem('');
+        setShowSuggestions(false);
+        setSuggestions([]);
+        success(`"${newItemObj.name}" toegevoegd! ✅`);
+      } catch (err) {
+        console.error('Error adding item:', err);
+        error('Er ging iets mis bij het toevoegen van het item');
+      }
     }
+  };
+
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setNewItem(value);
+    
+    if (value.length >= 2) {
+      const newSuggestions = getSuggestions(value);
+      setSuggestions(newSuggestions);
+      setShowSuggestions(newSuggestions.length > 0);
+    } else {
+      setSuggestions([]);
+      setShowSuggestions(false);
+    }
+  };
+
+  const handleSuggestionClick = (suggestion) => {
+    addItem(suggestion);
+  };
+
+  const handleInputFocus = () => {
+    if (newItem.length >= 2) {
+      setShowSuggestions(suggestions.length > 0);
+    }
+  };
+
+  const handleInputBlur = () => {
+    // Delay hiding suggestions to allow clicking on them
+    setTimeout(() => {
+      setShowSuggestions(false);
+    }, 200);
   };
 
   const toggleItem = async (itemId) => {
@@ -53,21 +99,64 @@ const ShoppingList = ({ list, onBack, onShare }) => {
   };
 
   const deleteItem = async (itemId) => {
-    const updatedItems = currentList.items.filter(item => item.id !== itemId);
-    
-    await updateDoc(doc(db, 'shoppingLists', currentList.id), {
-      items: updatedItems,
-      updatedAt: new Date()
-    });
+    try {
+      const itemToDelete = currentList.items.find(item => item.id === itemId);
+      const updatedItems = currentList.items.filter(item => item.id !== itemId);
+      
+      await updateDoc(doc(db, 'shoppingLists', currentList.id), {
+        items: updatedItems,
+        updatedAt: new Date()
+      });
+      
+      // Add undo action
+      addUndoAction({
+        message: `"${itemToDelete?.name}" verwijderd`,
+        undoFunction: async () => {
+          const restoreItems = [...updatedItems, itemToDelete];
+          await updateDoc(doc(db, 'shoppingLists', currentList.id), {
+            items: restoreItems,
+            updatedAt: new Date()
+          });
+          success(`"${itemToDelete?.name}" hersteld! ✅`);
+        }
+      });
+      
+      success(`"${itemToDelete?.name}" verwijderd`);
+    } catch (err) {
+      console.error('Error deleting item:', err);
+      error('Er ging iets mis bij het verwijderen van het item');
+    }
   };
 
   const clearCompleted = async () => {
-    const updatedItems = currentList.items.filter(item => !item.completed);
-    
-    await updateDoc(doc(db, 'shoppingLists', currentList.id), {
-      items: updatedItems,
-      updatedAt: new Date()
-    });
+    try {
+      const completedItems = currentList.items.filter(item => item.completed);
+      const completedCount = completedItems.length;
+      const updatedItems = currentList.items.filter(item => !item.completed);
+      
+      await updateDoc(doc(db, 'shoppingLists', currentList.id), {
+        items: updatedItems,
+        updatedAt: new Date()
+      });
+      
+      // Add undo action
+      addUndoAction({
+        message: `${completedCount} voltooide item${completedCount !== 1 ? 's' : ''} verwijderd`,
+        undoFunction: async () => {
+          const restoreItems = [...updatedItems, ...completedItems];
+          await updateDoc(doc(db, 'shoppingLists', currentList.id), {
+            items: restoreItems,
+            updatedAt: new Date()
+          });
+          success(`${completedCount} item${completedCount !== 1 ? 's' : ''} hersteld! ✅`);
+        }
+      });
+      
+      success(`${completedCount} voltooide item${completedCount !== 1 ? 's' : ''} verwijderd! 🗑️`);
+    } catch (err) {
+      console.error('Error clearing completed items:', err);
+      error('Er ging iets mis bij het verwijderen van voltooide items');
+    }
   };
 
   const filteredItems = currentList.items.filter(item => {
@@ -101,11 +190,8 @@ const ShoppingList = ({ list, onBack, onShare }) => {
           </div>
           <button
             onClick={() => {
-              console.log('Share button clicked', { currentList, onShare });
               if (onShare) {
                 onShare(currentList.id);
-              } else {
-                console.error('onShare function not provided');
               }
             }}
             className="flex items-center justify-center p-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
@@ -116,17 +202,35 @@ const ShoppingList = ({ list, onBack, onShare }) => {
         </div>
 
         <div className="mb-4">
-          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-            <input
-              type="text"
-              value={newItem}
-              onChange={(e) => setNewItem(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && addItem()}
-              placeholder="Voeg item toe..."
-              className="flex-1 px-4 py-2 border border-[rgb(var(--border-color))] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-[rgb(var(--card-bg))] text-[rgb(var(--card-text))]"
-            />
+          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 relative">
+            <div className="flex-1 relative">
+              <input
+                type="text"
+                value={newItem}
+                onChange={handleInputChange}
+                onKeyDown={(e) => e.key === 'Enter' && addItem()}
+                onFocus={handleInputFocus}
+                onBlur={handleInputBlur}
+                placeholder="Voeg item toe... (bijv. melk, brood, appels)"
+                className="w-full px-4 py-2 border border-[rgb(var(--border-color))] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-[rgb(var(--card-bg))] text-[rgb(var(--card-text))]"
+              />
+              
+              {showSuggestions && suggestions.length > 0 && (
+                <div className="absolute top-full left-0 right-0 bg-[rgb(var(--card-bg))] border border-[rgb(var(--border-color))] rounded-lg shadow-lg z-10 mt-1">
+                  {suggestions.map((suggestion, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleSuggestionClick(suggestion)}
+                      className="w-full text-left px-4 py-2 hover:bg-[rgb(var(--border-color))]/10 transition-colors first:rounded-t-lg last:rounded-b-lg text-[rgb(var(--card-text))]"
+                    >
+                      {suggestion}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
             <button
-              onClick={addItem}
+              onClick={() => addItem()}
               disabled={!newItem.trim()}
               className="flex items-center justify-center px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200"
             >
@@ -134,6 +238,23 @@ const ShoppingList = ({ list, onBack, onShare }) => {
               <span className="font-medium">Toevoegen</span>
             </button>
           </div>
+          
+          {currentList.items.length === 0 && newItem.length === 0 && (
+            <div className="mt-3">
+              <p className="text-sm text-[rgb(var(--text-color))]/60 mb-2">Populaire items:</p>
+              <div className="flex flex-wrap gap-2">
+                {getPopularItems().map((item, index) => (
+                  <button
+                    key={index}
+                    onClick={() => addItem(item)}
+                    className="px-3 py-1 bg-[rgb(var(--border-color))]/20 hover:bg-[rgb(var(--border-color))]/30 text-[rgb(var(--text-color))]/80 rounded-lg text-sm transition-colors"
+                  >
+                    {item}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="mb-4">
