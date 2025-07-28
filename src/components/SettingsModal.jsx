@@ -86,11 +86,11 @@ const SettingsModal = ({ onClose }) => {
             </h3>
             <button
               onClick={toggleTheme}
-              className="flex items-center space-x-3 p-3 w-full rounded-lg border border-[rgb(var(--border-color))] hover:bg-[rgb(var(--border-color))]/10 transition-colors"
+              className="flex items-center justify-center space-x-3 p-4 w-full rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
             >
               {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
-              <span className="text-[rgb(var(--card-text))]">
-                {theme === 'light' ? 'Donker thema' : 'Licht thema'}
+              <span className="font-medium">
+                {theme === 'light' ? '🌙 Donker thema' : '☀️ Licht thema'}
               </span>
             </button>
           </div>
@@ -186,9 +186,10 @@ const SettingsModal = ({ onClose }) => {
 
             <button
               onClick={resetColors}
-              className="w-full mt-4 px-4 py-2 bg-[rgb(var(--border-color))]/20 text-[rgb(var(--card-text))] rounded-lg hover:bg-[rgb(var(--border-color))]/30 transition-colors"
+              className="w-full mt-4 flex items-center justify-center px-4 py-3 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
             >
-              Kleuren resetten naar standaard
+              <Palette className="w-5 h-5 mr-2" />
+              <span className="font-medium">Kleuren resetten naar standaard</span>
             </button>
           </div>
 
@@ -211,13 +212,23 @@ const SettingsModal = ({ onClose }) => {
                   </div>
                   <button
                     onClick={handleDeviceLink}
-                    className={`px-3 py-1 rounded-lg text-sm transition-colors ${
+                    className={`flex items-center justify-center px-4 py-2 rounded-xl text-sm font-medium shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 ${
                       isLinkedToMaster()
-                        ? 'bg-red-500 text-white hover:bg-red-600'
-                        : 'bg-primary text-white hover:bg-primary/90'
+                        ? 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white'
+                        : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white'
                     }`}
                   >
-                    {isLinkedToMaster() ? 'Ontkoppelen' : 'Koppelen'}
+                    {isLinkedToMaster() ? (
+                      <>
+                        <span className="mr-1">🔗</span>
+                        Ontkoppelen
+                      </>
+                    ) : (
+                      <>
+                        <Link2 className="w-4 h-4 mr-1" />
+                        Koppelen
+                      </>
+                    )}
                   </button>
                 </div>
                 
@@ -249,9 +260,10 @@ const SettingsModal = ({ onClose }) => {
                         <button
                           onClick={handleScanCode}
                           disabled={!scanCode.trim()}
-                          className="w-full px-3 py-2 bg-secondary text-white rounded-lg hover:bg-secondary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
+                          className="w-full flex items-center justify-center px-3 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200 text-sm"
                         >
-                          Apparaat koppelen
+                          <QrCode className="w-4 h-4 mr-2" />
+                          <span className="font-medium">Apparaat koppelen</span>
                         </button>
                       </div>
                     </div>

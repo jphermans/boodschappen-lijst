@@ -127,17 +127,19 @@ function App() {
           <div className="flex items-center space-x-2 sm:space-x-4">
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-lg bg-[rgb(var(--border-color))]/20 hover:bg-[rgb(var(--border-color))]/30 transition-colors"
+              className="flex items-center justify-center p-3 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
               aria-label="Thema wisselen"
             >
-              {theme === 'light' ? '🌙' : '☀️'}
+              <span className="text-lg">
+                {theme === 'light' ? '🌙' : '☀️'}
+              </span>
             </button>
             <button
               onClick={() => setShowSettings(true)}
-              className="p-2 rounded-lg bg-[rgb(var(--border-color))]/20 hover:bg-[rgb(var(--border-color))]/30 transition-colors"
+              className="flex items-center justify-center p-3 rounded-xl bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
               aria-label="Instellingen"
             >
-              <Settings className="w-5 h-5 text-[rgb(var(--text-color))]/80" />
+              <Settings className="w-5 h-5" />
             </button>
           </div>
         </div>
@@ -166,9 +168,10 @@ function App() {
                 <button
                   onClick={createList}
                   disabled={!newListName.trim()}
-                  className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="flex items-center justify-center px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200"
                 >
-                  <Plus className="w-5 h-5" />
+                  <Plus className="w-5 h-5 mr-2" />
+                  <span className="font-medium">Aanmaken</span>
                 </button>
               </div>
             </motion.div>
@@ -190,19 +193,22 @@ function App() {
                   <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
                     <button
                       onClick={() => setSelectedList(list)}
-                      className="flex-1 px-3 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
+                      className="flex-1 flex items-center justify-center px-4 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
                     >
-                      Openen
+                      <Check className="w-4 h-4 mr-2" />
+                      <span className="font-medium">Openen</span>
                     </button>
                     <button
                       onClick={() => handleShare(list.id)}
-                      className="px-3 py-2 bg-secondary text-white rounded-lg hover:bg-secondary/90 transition-colors"
+                      className="flex items-center justify-center px-3 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+                      title="Delen"
                     >
                       <Share2 className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => deleteList(list.id)}
-                      className="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                      className="flex items-center justify-center px-3 py-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+                      title="Verwijderen"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>

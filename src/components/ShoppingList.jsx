@@ -91,7 +91,7 @@ const ShoppingList = ({ list, onBack, onShare }) => {
           <div className="flex items-center space-x-3">
             <button
               onClick={onBack}
-              className="p-2 rounded-lg bg-[rgb(var(--border-color))]/20 hover:bg-[rgb(var(--border-color))]/30 transition-colors"
+              className="flex items-center justify-center p-3 rounded-xl bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
@@ -101,7 +101,8 @@ const ShoppingList = ({ list, onBack, onShare }) => {
           </div>
           <button
             onClick={() => onShare(currentList.id)}
-            className="p-2 rounded-lg bg-secondary text-white hover:bg-secondary/90 transition-colors"
+            className="flex items-center justify-center p-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+            title="Lijst delen"
           >
             <Share2 className="w-5 h-5" />
           </button>
@@ -120,28 +121,32 @@ const ShoppingList = ({ list, onBack, onShare }) => {
             <button
               onClick={addItem}
               disabled={!newItem.trim()}
-              className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="flex items-center justify-center px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200"
             >
-              <Plus className="w-5 h-5" />
+              <Plus className="w-5 h-5 mr-2" />
+              <span className="font-medium">Toevoegen</span>
             </button>
           </div>
         </div>
 
         <div className="mb-4">
           <div className="flex flex-wrap gap-2">
-            {['all', 'active', 'completed'].map((filterType) => (
+            {[
+              { type: 'all', label: 'Alles', icon: '📋' },
+              { type: 'active', label: 'Actief', icon: '⏳' },
+              { type: 'completed', label: 'Voltooid', icon: '✅' }
+            ].map((filterOption) => (
               <button
-                key={filterType}
-                onClick={() => setFilter(filterType)}
-                className={`px-3 py-1 rounded-lg text-sm transition-colors ${
-                  filter === filterType
-                    ? 'bg-primary text-white'
-                    : 'bg-[rgb(var(--border-color))]/20 text-[rgb(var(--text-color))]/80 hover:bg-[rgb(var(--border-color))]/30'
+                key={filterOption.type}
+                onClick={() => setFilter(filterOption.type)}
+                className={`flex items-center justify-center px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
+                  filter === filterOption.type
+                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg transform scale-105'
+                    : 'bg-[rgb(var(--border-color))]/20 text-[rgb(var(--text-color))]/80 hover:bg-[rgb(var(--border-color))]/30 hover:scale-105'
                 }`}
               >
-                {filterType === 'all' && 'Alles'}
-                {filterType === 'active' && 'Actief'}
-                {filterType === 'completed' && 'Voltooid'}
+                <span className="mr-1">{filterOption.icon}</span>
+                {filterOption.label}
               </button>
             ))}
           </div>
@@ -162,13 +167,13 @@ const ShoppingList = ({ list, onBack, onShare }) => {
             >
               <button
                 onClick={() => toggleItem(item.id)}
-                className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors flex-shrink-0 ${
+                className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all duration-200 flex-shrink-0 transform hover:scale-110 ${
                   item.completed
-                    ? 'bg-primary border-primary'
-                    : 'border-[rgb(var(--border-color))] hover:border-primary'
+                    ? 'bg-gradient-to-r from-green-500 to-emerald-600 border-green-500 shadow-lg'
+                    : 'border-[rgb(var(--border-color))] hover:border-green-500 hover:bg-green-50'
                 }`}
               >
-                {item.completed && <Check className="w-3 h-3 text-white" />}
+                {item.completed && <Check className="w-4 h-4 text-white" />}
               </button>
               <span
                 className={`flex-1 min-w-0 break-words ${
@@ -181,7 +186,8 @@ const ShoppingList = ({ list, onBack, onShare }) => {
               </span>
               <button
                 onClick={() => deleteItem(item.id)}
-                className="text-red-500 hover:text-red-600 transition-colors flex-shrink-0"
+                className="flex items-center justify-center p-2 rounded-lg bg-red-100 hover:bg-red-200 text-red-600 hover:text-red-700 transform hover:scale-110 transition-all duration-200 flex-shrink-0"
+                title="Item verwijderen"
               >
                 <Trash2 className="w-4 h-4" />
               </button>
@@ -193,9 +199,10 @@ const ShoppingList = ({ list, onBack, onShare }) => {
           <div className="mt-6">
             <button
               onClick={clearCompleted}
-              className="w-full px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+              className="w-full flex items-center justify-center px-4 py-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
             >
-              Verwijder voltooide items ({completedCount})
+              <Trash2 className="w-5 h-5 mr-2" />
+              <span className="font-medium">Verwijder voltooide items ({completedCount})</span>
             </button>
           </div>
         )}

@@ -49,28 +49,28 @@ const DeviceLinkModal = ({ currentDeviceUID, onClose, onLinkDevice }) => {
         </div>
 
         <div className="p-6 space-y-6">
-          <div className="flex space-x-2">
+          <div className="flex space-x-3">
             <button
               onClick={() => setLinkType('generate')}
-              className={`flex-1 px-4 py-2 rounded-lg transition-colors ${
+              className={`flex-1 flex items-center justify-center px-4 py-3 rounded-xl transition-all duration-200 ${
                 linkType === 'generate'
-                  ? 'bg-primary text-white'
-                  : 'bg-[rgb(var(--border-color))]/20 text-[rgb(var(--text-color))]/80'
+                  ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg transform scale-105'
+                  : 'bg-[rgb(var(--border-color))]/20 text-[rgb(var(--text-color))]/80 hover:bg-[rgb(var(--border-color))]/30 hover:scale-105'
               }`}
             >
-              <Scan className="w-4 h-4 inline mr-2" />
-              Genereer code
+              <Scan className="w-4 h-4 mr-2" />
+              <span className="font-medium">📱 Genereer code</span>
             </button>
             <button
               onClick={() => setLinkType('scan')}
-              className={`flex-1 px-4 py-2 rounded-lg transition-colors ${
+              className={`flex-1 flex items-center justify-center px-4 py-3 rounded-xl transition-all duration-200 ${
                 linkType === 'scan'
-                  ? 'bg-primary text-white'
-                  : 'bg-[rgb(var(--border-color))]/20 text-[rgb(var(--text-color))]/80'
+                  ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg transform scale-105'
+                  : 'bg-[rgb(var(--border-color))]/20 text-[rgb(var(--text-color))]/80 hover:bg-[rgb(var(--border-color))]/30 hover:scale-105'
               }`}
             >
-              <Link2 className="w-4 h-4 inline mr-2" />
-              Scan code
+              <Link2 className="w-4 h-4 mr-2" />
+              <span className="font-medium">🔗 Scan code</span>
             </button>
           </div>
 
@@ -110,9 +110,10 @@ const DeviceLinkModal = ({ currentDeviceUID, onClose, onLinkDevice }) => {
               <button
                 onClick={handleScan}
                 disabled={!scanCode.trim()}
-                className="w-full px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="w-full flex items-center justify-center px-4 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200"
               >
-                Apparaat koppelen
+                <Link2 className="w-4 h-4 mr-2" />
+                <span className="font-medium">🔗 Apparaat koppelen</span>
               </button>
             </div>
           )}
