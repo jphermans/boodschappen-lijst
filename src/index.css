@@ -14,6 +14,30 @@
   --color-accent: 244 114 182;
 }
 
+.text-primary {
+  color: rgb(var(--color-primary));
+}
+
+.text-secondary {
+  color: rgb(var(--color-secondary));
+}
+
+.text-accent {
+  color: rgb(var(--color-accent));
+}
+
+.bg-primary {
+  background-color: rgb(var(--color-primary));
+}
+
+.bg-secondary {
+  background-color: rgb(var(--color-secondary));
+}
+
+.bg-accent {
+  background-color: rgb(var(--color-accent));
+}
+
 * {
   box-sizing: border-box;
 }

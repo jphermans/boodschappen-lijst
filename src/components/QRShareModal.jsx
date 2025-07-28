@@ -4,11 +4,21 @@ import { X, Copy, Download } from 'lucide-react';
 import QRCode from 'react-qr-code';
 
 const QRShareModal = ({ listId, onClose }) => {
-  const shareUrl = `${window.location.origin}/shared/${listId}`;
+  const shareUrl = `${window.location.origin}${window.location.pathname}#/shared/${listId}`;
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(shareUrl);
-    alert('Link gekopieerd naar klembord!');
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      const button = event.target.closest('button');
+      const originalText = button.innerHTML;
+      button.innerHTML = '<span class="inline-flex items-center"><svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Gekopieerd!</span>';
+      setTimeout(() => {
+        button.innerHTML = originalText;
+      }, 2000);
+    } catch (err) {
+      console.error('Kon link niet kopiëren:', err);
+      alert('Kon link niet kopiëren. Probeer handmatig te selecteren.');
+    }
   };
 
   const downloadQR = () => {
