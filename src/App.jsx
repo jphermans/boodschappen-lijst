@@ -158,19 +158,19 @@ function App() {
               <h2 className="text-xl font-semibold text-[rgb(var(--card-text))] mb-4">
                 Nieuwe lijst maken
               </h2>
-              <div className="flex space-x-2">
+              <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-2">
                 <input
                   type="text"
                   value={newListName}
                   onChange={(e) => setNewListName(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && createList()}
                   placeholder="Naam van je boodschappenlijst..."
-                  className="flex-1 px-4 py-2 border border-[rgb(var(--border-color))] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-[rgb(var(--card-bg))] text-[rgb(var(--card-text))]"
+                  className="flex-1 px-4 py-3 border border-[rgb(var(--border-color))] rounded-xl focus:outline-none focus:ring-2 focus:ring-primary bg-[rgb(var(--card-bg))] text-[rgb(var(--card-text))] text-lg"
                 />
                 <button
                   onClick={createList}
                   disabled={!newListName.trim()}
-                  className="flex items-center justify-center px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200"
+                  className="w-full sm:w-auto flex items-center justify-center px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200"
                 >
                   <Plus className="w-5 h-5 mr-2" />
                   <span className="font-medium">Aanmaken</span>
