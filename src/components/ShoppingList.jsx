@@ -100,7 +100,14 @@ const ShoppingList = ({ list, onBack, onShare }) => {
             </h2>
           </div>
           <button
-            onClick={() => onShare(currentList.id)}
+            onClick={() => {
+              console.log('Share button clicked', { currentList, onShare });
+              if (onShare) {
+                onShare(currentList.id);
+              } else {
+                console.error('onShare function not provided');
+              }
+            }}
             className="flex items-center justify-center p-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
             title="Lijst delen"
           >

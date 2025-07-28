@@ -91,8 +91,10 @@ function App() {
   };
 
   const handleShare = (listId) => {
+    console.log('handleShare called with listId:', listId);
     setShareListId(listId);
     setShowShare(true);
+    console.log('Share modal should now be visible:', { shareListId: listId, showShare: true });
   };
 
   if (isLoading) {
