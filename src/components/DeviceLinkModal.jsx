@@ -33,16 +33,16 @@ const DeviceLinkModal = ({ currentDeviceUID, onClose, onLinkDevice }) => {
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-white dark:bg-[rgb(var(--card-bg))] rounded-lg shadow-xl max-w-md w-full"
+        className="bg-[rgb(var(--card-bg))] rounded-lg shadow-xl max-w-md w-full"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between p-6 border-b border-[rgb(var(--border-color))]/50">
           <h2 className="text-xl font-semibold text-[rgb(var(--card-text))]">
             Apparaten koppelen
           </h2>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            className="p-2 rounded-lg hover:bg-[rgb(var(--border-color))]/20 transition-colors"
           >
             <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
           </button>
@@ -55,7 +55,7 @@ const DeviceLinkModal = ({ currentDeviceUID, onClose, onLinkDevice }) => {
               className={`flex-1 px-4 py-2 rounded-lg transition-colors ${
                 linkType === 'generate'
                   ? 'bg-primary text-white'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                  : 'bg-[rgb(var(--border-color))]/20 text-[rgb(var(--text-color))]/80'
               }`}
             >
               <Scan className="w-4 h-4 inline mr-2" />
@@ -66,7 +66,7 @@ const DeviceLinkModal = ({ currentDeviceUID, onClose, onLinkDevice }) => {
               className={`flex-1 px-4 py-2 rounded-lg transition-colors ${
                 linkType === 'scan'
                   ? 'bg-primary text-white'
-                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                  : 'bg-[rgb(var(--border-color))]/20 text-[rgb(var(--text-color))]/80'
               }`}
             >
               <Link2 className="w-4 h-4 inline mr-2" />
@@ -105,7 +105,7 @@ const DeviceLinkModal = ({ currentDeviceUID, onClose, onLinkDevice }) => {
                 value={scanCode}
                 onChange={(e) => setScanCode(e.target.value)}
                 placeholder="Code invoeren..."
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:text-white"
+                className="w-full px-4 py-2 border border-[rgb(var(--border-color))] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-[rgb(var(--card-bg))] text-[rgb(var(--card-text))]"
               />
               <button
                 onClick={handleScan}

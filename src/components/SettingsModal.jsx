@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { X, Palette, Moon, Sun, Link2, Smartphone, QrCode } from 'lucide-react';
+import QRCode from 'react-qr-code';
 import { useTheme } from '../context/ThemeContext';
-import { getDeviceInfo, generateLinkCode, linkToMasterDevice, unlinkFromMasterDevice, isLinkedToMaster } from '../utils/deviceUID';
+import { getDeviceInfo, generateLinkCode, linkToMasterDevice, unlinkFromMasterDevice, isLinkedToMaster, parseLinkCode } from '../utils/deviceUID';
 
 const SettingsModal = ({ onClose }) => {
   const [showQR, setShowQR] = useState(false);
@@ -63,16 +64,16 @@ const SettingsModal = ({ onClose }) => {
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto"
+        className="bg-[rgb(var(--card-bg))] rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+          <h2 className="text-xl font-semibold text-[rgb(var(--card-text))]">
             Instellingen
           </h2>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            className="p-2 rounded-lg hover:bg-[rgb(var(--border-color))]/20 transition-colors"
           >
             <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
           </button>
@@ -80,29 +81,29 @@ const SettingsModal = ({ onClose }) => {
 
         <div className="p-6 space-y-6">
           <div>
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-3">
+            <h3 className="text-lg font-medium text-[rgb(var(--card-text))] mb-3">
               Thema
             </h3>
             <button
               onClick={toggleTheme}
-              className="flex items-center space-x-3 p-3 w-full rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              className="flex items-center space-x-3 p-3 w-full rounded-lg border border-[rgb(var(--border-color))] hover:bg-[rgb(var(--border-color))]/10 transition-colors"
             >
               {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
-              <span className="text-gray-900 dark:text-white">
+              <span className="text-[rgb(var(--card-text))]">
                 {theme === 'light' ? 'Donker thema' : 'Licht thema'}
               </span>
             </button>
           </div>
 
           <div>
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-3 flex items-center">
+            <h3 className="text-lg font-medium text-[rgb(var(--card-text))] mb-3 flex items-center">
               <Palette className="w-5 h-5 mr-2" />
               Kleuren aanpassen
             </h3>
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-[rgb(var(--text-color))]/80 mb-2">
                   Primaire kleur
                 </label>
                 <div className="grid grid-cols-4 gap-2">
@@ -112,7 +113,7 @@ const SettingsModal = ({ onClose }) => {
                       onClick={() => updateColor('primary', color.value)}
                       className={`w-full h-10 rounded-lg border-2 transition-all ${
                         primaryColor === color.value
-                          ? 'border-gray-900 dark:border-white scale-110'
+                          ? 'border-[rgb(var(--text-color))] scale-110'
                           : 'border-transparent hover:scale-105'
                       }`}
                       style={{ backgroundColor: color.value }}
@@ -124,12 +125,12 @@ const SettingsModal = ({ onClose }) => {
                   type="color"
                   value={primaryColor}
                   onChange={(e) => updateColor('primary', e.target.value)}
-                  className="mt-2 w-full h-10 rounded-lg cursor-pointer"
+                  className="mt-2 w-full h-10 rounded-lg cursor-pointer border border-[rgb(var(--border-color))]"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-[rgb(var(--text-color))]/80 mb-2">
                   Secundaire kleur
                 </label>
                 <div className="grid grid-cols-4 gap-2">
@@ -139,7 +140,7 @@ const SettingsModal = ({ onClose }) => {
                       onClick={() => updateColor('secondary', color.value)}
                       className={`w-full h-10 rounded-lg border-2 transition-all ${
                         secondaryColor === color.value
-                          ? 'border-gray-900 dark:border-white scale-110'
+                          ? 'border-[rgb(var(--text-color))] scale-110'
                           : 'border-transparent hover:scale-105'
                       }`}
                       style={{ backgroundColor: color.value }}
@@ -151,12 +152,12 @@ const SettingsModal = ({ onClose }) => {
                   type="color"
                   value={secondaryColor}
                   onChange={(e) => updateColor('secondary', e.target.value)}
-                  className="mt-2 w-full h-10 rounded-lg cursor-pointer"
+                  className="mt-2 w-full h-10 rounded-lg cursor-pointer border border-[rgb(var(--border-color))]"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-[rgb(var(--text-color))]/80 mb-2">
                   Accentkleur
                 </label>
                 <div className="grid grid-cols-4 gap-2">
@@ -166,7 +167,7 @@ const SettingsModal = ({ onClose }) => {
                       onClick={() => updateColor('accent', color.value)}
                       className={`w-full h-10 rounded-lg border-2 transition-all ${
                         accentColor === color.value
-                          ? 'border-gray-900 dark:border-white scale-110'
+                          ? 'border-[rgb(var(--text-color))] scale-110'
                           : 'border-transparent hover:scale-105'
                       }`}
                       style={{ backgroundColor: color.value }}
@@ -178,20 +179,20 @@ const SettingsModal = ({ onClose }) => {
                   type="color"
                   value={accentColor}
                   onChange={(e) => updateColor('accent', e.target.value)}
-                  className="mt-2 w-full h-10 rounded-lg cursor-pointer"
+                  className="mt-2 w-full h-10 rounded-lg cursor-pointer border border-[rgb(var(--border-color))]"
                 />
               </div>
             </div>
 
             <button
               onClick={resetColors}
-              className="w-full mt-4 px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+              className="w-full mt-4 px-4 py-2 bg-[rgb(var(--border-color))]/20 text-[rgb(var(--card-text))] rounded-lg hover:bg-[rgb(var(--border-color))]/30 transition-colors"
             >
               Kleuren resetten naar standaard
             </button>
           </div>
 
-          <div className="pt-4 border-t border-gray-200 dark:border-gray-700 space-y-4">
+          <div className="pt-4 border-t border-[rgb(var(--border-color))]/50 space-y-4">
             <div>
               <h3 className="text-lg font-medium text-[rgb(var(--card-text))] mb-3 flex items-center">
                 <Link2 className="w-5 h-5 mr-2" />
@@ -227,7 +228,7 @@ const SettingsModal = ({ onClose }) => {
                         Scan deze QR-code op een ander apparaat:
                       </p>
                       <div className="flex justify-center mb-2">
-                        <div className="bg-white dark:bg-gray-100 p-2 rounded-lg shadow">
+                        <div className="bg-white p-2 rounded-lg shadow">
                           <QRCode
                             value={generateLinkCode()}
                             size={150}
@@ -243,7 +244,7 @@ const SettingsModal = ({ onClose }) => {
                           value={scanCode}
                           onChange={(e) => setScanCode(e.target.value)}
                           placeholder="Of vul code handmatig in..."
-                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:text-white text-sm"
+                          className="w-full px-3 py-2 border border-[rgb(var(--border-color))] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-[rgb(var(--card-bg))] text-[rgb(var(--card-text))] text-sm"
                         />
                         <button
                           onClick={handleScanCode}

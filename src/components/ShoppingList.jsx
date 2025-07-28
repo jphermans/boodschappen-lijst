@@ -86,16 +86,16 @@ const ShoppingList = ({ list, onBack }) => {
       animate={{ opacity: 1, x: 0 }}
       className="max-w-2xl mx-auto px-4 sm:px-0"
     >
-      <div className="bg-white dark:bg-[rgb(var(--card-bg))] rounded-lg shadow-lg p-6">
+      <div className="bg-[rgb(var(--card-bg))] rounded-lg shadow-lg p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-3">
             <button
               onClick={onBack}
-              className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+              className="p-2 rounded-lg bg-[rgb(var(--border-color))]/20 hover:bg-[rgb(var(--border-color))]/30 transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+            <h2 className="text-2xl font-bold text-[rgb(var(--card-text))]">
               {currentList.name}
             </h2>
           </div>
@@ -115,7 +115,7 @@ const ShoppingList = ({ list, onBack }) => {
               onChange={(e) => setNewItem(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && addItem()}
               placeholder="Voeg item toe..."
-              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:text-white"
+              className="flex-1 px-4 py-2 border border-[rgb(var(--border-color))] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-[rgb(var(--card-bg))] text-[rgb(var(--card-text))]"
             />
             <button
               onClick={addItem}
@@ -136,7 +136,7 @@ const ShoppingList = ({ list, onBack }) => {
                 className={`px-3 py-1 rounded-lg text-sm transition-colors ${
                   filter === filterType
                     ? 'bg-primary text-white'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                    : 'bg-[rgb(var(--border-color))]/20 text-[rgb(var(--text-color))]/80 hover:bg-[rgb(var(--border-color))]/30'
                 }`}
               >
                 {filterType === 'all' && 'Alles'}
@@ -147,7 +147,7 @@ const ShoppingList = ({ list, onBack }) => {
           </div>
         </div>
 
-        <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
+        <div className="mb-4 text-sm text-[rgb(var(--text-color))]/80">
           {completedCount} van {totalCount} items voltooid
         </div>
 
@@ -158,14 +158,14 @@ const ShoppingList = ({ list, onBack }) => {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg min-w-0"
+              className="flex items-center space-x-3 p-3 bg-[rgb(var(--border-color))]/10 rounded-lg min-w-0"
             >
               <button
                 onClick={() => toggleItem(item.id)}
                 className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors flex-shrink-0 ${
                   item.completed
                     ? 'bg-primary border-primary'
-                    : 'border-gray-300 dark:border-gray-500 hover:border-primary'
+                    : 'border-[rgb(var(--border-color))] hover:border-primary'
                 }`}
               >
                 {item.completed && <Check className="w-3 h-3 text-white" />}
@@ -173,8 +173,8 @@ const ShoppingList = ({ list, onBack }) => {
               <span
                 className={`flex-1 min-w-0 break-words ${
                   item.completed
-                    ? 'line-through text-gray-500 dark:text-gray-400'
-                    : 'text-gray-900 dark:text-white'
+                    ? 'line-through text-[rgb(var(--text-color))]/60'
+                    : 'text-[rgb(var(--card-text))]'
                 }`}
               >
                 {item.name}
@@ -202,7 +202,7 @@ const ShoppingList = ({ list, onBack }) => {
 
         {currentList.items.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-500 dark:text-gray-400">
+            <p className="text-[rgb(var(--text-color))]/60">
               Je boodschappenlijst is leeg. Voeg items toe om te beginnen!
             </p>
           </div>

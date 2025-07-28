@@ -56,29 +56,29 @@ const QRShareModal = ({ listId, onClose }) => {
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full"
+        className="bg-[rgb(var(--card-bg))] rounded-lg shadow-xl max-w-md w-full"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+        <div className="flex items-center justify-between p-6 border-b border-[rgb(var(--border-color))]/50">
+          <h2 className="text-xl font-semibold text-[rgb(var(--card-text))]">
             Deel boodschappenlijst
           </h2>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            className="p-2 rounded-lg hover:bg-[rgb(var(--border-color))]/20 transition-colors"
           >
-            <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+            <X className="w-5 h-5 text-[rgb(var(--text-color))]/60" />
           </button>
         </div>
 
         <div className="p-6 space-y-6">
           <div className="text-center">
-            <p className="text-gray-600 dark:text-gray-400 mb-4">
+            <p className="text-[rgb(var(--text-color))]/80 mb-4">
               Scan de QR-code om deze boodschappenlijst te delen
             </p>
             
             <div className="flex justify-center mb-4">
-              <div className="bg-white dark:bg-gray-100 p-4 rounded-lg shadow-lg">
+              <div className="bg-white p-4 rounded-lg shadow-lg">
                 <QRCode
                   id="qr-code"
                   value={shareUrl}
@@ -91,9 +91,9 @@ const QRShareModal = ({ listId, onClose }) => {
               </div>
             </div>
 
-            <div className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+            <div className="text-sm text-[rgb(var(--text-color))]/80 mb-4">
               <p className="font-medium mb-2">Deellink:</p>
-              <p className="text-xs break-all font-mono bg-gray-100 dark:bg-gray-700 p-2 rounded">
+              <p className="text-xs break-all font-mono bg-[rgb(var(--border-color))]/20 p-2 rounded">
                 {shareUrl}
               </p>
             </div>
@@ -116,7 +116,7 @@ const QRShareModal = ({ listId, onClose }) => {
             </div>
           </div>
 
-          <div className="text-xs text-gray-500 dark:text-gray-400 text-center">
+          <div className="text-xs text-[rgb(var(--text-color))]/60 text-center">
             <p>
               Iedereen met deze link kan de lijst bekijken en bewerken.
             </p>

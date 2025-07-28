@@ -6,6 +6,11 @@
   --color-primary: 59 130 246;
   --color-secondary: 168 85 247;
   --color-accent: 236 72 153;
+  --bg-color: 249 250 251;
+  --text-color: 17 24 39;
+  --border-color: 209 213 219;
+  --card-bg: 255 255 255;
+  --card-text: 17 24 39;
 }
 
 [data-theme="dark"] {
@@ -17,17 +22,6 @@
   --border-color: 51 65 85;
   --card-bg: 30 41 59; /* Darker slate */
   --card-text: 226 232 240;
-}
-
-[data-theme="light"] {
-  --color-primary: 59 130 246;
-  --color-secondary: 168 85 247;
-  --color-accent: 236 72 153;
-  --bg-color: 249 250 251;
-  --text-color: 17 24 39;
-  --border-color: 209 213 219;
-  --card-bg: 255 255 255;
-  --card-text: 17 24 39;
 }
 
 body {
@@ -71,13 +65,9 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: rgb(249 250 251);
-  transition: background-color 0.3s ease;
-}
-
-[data-theme="dark"] body {
-  background-color: rgb(17 24 39);
-  color: rgb(243 244 246);
+  background-color: rgb(var(--bg-color));
+  color: rgb(var(--text-color));
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 #root {

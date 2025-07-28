@@ -33,9 +33,9 @@ const ConnectionError = ({ error, onRetry }) => {
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="min-h-screen flex items-center justify-center p-4 bg-gray-50 dark:bg-gray-900"
+      className="min-h-screen flex items-center justify-center p-4 bg-[rgb(var(--bg-color))]"
     >
-      <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 text-center">
+      <div className="max-w-md w-full bg-[rgb(var(--card-bg))] rounded-lg shadow-xl p-8 text-center">
         <div className="mb-6">
           {error?.message === 'Firebase configuratie ontbreekt' ? (
             <AlertTriangle className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
@@ -44,12 +44,12 @@ const ConnectionError = ({ error, onRetry }) => {
           )}
         </div>
 
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4"
+        <h2 className="text-2xl font-bold text-[rgb(var(--text-color))] mb-4"
         >
           {errorInfo.title}
         </h2>
 
-        <p className="text-gray-600 dark:text-gray-400 mb-6"
+        <p className="text-[rgb(var(--text-color))]/80 mb-6"
         >
           {errorInfo.description}
         </p>
@@ -63,10 +63,10 @@ const ConnectionError = ({ error, onRetry }) => {
           </button>
 
           {error?.message === 'Firebase configuratie ontbreekt' && (
-            <div className="text-sm text-gray-500 dark:text-gray-400 text-left"
+            <div className="text-sm text-[rgb(var(--text-color))]/60 text-left"
             >
               <p className="mb-2"><strong>Vereiste environment variables:</strong></p>
-              <pre className="bg-gray-100 dark:bg-gray-700 p-3 rounded text-xs overflow-x-auto"
+              <pre className="bg-[rgb(var(--border-color))]/20 p-3 rounded text-xs overflow-x-auto"
               >
 VITE_FIREBASE_API_KEY=your_api_key
 VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
@@ -79,9 +79,9 @@ VITE_FIREBASE_APP_ID=your_app_id
           )}
         </div>
 
-        <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700"
+        <div className="mt-6 pt-4 border-t border-[rgb(var(--border-color))]/50"
         >
-          <p className="text-xs text-gray-500 dark:text-gray-400"
+          <p className="text-xs text-[rgb(var(--text-color))]/60"
           >
             De app werkt momenteel offline. Je kunt nog steeds lijsten maken en bewerken, 
             maar de gegevens worden niet opgeslagen.
