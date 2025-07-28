@@ -12,6 +12,24 @@
   --color-primary: 96 165 250;
   --color-secondary: 192 132 252;
   --color-accent: 244 114 182;
+  --bg-color: 17 24 39;
+  --text-color: 243 244 246;
+  --border-color: 75 85 99;
+}
+
+[data-theme="light"] {
+  --color-primary: 59 130 246;
+  --color-secondary: 168 85 247;
+  --color-accent: 236 72 153;
+  --bg-color: 249 250 251;
+  --text-color: 17 24 39;
+  --border-color: 209 213 219;
+}
+
+body {
+  background-color: rgb(var(--bg-color));
+  color: rgb(var(--text-color));
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .text-primary {

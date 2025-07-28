@@ -26,7 +26,7 @@ export const getDeviceInfo = () => {
   return {
     deviceId: getDeviceUID(),
     browser: navigator.userAgent.split(' ')[0],
-    platform: navigator.platform,
+    platform: 'unknown',
     language: navigator.language
   };
 };

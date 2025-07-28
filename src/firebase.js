@@ -132,16 +132,20 @@ export {
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Gebruikers kunnen alleen hun eigen lijsten zien en bewerken
+    // Gebruikers kunnen alleen hun eigen lijsten zien en bewerken op basis van deviceUID
     match /shoppingLists/{listId} {
-      allow read, write: if request.auth == null 
+      allow read: if request.auth == null 
         && resource.data.deviceUID == request.auth.uid;
       allow create: if request.auth == null
         && request.resource.data.deviceUID == request.auth.uid;
+      allow update, delete: if request.auth == null
+        && resource.data.deviceUID == request.auth.uid;
     }
     
-    // Items worden opgeslagen binnen de shoppingList document
-    // Geen aparte subcollectie nodig
+    // Vereenvoudigde regels voor ontwikkeling (vervang later met bovenstaande)
+    match /shoppingLists/{listId} {
+      allow read, write: if true;
+    }
   }
 }
 */

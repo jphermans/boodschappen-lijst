@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Plus, Check, Trash2, Share2 } from 'lucide-react';
 import { doc, updateDoc, onSnapshot } from 'firebase/firestore';
@@ -113,7 +113,7 @@ const ShoppingList = ({ list, onBack, onUpdateList }) => {
               type="text"
               value={newItem}
               onChange={(e) => setNewItem(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && addItem()}
+              onKeyDown={(e) => e.key === 'Enter' && addItem()}
               placeholder="Voeg item toe..."
               className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:text-white"
             />
