@@ -80,6 +80,7 @@ const getShoppingLists = async (deviceUID) => {
 
 const updateShoppingList = async (listId, updates) => {
   try {
+    if (!db) throw new Error('Firebase not initialized');
     const listRef = doc(db, 'shoppingLists', listId);
     await updateDoc(listRef, {
       ...updates,
@@ -93,6 +94,7 @@ const updateShoppingList = async (listId, updates) => {
 
 const deleteShoppingList = async (listId) => {
   try {
+    if (!db) throw new Error('Firebase not initialized');
     await deleteDoc(doc(db, 'shoppingLists', listId));
   } catch (error) {
     console.error('Error deleting shopping list:', error);

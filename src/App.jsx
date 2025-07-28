@@ -22,21 +22,29 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    initializeFirebase().then(({ error }) => {
+    initializeFirebase().then(async ({ error }) => {
       if (error) {
         setFirebaseError(error);
+        setIsLoading(false);
       } else {
-        // Load shopping lists from Firebase
-        loadShoppingLists();
-        
-        // Subscribe to real-time updates
-        const unsubscribe = subscribeToShoppingLists(deviceUID, (firebaseLists) => {
-          setLists(firebaseLists);
-        });
-        
-        return () => unsubscribe();
+        try {
+          // Load initial shopping lists
+          const initialLists = await getShoppingLists(deviceUID);
+          setLists(initialLists);
+          
+          // Subscribe to real-time updates
+          const unsubscribe = subscribeToShoppingLists(deviceUID, (firebaseLists) => {
+            setLists(firebaseLists);
+          });
+          
+          return () => unsubscribe();
+        } catch (error) {
+          console.error('Error loading shopping lists:', error);
+          setFirebaseError(error);
+        } finally {
+          setIsLoading(false);
+        }
       }
-      setIsLoading(false);
     });
   }, [deviceUID]);
 
@@ -54,15 +62,6 @@ function App() {
   useEffect(() => {
     console.log('Device UID:', deviceUID);
   }, [deviceUID]);
-
-  const loadShoppingLists = async () => {
-    try {
-      const firebaseLists = await getShoppingLists(deviceUID);
-      setLists(firebaseLists);
-    } catch (error) {
-      console.error('Error loading shopping lists:', error);
-    }
-  };
 
   const createList = async () => {
     if (newListName.trim()) {
