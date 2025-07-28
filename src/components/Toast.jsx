@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Check, X, AlertCircle, Info, Trash2 } from 'lucide-react';
 
 const Toast = ({ toast, onRemove }) => {
-  const { id, type, message, duration = 4000 } = toast;
+  const { id, type, message, duration = 2500 } = toast;
 
   useEffect(() => {
     const timer = setTimeout(() => {

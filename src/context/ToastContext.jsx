@@ -33,16 +33,23 @@ export const ToastProvider = ({ children }) => {
   const error = (message, duration) => addToast({ type: 'error', message, duration });
   const warning = (message, duration) => addToast({ type: 'warning', message, duration });
   const info = (message, duration) => addToast({ type: 'info', message, duration });
+  const deleteToast = (message, duration) => addToast({ type: 'delete', message, duration });
+
+  const removeToastByMessage = (message) => {
+    setToasts((prev) => prev.filter((toast) => toast.message !== message));
+  };
 
   const value = {
     toasts,
     addToast,
     removeToast,
+    removeToastByMessage,
     clearToasts,
     success,
     error,
     warning,
     info,
+    deleteToast,
   };
 
   return (

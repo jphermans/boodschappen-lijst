@@ -8,7 +8,7 @@ import { useUndo } from '../context/UndoContext';
 import { getSuggestions, getPopularItems } from '../utils/groceryItems';
 
 const ShoppingList = ({ list, onBack, onShare }) => {
-  const { success, error } = useToast();
+  const { success, error, deleteToast, removeToastByMessage } = useToast();
   const { addUndoAction } = useUndo();
   const [newItem, setNewItem] = useState('');
   const [filter, setFilter] = useState('all');
@@ -30,8 +30,18 @@ const ShoppingList = ({ list, onBack, onShare }) => {
   }, [list.id]);
 
   const addItem = async (itemName = newItem.trim()) => {
-    if (itemName) {
+    if (itemName && itemName.length > 0) {
       try {
+        // Check if item already exists to prevent duplicates
+        const existingItem = currentList.items.find(item => 
+          item.name.toLowerCase() === itemName.toLowerCase()
+        );
+        
+        if (existingItem) {
+          error(`"${itemName}" staat al op je lijst!`);
+          return;
+        }
+
         const newItemObj = {
           id: crypto.randomUUID(),
           name: itemName,
@@ -48,10 +58,10 @@ const ShoppingList = ({ list, onBack, onShare }) => {
         setNewItem('');
         setShowSuggestions(false);
         setSuggestions([]);
-        success(`"${newItemObj.name}" toegevoegd! ✅`);
+        success(`"${newItemObj.name}" toegevoegd! ✅`, 2000);
       } catch (err) {
         console.error('Error adding item:', err);
-        error('Er ging iets mis bij het toevoegen van het item');
+        error('Er ging iets mis bij het toevoegen van het item', 3000);
       }
     }
   };
@@ -108,23 +118,27 @@ const ShoppingList = ({ list, onBack, onShare }) => {
         updatedAt: new Date()
       });
       
+      const deleteMessage = `"${itemToDelete?.name}" verwijderd`;
+      
       // Add undo action
       addUndoAction({
-        message: `"${itemToDelete?.name}" verwijderd`,
+        message: deleteMessage,
         undoFunction: async () => {
+          // Hide the deletion toast when undoing
+          removeToastByMessage(deleteMessage);
           const restoreItems = [...updatedItems, itemToDelete];
           await updateDoc(doc(db, 'shoppingLists', currentList.id), {
             items: restoreItems,
             updatedAt: new Date()
           });
-          success(`"${itemToDelete?.name}" hersteld! ✅`);
+          success(`"${itemToDelete?.name}" hersteld! ✅`, 2000);
         }
       });
       
-      success(`"${itemToDelete?.name}" verwijderd`);
+      deleteToast(deleteMessage, 6000);
     } catch (err) {
       console.error('Error deleting item:', err);
-      error('Er ging iets mis bij het verwijderen van het item');
+      error('Er ging iets mis bij het verwijderen van het item', 3000);
     }
   };
 
@@ -139,23 +153,27 @@ const ShoppingList = ({ list, onBack, onShare }) => {
         updatedAt: new Date()
       });
       
+      const deleteMessage = `${completedCount} voltooide item${completedCount !== 1 ? 's' : ''} verwijderd! 🗑️`;
+      
       // Add undo action
       addUndoAction({
         message: `${completedCount} voltooide item${completedCount !== 1 ? 's' : ''} verwijderd`,
         undoFunction: async () => {
+          // Hide the deletion toast when undoing
+          removeToastByMessage(deleteMessage);
           const restoreItems = [...updatedItems, ...completedItems];
           await updateDoc(doc(db, 'shoppingLists', currentList.id), {
             items: restoreItems,
             updatedAt: new Date()
           });
-          success(`${completedCount} item${completedCount !== 1 ? 's' : ''} hersteld! ✅`);
+          success(`${completedCount} item${completedCount !== 1 ? 's' : ''} hersteld! ✅`, 2000);
         }
       });
       
-      success(`${completedCount} voltooide item${completedCount !== 1 ? 's' : ''} verwijderd! 🗑️`);
+      deleteToast(deleteMessage, 8000);
     } catch (err) {
       console.error('Error clearing completed items:', err);
-      error('Er ging iets mis bij het verwijderen van voltooide items');
+      error('Er ging iets mis bij het verwijderen van voltooide items', 3000);
     }
   };
 

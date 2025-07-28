@@ -15,7 +15,7 @@ import UndoBar from './components/UndoBar';
 
 function App() {
   const { theme, toggleTheme } = useTheme();
-  const { toasts, removeToast, success, error, info } = useToast();
+  const { toasts, removeToast, removeToastByMessage, success, error, info, deleteToast } = useToast();
   const { undoActions, addUndoAction, executeUndo, removeUndoAction } = useUndo();
   const [lists, setLists] = useState([]);
   const [newListName, setNewListName] = useState('');
@@ -96,19 +96,23 @@ function App() {
         setSelectedList(null);
       }
       
+      const deleteMessage = `Lijst "${listToDelete?.name}" is verwijderd`;
+      
       // Add undo action
       addUndoAction({
         message: `Lijst "${listToDelete?.name}" verwijderd`,
         undoFunction: async () => {
+          // Hide the deletion toast when undoing
+          removeToastByMessage(deleteMessage);
           await createShoppingList(listToDelete);
-          success(`Lijst "${listToDelete?.name}" hersteld! 🎉`);
+          success(`Lijst "${listToDelete?.name}" hersteld! 🎉`, 2000);
         }
       });
       
-      success(`Lijst "${listToDelete?.name}" is verwijderd`);
+      deleteToast(deleteMessage, 8000);
     } catch (error) {
       console.error('Error deleting shopping list:', error);
-      error('Er ging iets mis bij het verwijderen van de lijst');
+      error('Er ging iets mis bij het verwijderen van de lijst', 3000);
     }
   };
 
