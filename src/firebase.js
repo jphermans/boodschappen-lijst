@@ -14,7 +14,7 @@ const firebaseConfig = {
 
 // Initialiseer Firebase met error handling
 let app;
-let db;
+let db = null;
 let isConnected = false;
 
 const initializeFirebase = async () => {
@@ -44,13 +44,11 @@ const initializeFirebase = async () => {
   }
 };
 
-// Firestore helpers
-const shoppingListsRef = collection(db, 'shoppingLists');
-
 // Shopping list operations
 const createShoppingList = async (listData) => {
   try {
-    const docRef = await addDoc(shoppingListsRef, {
+    if (!db) throw new Error('Firebase not initialized');
+    const docRef = await addDoc(collection(db, 'shoppingLists'), {
       ...listData,
       createdAt: new Date(),
       updatedAt: new Date()
@@ -64,7 +62,11 @@ const createShoppingList = async (listData) => {
 
 const getShoppingLists = async (deviceUID) => {
   try {
-    const q = query(shoppingListsRef, where('deviceUID', '==', deviceUID));
+    if (!db) {
+      console.warn('Firebase not initialized, returning empty array');
+      return [];
+    }
+    const q = query(collection(db, 'shoppingLists'), where('deviceUID', '==', deviceUID));
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({
       id: doc.id,
@@ -100,7 +102,12 @@ const deleteShoppingList = async (listId) => {
 
 const subscribeToShoppingLists = (deviceUID, callback) => {
   try {
-    const q = query(shoppingListsRef, where('deviceUID', '==', deviceUID));
+    if (!db) {
+      console.warn('Firebase not initialized, returning empty array');
+      callback([]);
+      return () => {};
+    }
+    const q = query(collection(db, 'shoppingLists'), where('deviceUID', '==', deviceUID));
     return onSnapshot(q, (snapshot) => {
       const lists = snapshot.docs.map(doc => ({
         id: doc.id,

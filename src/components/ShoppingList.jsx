@@ -4,7 +4,7 @@ import { ArrowLeft, Plus, Check, Trash2, Share2 } from 'lucide-react';
 import { doc, updateDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase';
 
-const ShoppingList = ({ list, onBack, onUpdateList }) => {
+const ShoppingList = ({ list, onBack }) => {
   const [newItem, setNewItem] = useState('');
   const [filter, setFilter] = useState('all');
   const [currentList, setCurrentList] = useState(list);
