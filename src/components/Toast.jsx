@@ -39,11 +39,11 @@ const Toast = ({ toast, onRemove }) => {
       case 'warning':
         return 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white';
       case 'info':
-        return 'bg-gradient-to-r from-blue-500 to-blue-600 text-white';
+        return 'bg-primary text-white';
       case 'delete':
-        return 'bg-gradient-to-r from-orange-500 to-red-500 text-white';
+        return 'bg-accent text-white';
       default:
-        return 'bg-gradient-to-r from-gray-500 to-gray-600 text-white';
+        return 'bg-[rgb(var(--border-color))] text-[rgb(var(--card-text))]';
     }
   };
 

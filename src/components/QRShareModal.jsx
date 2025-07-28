@@ -101,14 +101,14 @@ const QRShareModal = ({ listId, onClose }) => {
             <div className="flex space-x-3">
               <button
                 onClick={copyToClipboard}
-                className="flex-1 flex items-center justify-center space-x-2 px-4 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                className="flex-1 flex items-center justify-center space-x-2 px-4 py-3 bg-primary hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
               >
                 <Copy className="w-4 h-4" />
                 <span className="font-medium">📋 Kopieer link</span>
               </button>
               <button
                 onClick={downloadQR}
-                className="flex-1 flex items-center justify-center space-x-2 px-4 py-3 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                className="flex-1 flex items-center justify-center space-x-2 px-4 py-3 bg-secondary hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
               >
                 <Download className="w-4 h-4" />
                 <span className="font-medium">💾 Download QR</span>

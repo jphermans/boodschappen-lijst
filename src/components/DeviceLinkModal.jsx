@@ -54,7 +54,7 @@ const DeviceLinkModal = ({ currentDeviceUID, onClose, onLinkDevice }) => {
               onClick={() => setLinkType('generate')}
               className={`flex-1 flex items-center justify-center px-4 py-3 rounded-xl transition-all duration-200 ${
                 linkType === 'generate'
-                  ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg transform scale-105'
+                  ? 'bg-primary text-white shadow-lg transform scale-105'
                   : 'bg-[rgb(var(--border-color))]/20 text-[rgb(var(--text-color))]/80 hover:bg-[rgb(var(--border-color))]/30 hover:scale-105'
               }`}
             >
@@ -65,7 +65,7 @@ const DeviceLinkModal = ({ currentDeviceUID, onClose, onLinkDevice }) => {
               onClick={() => setLinkType('scan')}
               className={`flex-1 flex items-center justify-center px-4 py-3 rounded-xl transition-all duration-200 ${
                 linkType === 'scan'
-                  ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg transform scale-105'
+                  ? 'bg-primary text-white shadow-lg transform scale-105'
                   : 'bg-[rgb(var(--border-color))]/20 text-[rgb(var(--text-color))]/80 hover:bg-[rgb(var(--border-color))]/30 hover:scale-105'
               }`}
             >
@@ -110,7 +110,7 @@ const DeviceLinkModal = ({ currentDeviceUID, onClose, onLinkDevice }) => {
               <button
                 onClick={handleScan}
                 disabled={!scanCode.trim()}
-                className="w-full flex items-center justify-center px-4 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200"
+                className="w-full flex items-center justify-center px-4 py-3 bg-primary hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200"
               >
                 <Link2 className="w-4 h-4 mr-2" />
                 <span className="font-medium">🔗 Apparaat koppelen</span>

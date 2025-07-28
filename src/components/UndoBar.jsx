@@ -17,8 +17,8 @@ const UndoBar = ({ undoActions, executeUndo, removeUndoAction }) => {
       >
         <div className="bg-[rgb(var(--card-bg))] border border-[rgb(var(--border-color))] rounded-xl shadow-xl p-4 max-w-md w-full flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
-              <Undo2 className="w-4 h-4 text-red-600" />
+            <div className="w-8 h-8 bg-accent/20 rounded-lg flex items-center justify-center">
+              <Undo2 className="w-4 h-4 text-accent" />
             </div>
             <div>
               <p className="text-sm font-medium text-[rgb(var(--card-text))]">
@@ -33,7 +33,7 @@ const UndoBar = ({ undoActions, executeUndo, removeUndoAction }) => {
           <div className="flex items-center space-x-2">
             <button
               onClick={() => executeUndo(latestAction.id)}
-              className="flex items-center space-x-1 px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium transition-colors"
+              className="flex items-center space-x-1 px-3 py-1.5 bg-primary hover:opacity-90 text-white rounded-lg text-sm font-medium transition-colors"
             >
               <Undo2 className="w-3 h-3" />
               <span>Ongedaan maken</span>
