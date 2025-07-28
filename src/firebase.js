@@ -23,6 +23,12 @@ const initializeFirebase = async () => {
       throw new Error('Firebase configuratie ontbreekt');
     }
     
+    console.log('Firebase config:', {
+      projectId: firebaseConfig.projectId,
+      authDomain: firebaseConfig.authDomain,
+      hasMeasurementId: !!firebaseConfig.measurementId
+    });
+    
     app = initializeApp(firebaseConfig);
     db = getFirestore(app);
     
