@@ -198,14 +198,14 @@ function App() {
           <div className="flex items-center space-x-2 sm:space-x-3">
             <button
               onClick={() => setShowScanner(true)}
-              className="flex items-center justify-center p-3 rounded-xl bg-gradient-to-r from-secondary to-accent hover:opacity-90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+              className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-r from-secondary to-accent hover:opacity-90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
               aria-label="QR-code scannen"
             >
               <QrCode className="w-5 h-5" />
             </button>
             <button
               onClick={toggleTheme}
-              className="flex items-center justify-center p-3 rounded-xl bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+              className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
               aria-label="Thema wisselen"
             >
               <span className="text-lg">
@@ -214,7 +214,7 @@ function App() {
             </button>
             <button
               onClick={() => setShowSettings(true)}
-              className="flex items-center justify-center p-3 rounded-xl bg-[rgb(var(--border-color))]/60 hover:bg-[rgb(var(--border-color))]/80 text-[rgb(var(--card-text))] shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+              className="flex items-center justify-center w-12 h-12 rounded-xl bg-[rgb(var(--border-color))]/60 hover:bg-[rgb(var(--border-color))]/80 text-[rgb(var(--card-text))] shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
               aria-label="Instellingen"
             >
               <Settings className="w-5 h-5" />
@@ -278,14 +278,14 @@ function App() {
                     </button>
                     <button
                       onClick={() => handleShare(list.id)}
-                      className="flex items-center justify-center px-3 py-3 bg-secondary hover:opacity-90 text-white rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+                      className="flex items-center justify-center w-12 h-12 bg-secondary hover:opacity-90 text-white rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
                       title="Delen"
                     >
                       <Share2 className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => deleteList(list.id)}
-                      className="flex items-center justify-center px-3 py-3 bg-accent hover:opacity-90 text-white rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+                      className="flex items-center justify-center w-12 h-12 bg-accent hover:opacity-90 text-white rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
                       title="Verwijderen"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -344,7 +344,7 @@ function App() {
         <div className="fixed bottom-6 right-6 lg:hidden">
           <button
             onClick={() => setShowScanner(true)}
-            className="flex items-center justify-center w-14 h-14 bg-gradient-to-r from-secondary to-accent hover:opacity-90 text-white rounded-full shadow-xl hover:shadow-2xl transform hover:scale-110 transition-all duration-200"
+            className="flex items-center justify-center w-16 h-16 bg-gradient-to-r from-secondary to-accent hover:opacity-90 text-white rounded-full shadow-xl hover:shadow-2xl transform hover:scale-110 transition-all duration-200"
             aria-label="QR-code scannen"
           >
             <QrCode className="w-6 h-6" />
