@@ -67,7 +67,7 @@ const SettingsModal = ({ onClose }) => {
         className="bg-[rgb(var(--card-bg))] rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between p-6 border-b border-[rgb(var(--border-color))]/50">
           <h2 className="text-xl font-semibold text-[rgb(var(--card-text))]">
             Instellingen
           </h2>
@@ -75,7 +75,7 @@ const SettingsModal = ({ onClose }) => {
             onClick={onClose}
             className="p-2 rounded-lg hover:bg-[rgb(var(--border-color))]/20 transition-colors"
           >
-            <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+            <X className="w-5 h-5 text-[rgb(var(--text-color))]/60" />
           </button>
         </div>
 
@@ -222,7 +222,7 @@ const SettingsModal = ({ onClose }) => {
                 </div>
                 
                 {showQR && (
-                  <div className="space-y-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                  <div className="space-y-3 pt-3 border-t border-[rgb(var(--border-color))]/50">
                     <div>
                       <p className="text-sm text-[rgb(var(--text-color))]/80 mb-2">
                         Scan deze QR-code op een ander apparaat:

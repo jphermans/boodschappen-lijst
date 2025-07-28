@@ -44,7 +44,7 @@ const DeviceLinkModal = ({ currentDeviceUID, onClose, onLinkDevice }) => {
             onClick={onClose}
             className="p-2 rounded-lg hover:bg-[rgb(var(--border-color))]/20 transition-colors"
           >
-            <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+            <X className="w-5 h-5 text-[rgb(var(--text-color))]/60" />
           </button>
         </div>
 
@@ -80,7 +80,7 @@ const DeviceLinkModal = ({ currentDeviceUID, onClose, onLinkDevice }) => {
                 Scan deze QR-code op een ander apparaat om dezelfde lijsten te gebruiken:
               </p>
               <div className="flex justify-center mb-4">
-                <div className="bg-white dark:bg-gray-100 p-4 rounded-lg shadow-lg">
+                <div className="bg-white p-4 rounded-lg shadow-lg">
                   <QRCode
                     value={generateLinkCode()}
                     size={200}

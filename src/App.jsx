@@ -97,10 +97,10 @@ function App() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen flex items-center justify-center bg-[rgb(var(--bg-color))]">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-[rgb(var(--text-color))]/80">
             Verbinden met database...
           </p>
         </div>
@@ -115,29 +115,29 @@ function App() {
   const isOffline = !isConnected;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-      <header className="bg-white dark:bg-gray-800 shadow-sm">
+    <div className="min-h-screen bg-[rgb(var(--bg-color))] transition-colors duration-300">
+      <header className="bg-[rgb(var(--card-bg))] shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <List className="w-8 h-8 text-primary" />
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+            <h1 className="text-xl sm:text-2xl font-bold text-[rgb(var(--card-text))]">
               Boodschappenlijst
             </h1>
           </div>
           <div className="flex items-center space-x-2 sm:space-x-4">
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+              className="p-2 rounded-lg bg-[rgb(var(--border-color))]/20 hover:bg-[rgb(var(--border-color))]/30 transition-colors"
               aria-label="Thema wisselen"
             >
               {theme === 'light' ? '🌙' : '☀️'}
             </button>
             <button
               onClick={() => setShowSettings(true)}
-              className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+              className="p-2 rounded-lg bg-[rgb(var(--border-color))]/20 hover:bg-[rgb(var(--border-color))]/30 transition-colors"
               aria-label="Instellingen"
             >
-              <Settings className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+              <Settings className="w-5 h-5 text-[rgb(var(--text-color))]/80" />
             </button>
           </div>
         </div>
@@ -149,9 +149,9 @@ function App() {
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white dark:bg-[rgb(var(--card-bg))] rounded-lg shadow-lg p-6 mb-6"
+              className="bg-[rgb(var(--card-bg))] rounded-lg shadow-lg p-6 mb-6"
             >
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+              <h2 className="text-xl font-semibold text-[rgb(var(--card-text))] mb-4">
                 Nieuwe lijst maken
               </h2>
               <div className="flex space-x-2">
@@ -161,7 +161,7 @@ function App() {
                   onChange={(e) => setNewListName(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && createList()}
                   placeholder="Naam van je boodschappenlijst..."
-                  className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:text-white"
+                  className="flex-1 px-4 py-2 border border-[rgb(var(--border-color))] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-[rgb(var(--card-bg))] text-[rgb(var(--card-text))]"
                 />
                 <button
                   onClick={createList}
@@ -179,7 +179,7 @@ function App() {
                   key={list.id}
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="bg-white dark:bg-[rgb(var(--card-bg))] rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow"
+                  className="bg-[rgb(var(--card-bg))] rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow"
                 >
                   <h3 className="text-lg font-semibold text-[rgb(var(--card-text))] mb-2">
                     {list.name}
@@ -217,7 +217,7 @@ function App() {
                 animate={{ opacity: 1 }}
                 className="text-center py-12"
               >
-                <List className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <List className="w-16 h-16 text-[rgb(var(--text-color))]/40 mx-auto mb-4" />
                 <p className="text-[rgb(var(--text-color))]/60">
                   Je hebt nog geen boodschappenlijsten. Maak er een aan om te beginnen!
                 </p>
