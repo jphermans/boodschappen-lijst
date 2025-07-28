@@ -86,7 +86,7 @@ const ShoppingList = ({ list, onBack }) => {
       animate={{ opacity: 1, x: 0 }}
       className="max-w-2xl mx-auto px-4 sm:px-0"
     >
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+      <div className="bg-white dark:bg-[rgb(var(--card-bg))] rounded-lg shadow-lg p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-3">
             <button

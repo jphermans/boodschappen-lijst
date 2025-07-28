@@ -149,7 +149,7 @@ function App() {
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6"
+              className="bg-white dark:bg-[rgb(var(--card-bg))] rounded-lg shadow-lg p-6 mb-6"
             >
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
                 Nieuwe lijst maken
@@ -179,12 +179,12 @@ function App() {
                   key={list.id}
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow"
+                  className="bg-white dark:bg-[rgb(var(--card-bg))] rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow"
                 >
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                  <h3 className="text-lg font-semibold text-[rgb(var(--card-text))] mb-2">
                     {list.name}
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-400 mb-4">
+                  <p className="text-[rgb(var(--text-color))]/60 mb-4">
                     {list.items.length} item{list.items.length !== 1 ? 's' : ''}
                   </p>
                   <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
@@ -218,7 +218,7 @@ function App() {
                 className="text-center py-12"
               >
                 <List className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600 dark:text-gray-400">
+                <p className="text-[rgb(var(--text-color))]/60">
                   Je hebt nog geen boodschappenlijsten. Maak er een aan om te beginnen!
                 </p>
               </motion.div>

@@ -28,9 +28,17 @@ export const ThemeProvider = ({ children }) => {
     setAccentColor(savedAccent);
 
     document.documentElement.setAttribute('data-theme', savedTheme);
-    document.documentElement.style.setProperty('--color-primary', hexToRgb(savedPrimary));
-    document.documentElement.style.setProperty('--color-secondary', hexToRgb(savedSecondary));
-    document.documentElement.style.setProperty('--color-accent', hexToRgb(savedAccent));
+    
+    // Apply theme-specific colors
+    if (savedTheme === 'dark') {
+      document.documentElement.style.setProperty('--color-primary', hexToRgb('#60a5fa'));
+      document.documentElement.style.setProperty('--color-secondary', hexToRgb('#c084fc'));
+      document.documentElement.style.setProperty('--color-accent', hexToRgb('#f472b6'));
+    } else {
+      document.documentElement.style.setProperty('--color-primary', hexToRgb(savedPrimary));
+      document.documentElement.style.setProperty('--color-secondary', hexToRgb(savedSecondary));
+      document.documentElement.style.setProperty('--color-accent', hexToRgb(savedAccent));
+    }
   }, []);
 
   useEffect(() => {
