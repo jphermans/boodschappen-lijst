@@ -27,6 +27,14 @@ export const ThemeProvider = ({ children }) => {
     setSecondaryColor(savedSecondary);
     setAccentColor(savedAccent);
 
+    // Apply theme class for Tailwind
+    if (savedTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    
+    // Keep data-theme for CSS custom properties
     document.documentElement.setAttribute('data-theme', savedTheme);
     
     // Apply theme-specific colors
@@ -62,6 +70,15 @@ export const ThemeProvider = ({ children }) => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
     setTheme(newTheme);
     localStorage.setItem('boodschappenlijst_theme', newTheme);
+    
+    // Apply theme class for Tailwind
+    if (newTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    
+    // Keep data-theme for CSS custom properties
     document.documentElement.setAttribute('data-theme', newTheme);
   };
 
