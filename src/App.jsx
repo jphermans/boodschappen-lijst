@@ -90,6 +90,9 @@ function App() {
   const deleteList = async (listId) => {
     try {
       const listToDelete = lists.find(l => l.id === listId);
+      
+
+      
       await deleteShoppingList(listId);
       
       if (selectedList?.id === listId) {
@@ -109,7 +112,7 @@ function App() {
         }
       });
       
-      deleteToast(deleteMessage, 8000);
+      success(deleteMessage, 8000);
     } catch (error) {
       console.error('Error deleting shopping list:', error);
       error('Er ging iets mis bij het verwijderen van de lijst', 3000);

@@ -135,7 +135,7 @@ const ShoppingList = ({ list, onBack, onShare }) => {
         }
       });
       
-      deleteToast(deleteMessage, 6000);
+      success(deleteMessage, 6000);
     } catch (err) {
       console.error('Error deleting item:', err);
       error('Er ging iets mis bij het verwijderen van het item', 3000);
@@ -170,7 +170,7 @@ const ShoppingList = ({ list, onBack, onShare }) => {
         }
       });
       
-      deleteToast(deleteMessage, 8000);
+      success(deleteMessage, 8000);
     } catch (err) {
       console.error('Error clearing completed items:', err);
       error('Er ging iets mis bij het verwijderen van voltooide items', 3000);

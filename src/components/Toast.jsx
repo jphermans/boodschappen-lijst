@@ -41,7 +41,7 @@ const Toast = ({ toast, onRemove }) => {
       case 'info':
         return 'bg-gradient-to-r from-blue-500 to-blue-600 text-white';
       case 'delete':
-        return 'bg-gradient-to-r from-red-500 to-red-600 text-white';
+        return 'bg-gradient-to-r from-orange-500 to-red-500 text-white';
       default:
         return 'bg-gradient-to-r from-gray-500 to-gray-600 text-white';
     }
