@@ -232,6 +232,7 @@ function App() {
               setLists(lists.map(l => l.id === updatedList.id ? updatedList : l));
               setSelectedList(updatedList);
             }}
+            onShare={handleShare}
           />
         )}
       </main>

@@ -4,7 +4,7 @@ import { ArrowLeft, Plus, Check, Trash2, Share2 } from 'lucide-react';
 import { doc, updateDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase';
 
-const ShoppingList = ({ list, onBack }) => {
+const ShoppingList = ({ list, onBack, onShare }) => {
   const [newItem, setNewItem] = useState('');
   const [filter, setFilter] = useState('all');
   const [currentList, setCurrentList] = useState(list);
@@ -100,7 +100,7 @@ const ShoppingList = ({ list, onBack }) => {
             </h2>
           </div>
           <button
-            onClick={() => {}}
+            onClick={() => onShare(currentList.id)}
             className="p-2 rounded-lg bg-secondary text-white hover:bg-secondary/90 transition-colors"
           >
             <Share2 className="w-5 h-5" />
