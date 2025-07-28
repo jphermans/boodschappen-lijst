@@ -91,9 +91,15 @@ function App() {
     try {
       const listToDelete = lists.find(l => l.id === listId);
       
-
+      if (!listToDelete) {
+        error('Lijst niet gevonden');
+        return;
+      }
       
       await deleteShoppingList(listId);
+      
+      // Manually update the lists state to ensure immediate UI update
+      setLists(prevLists => prevLists.filter(l => l.id !== listId));
       
       if (selectedList?.id === listId) {
         setSelectedList(null);
@@ -105,10 +111,19 @@ function App() {
       addUndoAction({
         message: `Lijst "${listToDelete?.name}" verwijderd`,
         undoFunction: async () => {
-          // Hide the deletion toast when undoing
-          removeToastByMessage(deleteMessage);
-          await createShoppingList(listToDelete);
-          success(`Lijst "${listToDelete?.name}" hersteld! 🎉`, 2000);
+          try {
+            // Hide the deletion toast when undoing
+            removeToastByMessage(deleteMessage);
+            
+            // Remove the id field to allow Firebase to create a new one
+            const { id, createdAt, updatedAt, ...listDataToRestore } = listToDelete;
+            
+            await createShoppingList(listDataToRestore);
+            success(`Lijst "${listToDelete?.name}" hersteld! 🎉`, 2000);
+          } catch (err) {
+            console.error('Error restoring list:', err);
+            error('Er ging iets mis bij het herstellen van de lijst');
+          }
         }
       });
       
