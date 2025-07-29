@@ -49,14 +49,14 @@ const SettingsModal = ({ lists = [], onClose }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center lg:items-start justify-center p-4 z-50"
       onClick={onClose}
     >
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] flex flex-col"
+        className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] flex flex-col mt-0 lg:mt-24"
         onClick={(e) => e.stopPropagation()}
         style={{ overflow: 'hidden' }} // Prevent scroll bleed
       >

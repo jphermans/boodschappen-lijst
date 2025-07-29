@@ -150,14 +150,14 @@ const QRScannerModal = ({ onClose, onScanSuccess }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center lg:items-start justify-center p-4 z-50"
       onClick={onClose}
     >
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-xl max-w-md w-full max-h-[90vh] overflow-hidden"
+        className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-xl max-w-md w-full max-h-[90vh] overflow-hidden mt-0 lg:mt-24"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between p-6 border-b border-[rgb(var(--border-color))]/20">

@@ -26,15 +26,16 @@ const DeviceLinkModal = ({ currentDeviceUID, onClose, onLinkDevice }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center lg:items-start justify-center p-4 z-50"
       onClick={onClose}
     >
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-[rgb(var(--card-bg))] rounded-lg shadow-xl max-w-md w-full"
+        className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] flex flex-col mt-0 lg:mt-24"
         onClick={(e) => e.stopPropagation()}
+        style={{ overflow: 'hidden' }}
       >
         <div className="flex items-center justify-between p-6 border-b border-[rgb(var(--border-color))]/50">
           <h2 className="text-xl font-semibold text-[rgb(var(--card-text))]">
@@ -59,7 +60,7 @@ const DeviceLinkModal = ({ currentDeviceUID, onClose, onLinkDevice }) => {
               }`}
             >
               <Scan className="w-4 h-4 mr-2" />
-              <span className="font-medium">📱 Genereer code</span>
+              <span className="font-medium"> Genereer code</span>
             </button>
             <button
               onClick={() => setLinkType('scan')}
@@ -70,7 +71,7 @@ const DeviceLinkModal = ({ currentDeviceUID, onClose, onLinkDevice }) => {
               }`}
             >
               <Link2 className="w-4 h-4 mr-2" />
-              <span className="font-medium">🔗 Scan code</span>
+              <span className="font-medium"> Scan code</span>
             </button>
           </div>
 
@@ -113,7 +114,7 @@ const DeviceLinkModal = ({ currentDeviceUID, onClose, onLinkDevice }) => {
                 className="w-full flex items-center justify-center px-4 py-3 bg-primary hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200"
               >
                 <Link2 className="w-4 h-4 mr-2" />
-                <span className="font-medium">🔗 Apparaat koppelen</span>
+                <span className="font-medium"> Apparaat koppelen</span>
               </button>
             </div>
           )}
