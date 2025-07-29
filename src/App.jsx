@@ -4,7 +4,7 @@ import { Settings, Plus, List, Share2, Trash2, Check, Wifi, QrCode } from 'lucid
 import { useTheme } from './context/ThemeContext';
 import { useToast } from './context/ToastContext';
 import { useUndo } from './context/UndoContext';
-import { initializeFirebase, isConnected, getCurrentUserID, createShoppingList, getShoppingLists, deleteShoppingList, subscribeToShoppingLists, canDeleteList } from './firebase';
+import { initializeFirebase, isConnected, getCurrentUserID, createShoppingList, getShoppingLists, deleteShoppingList, subscribeToShoppingLists, canDeleteList, shareListWithUser, getListById } from './firebase';
 import ShoppingList from './components/ShoppingList';
 import SettingsModal from './components/SettingsModal';
 import QRShareModal from './components/QRShareModal';
@@ -180,11 +180,31 @@ function App() {
 
       const { listId } = validation;
       
-      // For now, just show success message
-      success(`Gedeelde lijst gevonden: ${listId}`, 3000);
-      info('Functionaliteit om gedeelde lijsten te importeren komt binnenkort! 🚧', 4000);
+      // Check if the list exists and get its details
+      const sharedList = await getListById(listId);
+      
+      if (!sharedList) {
+        error('Gedeelde lijst niet gevonden of niet toegankelijk');
+        return;
+      }
+      
+      // Check if user already has access to this list
+      const currentUserId = getCurrentUserID();
+      const alreadyHasAccess = lists.some(list => list.id === listId);
+      
+      if (alreadyHasAccess) {
+        info(`Je hebt al toegang tot lijst "${sharedList.name}"`);
+        return;
+      }
+      
+      // Share the list with the current user
+      await shareListWithUser(listId, currentUserId);
+      
+      success(`Lijst "${sharedList.name}" is gedeeld met jou! 🎉`);
+      info('De lijst verschijnt nu in je overzicht', 3000);
       
     } catch (err) {
+      console.error('Error processing scanned QR code:', err);
       error('Fout bij verwerken van gescande code');
     }
   };
@@ -287,9 +307,18 @@ function App() {
                   animate={{ opacity: 1, scale: 1 }}
                   className="bg-[rgb(var(--card-bg))] rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow"
                 >
-                  <h3 className="text-lg font-semibold text-[rgb(var(--card-text))] mb-2">
-                    {list.name}
-                  </h3>
+                  <div className="flex items-start justify-between mb-2">
+                    <h3 className="text-lg font-semibold text-[rgb(var(--card-text))] flex-1">
+                      {list.name}
+                    </h3>
+                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                      list.isCreator
+                        ? 'bg-primary/20 text-primary'
+                        : 'bg-secondary/20 text-secondary'
+                    }`}>
+                      {list.isCreator ? 'Eigenaar' : 'Gedeeld'}
+                    </span>
+                  </div>
                   <p className="text-[rgb(var(--text-color))]/60 mb-4">
                     {list.items.length} item{list.items.length !== 1 ? 's' : ''}
                   </p>
@@ -310,14 +339,16 @@ function App() {
                         <Share2 className="w-4 h-4 mr-2" />
                         <span className="font-medium">Delen</span>
                       </button>
-                      <button
-                        onClick={() => deleteList(list.id)}
-                        className="flex-1 flex items-center justify-center px-4 py-3 bg-accent hover:opacity-90 text-white rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
-                        title="Verwijderen"
-                      >
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        <span className="font-medium">Verwijderen</span>
-                      </button>
+                      {canDeleteList(list) && (
+                        <button
+                          onClick={() => deleteList(list.id)}
+                          className="flex-1 flex items-center justify-center px-4 py-3 bg-accent hover:opacity-90 text-white rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+                          title="Verwijderen"
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          <span className="font-medium">Verwijderen</span>
+                        </button>
+                      )}
                     </div>
                   </div>
                 </motion.div>

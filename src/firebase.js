@@ -82,7 +82,9 @@ const createShoppingList = async (listData) => {
     
     const docRef = await addDoc(collection(db, 'shoppingLists'), {
       ...listData,
-      deviceUID: currentUser.uid, // Use deviceUID to match your Firebase rules
+      deviceUID: currentUser.uid, // Original creator
+      creatorId: currentUser.uid, // Track who created the list
+      sharedWith: [], // Array of user IDs who have access
       createdAt: new Date(),
       updatedAt: new Date()
     });
@@ -104,20 +106,38 @@ const getShoppingLists = async () => {
     
     console.log('Querying shopping lists for user:', currentUser.uid);
     
-    // Query using deviceUID as that's what your Firebase rules expect
-    const q = query(collection(db, 'shoppingLists'), where('deviceUID', '==', currentUser.uid));
-    const querySnapshot = await getDocs(q);
+    // Get lists where user is creator (deviceUID) or shared with them
+    const createdQuery = query(collection(db, 'shoppingLists'), where('deviceUID', '==', currentUser.uid));
+    const sharedQuery = query(collection(db, 'shoppingLists'), where('sharedWith', 'array-contains', currentUser.uid));
     
-    console.log('Found', querySnapshot.docs.length, 'shopping lists');
+    const [createdSnapshot, sharedSnapshot] = await Promise.all([
+      getDocs(createdQuery),
+      getDocs(sharedQuery)
+    ]);
     
-    const lists = querySnapshot.docs.map(doc => ({
+    const createdLists = createdSnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
       isCreator: true
     }));
     
-    console.log('Returning lists:', lists);
-    return lists;
+    const sharedLists = sharedSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+      isCreator: false
+    }));
+    
+    // Combine and deduplicate
+    const allLists = [...createdLists];
+    sharedLists.forEach(sharedList => {
+      if (!allLists.find(list => list.id === sharedList.id)) {
+        allLists.push(sharedList);
+      }
+    });
+    
+    console.log('Found', createdLists.length, 'created lists and', sharedLists.length, 'shared lists');
+    console.log('Returning lists:', allLists);
+    return allLists;
   } catch (error) {
     console.error('Error getting shopping lists:', error);
     throw error;
@@ -204,11 +224,6 @@ const removeUserFromList = async (listId, userIdToRemove) => {
   }
 };
 
-// Check if current user can delete a list (only creator can delete)
-const canDeleteList = (list) => {
-  return list.deviceUID === currentUser?.uid;
-};
-
 // Get a single list by ID (for sharing functionality)
 const getListById = async (listId) => {
   try {
@@ -219,7 +234,7 @@ const getListById = async (listId) => {
       return {
         id: listDoc.id,
         ...data,
-        isCreator: data.creatorId === currentUser?.uid || data.userId === currentUser?.uid
+        isCreator: data.deviceUID === currentUser?.uid
       };
     }
     return null;
@@ -227,6 +242,11 @@ const getListById = async (listId) => {
     console.error('Error getting list by ID:', error);
     throw error;
   }
+};
+
+// Check if current user can delete a list (only creator can delete)
+const canDeleteList = (list) => {
+  return list.deviceUID === currentUser?.uid;
 };
 
 const subscribeToShoppingLists = (callback) => {
@@ -239,18 +259,46 @@ const subscribeToShoppingLists = (callback) => {
     
     console.log('Subscribing to shopping lists for user:', currentUser.uid);
     
-    // Subscribe using deviceUID as that's what your Firebase rules expect
-    const q = query(collection(db, 'shoppingLists'), where('deviceUID', '==', currentUser.uid));
-    return onSnapshot(q, (snapshot) => {
-      console.log('Subscription update: found', snapshot.docs.length, 'lists');
-      const lists = snapshot.docs.map(doc => ({
+    // Subscribe to both created and shared lists
+    const createdQuery = query(collection(db, 'shoppingLists'), where('deviceUID', '==', currentUser.uid));
+    const sharedQuery = query(collection(db, 'shoppingLists'), where('sharedWith', 'array-contains', currentUser.uid));
+    
+    let createdLists = [];
+    let sharedLists = [];
+    
+    const unsubscribeCreated = onSnapshot(createdQuery, (snapshot) => {
+      createdLists = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
         isCreator: true
       }));
-      console.log('Subscription returning lists:', lists);
-      callback(lists);
+      updateCombinedLists();
     });
+    
+    const unsubscribeShared = onSnapshot(sharedQuery, (snapshot) => {
+      sharedLists = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        isCreator: false
+      }));
+      updateCombinedLists();
+    });
+    
+    const updateCombinedLists = () => {
+      const allLists = [...createdLists];
+      sharedLists.forEach(sharedList => {
+        if (!allLists.find(list => list.id === sharedList.id)) {
+          allLists.push(sharedList);
+        }
+      });
+      console.log('Subscription update: found', createdLists.length, 'created and', sharedLists.length, 'shared lists');
+      callback(allLists);
+    };
+    
+    return () => {
+      unsubscribeCreated();
+      unsubscribeShared();
+    };
   } catch (error) {
     console.error('Error subscribing to shopping lists:', error);
     throw error;

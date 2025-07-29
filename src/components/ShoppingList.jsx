@@ -211,9 +211,18 @@ const ShoppingList = ({ list, onBack, onShare }) => {
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
-            <h2 className="text-2xl font-bold text-[rgb(var(--card-text))]">
-              {currentList.name}
-            </h2>
+            <div className="flex flex-col">
+              <h2 className="text-2xl font-bold text-[rgb(var(--card-text))]">
+                {currentList.name}
+              </h2>
+              <span className={`text-xs font-medium px-2 py-1 rounded-full self-start mt-1 ${
+                currentList.isCreator
+                  ? 'bg-primary/20 text-primary'
+                  : 'bg-secondary/20 text-secondary'
+              }`}>
+                {currentList.isCreator ? 'Jouw lijst' : 'Gedeelde lijst'}
+              </span>
+            </div>
           </div>
           <button
             onClick={() => {
