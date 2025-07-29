@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Settings, Plus, List, Share2, Trash2, Check, Wifi, QrCode } from 'lucide-react';
+import { Settings, Plus, List, Share2, Trash2, Check, Wifi, QrCode, Users } from 'lucide-react';
 import { useTheme } from './context/ThemeContext';
 import { useToast } from './context/ToastContext';
 import { useUndo } from './context/UndoContext';
@@ -9,6 +9,7 @@ import ShoppingList from './components/ShoppingList';
 import SettingsModal from './components/SettingsModal';
 import QRShareModal from './components/QRShareModal';
 import QRScannerModal from './components/QRScannerModal';
+import UserManagementModal from './components/UserManagementModal';
 import ConnectionError from './components/ConnectionError';
 import ToastContainer from './components/Toast';
 import UndoBar from './components/UndoBar';
@@ -25,7 +26,9 @@ function App() {
   const [showSettings, setShowSettings] = useState(false);
   const [showShare, setShowShare] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
+  const [showUserManagement, setShowUserManagement] = useState(false);
   const [shareListId, setShareListId] = useState(null);
+  const [managementListId, setManagementListId] = useState(null);
   const [firebaseError, setFirebaseError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isProcessingQRScan, setIsProcessingQRScan] = useState(false);
@@ -283,6 +286,12 @@ function App() {
     info('Deel de QR-code of link om je lijst te delen! 📤');
   };
 
+  const handleUserManagement = (listId) => {
+    setManagementListId(listId);
+    setShowUserManagement(true);
+    info('Beheer gebruikers die toegang hebben tot je lijst 👥');
+  };
+
   const handleScanSuccess = async (scannedData) => {
     console.log('🔍 QR Scan Debug - Starting scan process');
     console.log('📱 Scanned data:', scannedData);
@@ -536,6 +545,16 @@ function App() {
                         <Share2 className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                         <span className="font-medium text-xs sm:text-sm">Delen</span>
                       </button>
+                      {list.isCreator && (
+                        <button
+                          onClick={() => handleUserManagement(list.id)}
+                          className="flex-1 flex items-center justify-center px-2 sm:px-4 py-2 sm:py-3 bg-gradient-to-r from-blue-500 to-purple-500 hover:opacity-90 text-white rounded-lg sm:rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+                          title="Gebruikers beheren"
+                        >
+                          <Users className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                          <span className="font-medium text-xs sm:text-sm">Gebruikers</span>
+                        </button>
+                      )}
                       {canDeleteList(list) && (
                         <button
                           onClick={() => deleteList(list.id)}
@@ -610,7 +629,10 @@ function App() {
       )}
 
       {showSettings && (
-        <SettingsModal onClose={() => setShowSettings(false)} />
+        <SettingsModal
+          lists={lists}
+          onClose={() => setShowSettings(false)}
+        />
       )}
 
       {showShare && (
@@ -631,11 +653,24 @@ function App() {
         />
       )}
 
+      {showUserManagement && (
+        <UserManagementModal
+          list={lists.find(l => l.id === managementListId)}
+          onClose={() => {
+            setShowUserManagement(false);
+            setManagementListId(null);
+          }}
+          onListUpdate={(updatedList) => {
+            setLists(lists.map(l => l.id === updatedList.id ? updatedList : l));
+          }}
+        />
+      )}
+
       <ToastContainer toasts={toasts} removeToast={removeToast} />
-      <UndoBar 
-        undoActions={undoActions} 
-        executeUndo={executeUndo} 
-        removeUndoAction={removeUndoAction} 
+      <UndoBar
+        undoActions={undoActions}
+        executeUndo={executeUndo}
+        removeUndoAction={removeUndoAction}
       />
     </div>
   );

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { X, Palette, Moon, Sun, Link2 } from 'lucide-react';
+import { X, Palette, Moon, Sun, Link2, BarChart3 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { getDeviceInfo } from '../utils/deviceUID';
+import AnalyticsDashboard from './AnalyticsDashboard';
 
-const SettingsModal = ({ onClose }) => {
+const SettingsModal = ({ lists = [], onClose }) => {
+  const [showAnalytics, setShowAnalytics] = useState(false);
   
   const {
     theme,
@@ -204,8 +206,55 @@ const SettingsModal = ({ onClose }) => {
               </div>
             </div>
           </div>
+
+          <div className="pt-4 border-t border-[rgb(var(--border-color))]/50">
+            <div>
+              <h3 className="text-lg font-medium text-[rgb(var(--card-text))] mb-3 flex items-center">
+                <BarChart3 className="w-5 h-5 mr-2" />
+                Analytics & Statistieken
+              </h3>
+              
+              <div className="space-y-3">
+                <div className="bg-[rgb(var(--border-color))]/10 p-4 rounded-lg">
+                  <p className="text-sm text-[rgb(var(--text-color))]/80 mb-3">
+                    Bekijk gedetailleerde statistieken over je lijsten, delen-activiteit en gebruikspatronen.
+                  </p>
+                  
+                  <button
+                    onClick={() => setShowAnalytics(true)}
+                    className="w-full flex items-center justify-center px-4 py-3 bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                  >
+                    <BarChart3 className="w-5 h-5 mr-2" />
+                    <span className="font-medium">Open Analytics Dashboard</span>
+                  </button>
+                </div>
+                
+                {lists.length > 0 && (
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-primary/10 rounded-lg p-3 text-center">
+                      <div className="text-lg font-bold text-primary">{lists.length}</div>
+                      <div className="text-xs text-[rgb(var(--text-color))]/60">Totaal lijsten</div>
+                    </div>
+                    <div className="bg-secondary/10 rounded-lg p-3 text-center">
+                      <div className="text-lg font-bold text-secondary">
+                        {lists.filter(list => list.isCreator).length}
+                      </div>
+                      <div className="text-xs text-[rgb(var(--text-color))]/60">Eigenaar van</div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       </motion.div>
+
+      {showAnalytics && (
+        <AnalyticsDashboard
+          lists={lists}
+          onClose={() => setShowAnalytics(false)}
+        />
+      )}
     </motion.div>
   );
 };
