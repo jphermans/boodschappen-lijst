@@ -526,13 +526,16 @@ function App() {
 
   return (
     <div className="min-h-screen-safe bg-[rgb(var(--bg-color))] transition-colors duration-300">
+      {/* Safe area background extension */}
+      <div className="fixed inset-x-0 top-0 h-[var(--safe-area-inset-top)] bg-[rgb(var(--card-bg))] z-50"></div>
+      
       {/* Desktop Navigation Bar */}
       <header className="fixed-top-safe bg-[rgb(var(--card-bg))] shadow-sm border-b border-[rgb(var(--border-color))]/20 header-safe-area">
         <div className="max-w-[1920px] mx-auto px-4 lg:px-8 xl:px-12 safe-area-x">
           <div className="flex items-center justify-between h-16 lg:h-20">
             {/* Logo and Brand */}
-            <div className="flex items-center space-x-3 lg:space-x-4">
-              <div className="hidden lg:flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-primary to-secondary rounded-xl shadow-lg">
+            <div className="flex items-center lg:space-x-4">
+              <div className="hidden lg:flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-primary to-secondary rounded-xl shadow-lg mr-3">
                 <List className="w-5 h-5 lg:w-6 lg:h-6 text-white" />
               </div>
               <div>
