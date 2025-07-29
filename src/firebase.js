@@ -89,7 +89,7 @@ const getShoppingLists = async () => {
       console.warn('Firebase not initialized or user not authenticated, returning empty array');
       return [];
     }
-    const q = query(collection(db, 'shoppingLists'), where('deviceUID', '==', currentUser.uid));
+    const q = query(collection(db, 'shoppingLists'), where('userId', '==', currentUser.uid));
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({
       id: doc.id,
@@ -132,7 +132,7 @@ const subscribeToShoppingLists = (callback) => {
       callback([]);
       return () => {};
     }
-    const q = query(collection(db, 'shoppingLists'), where('deviceUID', '==', currentUser.uid));
+    const q = query(collection(db, 'shoppingLists'), where('userId', '==', currentUser.uid));
     return onSnapshot(q, (snapshot) => {
       const lists = snapshot.docs.map(doc => ({
         id: doc.id,
@@ -166,19 +166,17 @@ export {
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Gebruikers kunnen alleen hun eigen lijsten zien en bewerken op basis van deviceUID
+    // Gebruikers kunnen alleen hun eigen lijsten zien en bewerken op basis van user ID
     match /shoppingLists/{listId} {
-      allow read: if request.auth == null 
-        && resource.data.deviceUID == request.auth.uid;
-      allow create: if request.auth == null
-        && request.resource.data.deviceUID == request.auth.uid;
-      allow update, delete: if request.auth == null
-        && resource.data.deviceUID == request.auth.uid;
-    }
-    
-    // Vereenvoudigde regels voor ontwikkeling (vervang later met bovenstaande)
-    match /shoppingLists/{listId} {
-      allow read, write: if true;
+      allow read: if request.auth != null 
+        && resource.data.userId == request.auth.uid;
+      allow create: if request.auth != null
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.name is string
+        && request.resource.data.name.size() <= 100
+        && request.resource.data.items is list;
+      allow update, delete: if request.auth != null
+        && resource.data.userId == request.auth.uid;
     }
   }
 }

@@ -6,6 +6,7 @@ import { db } from '../firebase';
 import { useToast } from '../context/ToastContext';
 import { useUndo } from '../context/UndoContext';
 import { getSuggestions, getPopularItems } from '../utils/groceryItems';
+import { validateItemName } from '../utils/validation';
 import VoiceInput from './VoiceInput';
 
 const ShoppingList = ({ list, onBack, onShare }) => {
@@ -31,39 +32,43 @@ const ShoppingList = ({ list, onBack, onShare }) => {
   }, [list.id]);
 
   const addItem = async (itemName = newItem.trim()) => {
-    if (itemName && itemName.length > 0) {
-      try {
-        // Check if item already exists to prevent duplicates
-        const existingItem = currentList.items.find(item => 
-          item.name.toLowerCase() === itemName.toLowerCase()
-        );
-        
-        if (existingItem) {
-          error(`"${itemName}" staat al op je lijst!`);
-          return;
-        }
+    const validation = validateItemName(itemName);
+    if (!validation.valid) {
+      error(validation.error);
+      return;
+    }
 
-        const newItemObj = {
-          id: crypto.randomUUID(),
-          name: itemName,
-          completed: false,
-          addedAt: new Date(),
-        };
-        
-        const updatedItems = [...currentList.items, newItemObj];
-        await updateDoc(doc(db, 'shoppingLists', currentList.id), {
-          items: updatedItems,
-          updatedAt: new Date()
-        });
-        
-        setNewItem('');
-        setShowSuggestions(false);
-        setSuggestions([]);
-        success(`"${newItemObj.name}" toegevoegd! ✅`, 2000);
-      } catch (err) {
-        console.error('Error adding item:', err);
-        error('Er ging iets mis bij het toevoegen van het item', 3000);
+    try {
+      // Check if item already exists to prevent duplicates
+      const existingItem = currentList.items.find(item => 
+        item.name.toLowerCase() === validation.value.toLowerCase()
+      );
+      
+      if (existingItem) {
+        error(`"${validation.value}" staat al op je lijst!`);
+        return;
       }
+
+      const newItemObj = {
+        id: crypto.randomUUID(),
+        name: validation.value,
+        completed: false,
+        addedAt: new Date(),
+      };
+      
+      const updatedItems = [...currentList.items, newItemObj];
+      await updateDoc(doc(db, 'shoppingLists', currentList.id), {
+        items: updatedItems,
+        updatedAt: new Date()
+      });
+      
+      setNewItem('');
+      setShowSuggestions(false);
+      setSuggestions([]);
+      success(`"${newItemObj.name}" toegevoegd! ✅`, 2000);
+    } catch (err) {
+      console.error('Error adding item:', err);
+      error('Er ging iets mis bij het toevoegen van het item', 3000);
     }
   };
 

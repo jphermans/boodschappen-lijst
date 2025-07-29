@@ -1,36 +1,38 @@
 // Genereer en beheer unieke apparaat-ID met koppelingsfunctionaliteit
+import { secureStorage } from './secureStorage.js';
+
 const STORAGE_KEY = 'boodschappenlijst_device_uid';
 const MASTER_DEVICE_KEY = 'boodschappenlijst_master_device';
 
 export const getDeviceUID = () => {
   // Controleer eerst of dit apparaat is gekoppeld aan een master device
-  const masterDeviceUID = localStorage.getItem(MASTER_DEVICE_KEY);
+  const masterDeviceUID = secureStorage.getItem(MASTER_DEVICE_KEY);
   if (masterDeviceUID) {
     return masterDeviceUID;
   }
 
   // Anders gebruik het eigen device ID
-  let deviceUID = localStorage.getItem(STORAGE_KEY);
+  let deviceUID = secureStorage.getItem(STORAGE_KEY);
   
   if (!deviceUID) {
     deviceUID = crypto.randomUUID();
-    localStorage.setItem(STORAGE_KEY, deviceUID);
+    secureStorage.setItem(STORAGE_KEY, deviceUID);
   }
   
   return deviceUID;
 };
 
 export const linkToMasterDevice = (masterDeviceUID) => {
-  localStorage.setItem(MASTER_DEVICE_KEY, masterDeviceUID);
+  secureStorage.setItem(MASTER_DEVICE_KEY, masterDeviceUID);
   return masterDeviceUID;
 };
 
 export const unlinkFromMasterDevice = () => {
-  localStorage.removeItem(MASTER_DEVICE_KEY);
+  secureStorage.removeItem(MASTER_DEVICE_KEY);
 };
 
 export const isLinkedToMaster = () => {
-  return !!localStorage.getItem(MASTER_DEVICE_KEY);
+  return !!secureStorage.getItem(MASTER_DEVICE_KEY);
 };
 
 export const getDeviceInfo = () => {
@@ -41,7 +43,7 @@ export const getDeviceInfo = () => {
     platform: 'unknown',
     language: navigator.language,
     isMaster: !isLinkedToMaster(),
-    masterDevice: isLinkedToMaster() ? localStorage.getItem(MASTER_DEVICE_KEY) : null
+    masterDevice: isLinkedToMaster() ? secureStorage.getItem(MASTER_DEVICE_KEY) : null
   };
 };
 

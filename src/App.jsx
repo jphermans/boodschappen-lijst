@@ -13,6 +13,8 @@ import ConnectionError from './components/ConnectionError';
 import ToastContainer from './components/Toast';
 import UndoBar from './components/UndoBar';
 import VoiceInput from './components/VoiceInput';
+import { validateListName } from './utils/validation';
+import { validateQRData } from './utils/qrSecurity';
 
 function App() {
   const { theme, toggleTheme } = useTheme();
@@ -83,26 +85,30 @@ function App() {
   };
 
   const createList = async () => {
-    if (newListName.trim()) {
-      try {
-        const userID = getCurrentUserID();
-        if (!userID) {
-          error('Gebruiker niet ingelogd. Probeer de pagina te vernieuwen.');
-          return;
-        }
-        
-        const newList = {
-          name: newListName.trim(),
-          items: [],
-          deviceUID: userID
-        };
-        await createShoppingList(newList);
-        setNewListName('');
-        success(`Lijst "${newListName.trim()}" is aangemaakt! 🎉`);
-      } catch (error) {
-        console.error('Error creating shopping list:', error);
-        error('Er ging iets mis bij het aanmaken van de lijst');
+    const validation = validateListName(newListName);
+    if (!validation.valid) {
+      error(validation.error);
+      return;
+    }
+
+    try {
+      const userID = getCurrentUserID();
+      if (!userID) {
+        error('Gebruiker niet ingelogd. Probeer de pagina te vernieuwen.');
+        return;
       }
+      
+      const newList = {
+        name: validation.value,
+        items: [],
+        userId: userID
+      };
+      await createShoppingList(newList);
+      setNewListName('');
+      success(`Lijst "${validation.value}" is aangemaakt! 🎉`);
+    } catch (error) {
+      console.error('Error creating shopping list:', error);
+      error('Er ging iets mis bij het aanmaken van de lijst');
     }
   };
 
@@ -161,23 +167,20 @@ function App() {
 
   const handleScanSuccess = async (scannedData) => {
     try {
-      // Extract list ID from the scanned URL or data
-      let listId = null;
+      const validation = validateQRData(scannedData);
       
-      if (scannedData.includes('/shared/')) {
-        listId = scannedData.split('/shared/')[1];
-      } else if (scannedData.includes('#')) {
-        listId = scannedData.split('#')[1];
-      } else {
-        listId = scannedData;
+      if (!validation.valid) {
+        error(validation.error);
+        return;
       }
 
-      if (listId) {
-        // For now, just show success message
-        // In a real implementation, you'd fetch the shared list from Firebase
-        success(`Gedeelde lijst gevonden: ${listId}`, 3000);
-        info('Functionaliteit om gedeelde lijsten te importeren komt binnenkort! 🚧', 4000);
-      }
+      const { listId } = validation;
+      
+      // For now, just show success message
+      // In a real implementation, you'd fetch the shared list from Firebase
+      success(`Gedeelde lijst gevonden: ${listId}`, 3000);
+      info('Functionaliteit om gedeelde lijsten te importeren komt binnenkort! 🚧', 4000);
+      
     } catch (err) {
       error('Fout bij verwerken van gescande code');
     }
@@ -257,7 +260,7 @@ function App() {
                     type="text"
                     value={newListName}
                     onChange={(e) => setNewListName(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && createList()}
+                    onKeyDown={(e) => e.key === 'Enter' && createList()}
                     placeholder="Naam van je boodschappenlijst..."
                     className="w-full px-4 py-3 border border-[rgb(var(--border-color))] rounded-xl focus:outline-none focus:ring-2 focus:ring-primary bg-[rgb(var(--card-bg))] text-[rgb(var(--card-text))] text-lg"
                   />
