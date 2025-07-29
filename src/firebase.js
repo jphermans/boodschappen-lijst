@@ -73,8 +73,7 @@ const createShoppingList = async (listData) => {
     if (!db) throw new Error('Firebase not initialized');
     const docRef = await addDoc(collection(db, 'shoppingLists'), {
       ...listData,
-      creatorId: currentUser?.uid, // Track who created the list
-      sharedWith: [], // Array of user IDs who have access
+      deviceUID: currentUser?.uid, // Use deviceUID to match your Firebase rules
       createdAt: new Date(),
       updatedAt: new Date()
     });
@@ -92,57 +91,15 @@ const getShoppingLists = async () => {
       return [];
     }
     
-    // Get all lists for this user - try multiple field names to be compatible with existing data
-    const queries = [];
+    // Query using deviceUID as that's what your Firebase rules expect
+    const q = query(collection(db, 'shoppingLists'), where('deviceUID', '==', currentUser.uid));
+    const querySnapshot = await getDocs(q);
     
-    // Try different possible field names that might exist in your data
-    const possibleFields = ['userId', 'creatorId', 'userID', 'user'];
-    
-    for (const field of possibleFields) {
-      try {
-        const q = query(collection(db, 'shoppingLists'), where(field, '==', currentUser.uid));
-        queries.push(getDocs(q));
-      } catch (err) {
-        // Field might not exist, continue
-        console.log(`Field ${field} not found, trying next...`);
-      }
-    }
-    
-    // Also try to get all lists (in case there's no user field filtering)
-    try {
-      queries.push(getDocs(collection(db, 'shoppingLists')));
-    } catch (err) {
-      console.log('Could not get all lists');
-    }
-    
-    const snapshots = await Promise.all(queries);
-    const allLists = [];
-    const seenIds = new Set();
-    
-    snapshots.forEach(snapshot => {
-      snapshot.docs.forEach(doc => {
-        if (!seenIds.has(doc.id)) {
-          const data = doc.data();
-          // Check if this list belongs to current user or has no user restriction
-          const belongsToUser = !data.userId ||
-                               data.userId === currentUser.uid ||
-                               data.creatorId === currentUser.uid ||
-                               data.userID === currentUser.uid ||
-                               data.user === currentUser.uid;
-          
-          if (belongsToUser) {
-            allLists.push({
-              id: doc.id,
-              ...data,
-              isCreator: true
-            });
-            seenIds.add(doc.id);
-          }
-        }
-      });
-    });
-    
-    return allLists;
+    return querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+      isCreator: true
+    }));
   } catch (error) {
     console.error('Error getting shopping lists:', error);
     throw error;
@@ -231,7 +188,7 @@ const removeUserFromList = async (listId, userIdToRemove) => {
 
 // Check if current user can delete a list (only creator can delete)
 const canDeleteList = (list) => {
-  return list.creatorId === currentUser?.uid || list.userId === currentUser?.uid;
+  return list.deviceUID === currentUser?.uid;
 };
 
 // Get a single list by ID (for sharing functionality)
@@ -262,36 +219,16 @@ const subscribeToShoppingLists = (callback) => {
       return () => {};
     }
     
-    // Subscribe to all lists and filter on client side to be compatible with existing data
-    const unsubscribe = onSnapshot(collection(db, 'shoppingLists'), (snapshot) => {
-      const allLists = [];
-      const seenIds = new Set();
-      
-      snapshot.docs.forEach(doc => {
-        if (!seenIds.has(doc.id)) {
-          const data = doc.data();
-          // Check if this list belongs to current user or has no user restriction
-          const belongsToUser = !data.userId ||
-                               data.userId === currentUser.uid ||
-                               data.creatorId === currentUser.uid ||
-                               data.userID === currentUser.uid ||
-                               data.user === currentUser.uid;
-          
-          if (belongsToUser) {
-            allLists.push({
-              id: doc.id,
-              ...data,
-              isCreator: true
-            });
-            seenIds.add(doc.id);
-          }
-        }
-      });
-      
-      callback(allLists);
+    // Subscribe using deviceUID as that's what your Firebase rules expect
+    const q = query(collection(db, 'shoppingLists'), where('deviceUID', '==', currentUser.uid));
+    return onSnapshot(q, (snapshot) => {
+      const lists = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        isCreator: true
+      }));
+      callback(lists);
     });
-    
-    return unsubscribe;
   } catch (error) {
     console.error('Error subscribing to shopping lists:', error);
     throw error;

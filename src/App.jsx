@@ -99,8 +99,7 @@ function App() {
       
       const newList = {
         name: validation.value,
-        items: [],
-        userId: userID // Keep for backward compatibility
+        items: []
       };
       await createShoppingList(newList);
       setNewListName('');
