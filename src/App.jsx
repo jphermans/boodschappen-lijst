@@ -4,7 +4,7 @@ import { Settings, Plus, List, Share2, Trash2, Check, Wifi, QrCode } from 'lucid
 import { useTheme } from './context/ThemeContext';
 import { useToast } from './context/ToastContext';
 import { useUndo } from './context/UndoContext';
-import { initializeFirebase, isConnected, getCurrentUserID, createShoppingList, getShoppingLists, deleteShoppingList, subscribeToShoppingLists, canDeleteList, getListById, shareListWithUser } from './firebase';
+import { initializeFirebase, isConnected, getCurrentUserID, createShoppingList, getShoppingLists, deleteShoppingList, subscribeToShoppingLists, canDeleteList } from './firebase';
 import ShoppingList from './components/ShoppingList';
 import SettingsModal from './components/SettingsModal';
 import QRShareModal from './components/QRShareModal';
@@ -12,7 +12,6 @@ import QRScannerModal from './components/QRScannerModal';
 import ConnectionError from './components/ConnectionError';
 import ToastContainer from './components/Toast';
 import UndoBar from './components/UndoBar';
-import VoiceInput from './components/VoiceInput';
 import { validateListName } from './utils/validation';
 import { validateQRData } from './utils/qrSecurity';
 
@@ -182,45 +181,9 @@ function App() {
 
       const { listId } = validation;
       
-      // Try to access the shared list
-      try {
-        const sharedList = await getListById(listId);
-        
-        if (!sharedList) {
-          error('Gedeelde lijst niet gevonden of niet toegankelijk');
-          return;
-        }
-        
-        // If user is not the creator and not already in sharedWith, add them
-        if (!sharedList.isCreator) {
-          const currentUserId = getCurrentUserID();
-          if (currentUserId && !sharedList.sharedWith?.includes(currentUserId)) {
-            await shareListWithUser(listId, currentUserId);
-            success('Je hebt nu toegang tot de gedeelde lijst! 🎉', 3000);
-          } else {
-            success('Gedeelde lijst geladen! 📋', 2000);
-          }
-        } else {
-          success('Dit is je eigen lijst! 📋', 2000);
-        }
-        
-        // Close scanner and refresh lists
-        setShowScanner(false);
-        
-        // Refresh the lists to show the newly shared list
-        setTimeout(async () => {
-          try {
-            const updatedLists = await getShoppingLists();
-            setLists(updatedLists);
-          } catch (err) {
-            console.error('Error refreshing lists:', err);
-          }
-        }, 1000);
-        
-      } catch (err) {
-        console.error('Error accessing shared list:', err);
-        error('Kon gedeelde lijst niet laden. Controleer of je toegang hebt.');
-      }
+      // For now, just show success message
+      success(`Gedeelde lijst gevonden: ${listId}`, 3000);
+      info('Functionaliteit om gedeelde lijsten te importeren komt binnenkort! 🚧', 4000);
       
     } catch (err) {
       error('Fout bij verwerken van gescande code');
@@ -306,21 +269,14 @@ function App() {
                     className="w-full px-4 py-3 border border-[rgb(var(--border-color))] rounded-xl focus:outline-none focus:ring-2 focus:ring-primary bg-[rgb(var(--card-bg))] text-[rgb(var(--card-text))] text-lg"
                   />
                 </div>
-                <div className="flex space-x-2">
-                  <VoiceInput 
-                    onTranscript={(text) => setNewListName(text)}
-                    placeholder="Spreek lijstnaam uit..."
-                    className="flex-shrink-0"
-                  />
-                  <button
-                    onClick={createList}
-                    disabled={!newListName.trim()}
-                    className="flex items-center justify-center px-6 py-3 bg-primary hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200"
-                  >
-                    <Plus className="w-5 h-5 mr-2" />
-                    <span className="font-medium">Aanmaken</span>
-                  </button>
-                </div>
+                <button
+                  onClick={createList}
+                  disabled={!newListName.trim()}
+                  className="flex items-center justify-center px-6 py-3 bg-primary hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200"
+                >
+                  <Plus className="w-5 h-5 mr-2" />
+                  <span className="font-medium">Aanmaken</span>
+                </button>
               </div>
             </motion.div>
 
@@ -332,21 +288,11 @@ function App() {
                   animate={{ opacity: 1, scale: 1 }}
                   className="bg-[rgb(var(--card-bg))] rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow"
                 >
-                  <div className="flex items-start justify-between mb-2">
-                    <h3 className="text-lg font-semibold text-[rgb(var(--card-text))]">
-                      {list.name}
-                    </h3>
-                    {!list.isCreator && (
-                      <span className="text-xs bg-secondary/20 text-secondary px-2 py-1 rounded-full">
-                        Gedeeld
-                      </span>
-                    )}
-                  </div>
+                  <h3 className="text-lg font-semibold text-[rgb(var(--card-text))] mb-2">
+                    {list.name}
+                  </h3>
                   <p className="text-[rgb(var(--text-color))]/60 mb-4">
                     {list.items.length} item{list.items.length !== 1 ? 's' : ''}
-                    {list.isCreator && (
-                      <span className="text-xs ml-2 text-primary">• Eigenaar</span>
-                    )}
                   </p>
                   <div className="flex flex-col space-y-2">
                     <button
@@ -365,21 +311,14 @@ function App() {
                         <Share2 className="w-4 h-4 mr-2" />
                         <span className="font-medium">Delen</span>
                       </button>
-                      {list.isCreator ? (
-                        <button
-                          onClick={() => deleteList(list.id)}
-                          className="flex-1 flex items-center justify-center px-4 py-3 bg-accent hover:opacity-90 text-white rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
-                          title="Verwijderen (alleen eigenaar)"
-                        >
-                          <Trash2 className="w-4 h-4 mr-2" />
-                          <span className="font-medium">Verwijderen</span>
-                        </button>
-                      ) : (
-                        <div className="flex-1 flex items-center justify-center px-4 py-3 bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 rounded-xl cursor-not-allowed">
-                          <Trash2 className="w-4 h-4 mr-2" />
-                          <span className="font-medium text-sm">Alleen eigenaar</span>
-                        </div>
-                      )}
+                      <button
+                        onClick={() => deleteList(list.id)}
+                        className="flex-1 flex items-center justify-center px-4 py-3 bg-accent hover:opacity-90 text-white rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+                        title="Verwijderen"
+                      >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        <span className="font-medium">Verwijderen</span>
+                      </button>
                     </div>
                   </div>
                 </motion.div>

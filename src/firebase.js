@@ -92,53 +92,43 @@ const getShoppingLists = async () => {
       return [];
     }
     
-    // Get lists where user is either the creator or in the sharedWith array
-    // Support both new creatorId and legacy userId fields
+    // Simple approach: get lists where user is creator (using both creatorId and userId for backward compatibility)
     const createdQuery = query(collection(db, 'shoppingLists'), where('creatorId', '==', currentUser.uid));
     const legacyQuery = query(collection(db, 'shoppingLists'), where('userId', '==', currentUser.uid));
-    const sharedQuery = query(collection(db, 'shoppingLists'), where('sharedWith', 'array-contains', currentUser.uid));
     
-    const [createdSnapshot, legacySnapshot, sharedSnapshot] = await Promise.all([
+    const [createdSnapshot, legacySnapshot] = await Promise.all([
       getDocs(createdQuery),
-      getDocs(legacyQuery),
-      getDocs(sharedQuery)
+      getDocs(legacyQuery)
     ]);
     
-    // Use a Map to prevent duplicates by ID
-    const listsMap = new Map();
+    const allLists = [];
+    const seenIds = new Set();
     
     // Add created lists
     createdSnapshot.docs.forEach(doc => {
-      listsMap.set(doc.id, {
-        id: doc.id,
-        ...doc.data(),
-        isCreator: true
-      });
-    });
-    
-    // Add legacy lists (only if not already added)
-    legacySnapshot.docs.forEach(doc => {
-      if (!listsMap.has(doc.id)) {
-        listsMap.set(doc.id, {
+      if (!seenIds.has(doc.id)) {
+        allLists.push({
           id: doc.id,
           ...doc.data(),
           isCreator: true
         });
+        seenIds.add(doc.id);
       }
     });
     
-    // Add shared lists (only if not already added)
-    sharedSnapshot.docs.forEach(doc => {
-      if (!listsMap.has(doc.id)) {
-        listsMap.set(doc.id, {
+    // Add legacy lists (avoid duplicates)
+    legacySnapshot.docs.forEach(doc => {
+      if (!seenIds.has(doc.id)) {
+        allLists.push({
           id: doc.id,
           ...doc.data(),
-          isCreator: false
+          isCreator: true
         });
+        seenIds.add(doc.id);
       }
     });
     
-    return Array.from(listsMap.values());
+    return allLists;
   } catch (error) {
     console.error('Error getting shopping lists:', error);
     throw error;
@@ -258,15 +248,12 @@ const subscribeToShoppingLists = (callback) => {
       return () => {};
     }
     
-    // Subscribe to lists where user is either creator or shared with
-    // Support both new creatorId and legacy userId fields
+    // Simple approach: subscribe to lists where user is creator
     const createdQuery = query(collection(db, 'shoppingLists'), where('creatorId', '==', currentUser.uid));
     const legacyQuery = query(collection(db, 'shoppingLists'), where('userId', '==', currentUser.uid));
-    const sharedQuery = query(collection(db, 'shoppingLists'), where('sharedWith', 'array-contains', currentUser.uid));
     
     let createdLists = [];
     let legacyLists = [];
-    let sharedLists = [];
     
     const unsubscribeCreated = onSnapshot(createdQuery, (snapshot) => {
       createdLists = snapshot.docs.map(doc => ({
@@ -286,45 +273,32 @@ const subscribeToShoppingLists = (callback) => {
       updateCombinedLists();
     });
     
-    const unsubscribeShared = onSnapshot(sharedQuery, (snapshot) => {
-      sharedLists = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-        isCreator: false
-      }));
-      updateCombinedLists();
-    });
-    
     const updateCombinedLists = () => {
-      // Use a Map to prevent duplicates by ID
-      const listsMap = new Map();
+      const allLists = [];
+      const seenIds = new Set();
       
       // Add created lists
       createdLists.forEach(list => {
-        listsMap.set(list.id, list);
+        if (!seenIds.has(list.id)) {
+          allLists.push(list);
+          seenIds.add(list.id);
+        }
       });
       
-      // Add legacy lists (only if not already added)
+      // Add legacy lists (avoid duplicates)
       legacyLists.forEach(list => {
-        if (!listsMap.has(list.id)) {
-          listsMap.set(list.id, list);
+        if (!seenIds.has(list.id)) {
+          allLists.push(list);
+          seenIds.add(list.id);
         }
       });
       
-      // Add shared lists (only if not already added)
-      sharedLists.forEach(list => {
-        if (!listsMap.has(list.id)) {
-          listsMap.set(list.id, list);
-        }
-      });
-      
-      callback(Array.from(listsMap.values()));
+      callback(allLists);
     };
     
     return () => {
       unsubscribeCreated();
       unsubscribeLegacy();
-      unsubscribeShared();
     };
   } catch (error) {
     console.error('Error subscribing to shopping lists:', error);

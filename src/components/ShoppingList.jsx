@@ -7,7 +7,6 @@ import { useToast } from '../context/ToastContext';
 import { useUndo } from '../context/UndoContext';
 import { getSuggestions, getPopularItems } from '../utils/groceryItems';
 import { validateItemName } from '../utils/validation';
-import VoiceInput from './VoiceInput';
 
 const ShoppingList = ({ list, onBack, onShare }) => {
   const { success, error, deleteToast, removeToastByMessage } = useToast();
@@ -212,22 +211,9 @@ const ShoppingList = ({ list, onBack, onShare }) => {
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
-            <div>
-              <h2 className="text-2xl font-bold text-[rgb(var(--card-text))]">
-                {currentList.name}
-              </h2>
-              <div className="flex items-center space-x-2 mt-1">
-                {currentList.isCreator ? (
-                  <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded-full">
-                    Eigenaar
-                  </span>
-                ) : (
-                  <span className="text-xs bg-secondary/20 text-secondary px-2 py-1 rounded-full">
-                    Gedeelde lijst
-                  </span>
-                )}
-              </div>
-            </div>
+            <h2 className="text-2xl font-bold text-[rgb(var(--card-text))]">
+              {currentList.name}
+            </h2>
           </div>
           <button
             onClick={() => {
@@ -270,25 +256,14 @@ const ShoppingList = ({ list, onBack, onShare }) => {
                 </div>
               )}
             </div>
-            <div className="flex space-x-2">
-              <VoiceInput 
-                onTranscript={(text) => {
-                  setNewItem(text);
-                  handleInputChange({ target: { value: text } });
-                }}
-                placeholder="Spreek item uit..."
-                autoSubmit={false}
-                className="flex-shrink-0"
-              />
-              <button
-                onClick={() => addItem()}
-                disabled={!newItem.trim()}
-                className="flex items-center justify-center px-6 py-3 bg-primary hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200"
-              >
-                <Plus className="w-5 h-5 mr-2" />
-                <span className="font-medium">Toevoegen</span>
-              </button>
-            </div>
+            <button
+              onClick={() => addItem()}
+              disabled={!newItem.trim()}
+              className="flex items-center justify-center px-6 py-3 bg-primary hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200"
+            >
+              <Plus className="w-5 h-5 mr-2" />
+              <span className="font-medium">Toevoegen</span>
+            </button>
           </div>
           
           {currentList.items.length === 0 && newItem.length === 0 && (
