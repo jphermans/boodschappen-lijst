@@ -63,7 +63,19 @@ Value: G-XXXXXXXXXX
 
 ## 🔄 GitHub Pages Inschakelen
 
-### 1. Pages Configuratie
+### 1. Firebase Domain Autoriseren
+
+**Belangrijk:** Voeg je GitHub Pages domain toe aan Firebase:
+
+1. Ga naar [Firebase Console](https://console.firebase.google.com)
+2. Selecteer je project
+3. Ga naar **Authentication** > **Settings**
+4. Scroll naar **Authorized domains**
+5. Klik **Add domain**
+6. Voeg toe: `jouwusername.github.io` (vervang met je echte GitHub username)
+7. Klik **Add**
+
+### 2. Pages Configuratie
 
 1. Ga naar **Settings** > **Pages**
 2. Bij **Source** selecteer **GitHub Actions**
@@ -125,6 +137,31 @@ Na succesvolle deployment:
 2. Verifieer Firebase configuratie in console
 3. Controleer Firestore security rules
 4. Bekijk GitHub Actions logs voor build errors
+
+### "Permission Denied" Error
+
+**Error:** `FirebaseError: [code=permission-denied]: Missing or insufficient permissions.`
+
+**Oorzaak:** Firestore security rules zijn niet correct ingesteld of domain niet geautoriseerd.
+
+**Oplossingen:**
+1. **Update Firestore Security Rules** met de nieuwe rules (zie boven)
+2. **Autoriseer GitHub Pages Domain:**
+   - Firebase Console > Authentication > Settings > Authorized domains
+   - Voeg `jouwusername.github.io` toe
+3. **Controleer Anonymous Authentication** is ingeschakeld
+4. **Wacht 5-10 minuten** na het updaten van rules voor propagatie
+
+### "Domain Not Authorized" Warning
+
+**Warning:** `The current domain is not authorized for OAuth operations`
+
+**Oplossing:**
+1. Ga naar Firebase Console > Authentication > Settings
+2. Scroll naar "Authorized domains"
+3. Klik "Add domain"
+4. Voeg toe: `jouwusername.github.io`
+5. Klik "Add"
 
 ### Build Fails in GitHub Actions
 

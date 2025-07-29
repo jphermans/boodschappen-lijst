@@ -169,27 +169,32 @@ service cloud.firestore {
     // Shopping lists with creator permissions and sharing support
     match /shoppingLists/{listId} {
       // Users can read lists they created or are shared with
+      // Support both deviceUID (legacy) and creatorId (new)
       allow read: if request.auth != null
-        && (resource.data.creatorId == request.auth.uid
-            || request.auth.uid in resource.data.sharedWith);
+        && (resource.data.deviceUID == request.auth.uid
+            || resource.data.creatorId == request.auth.uid
+            || request.auth.uid in resource.data.get('sharedWith', []));
       
       // Only authenticated users can create lists
       allow create: if request.auth != null
-        && request.resource.data.creatorId == request.auth.uid
+        && (request.resource.data.deviceUID == request.auth.uid
+            || request.resource.data.creatorId == request.auth.uid)
         && request.resource.data.name is string
         && request.resource.data.name.size() <= 100
-        && request.resource.data.items is list
-        && request.resource.data.sharedWith is list;
+        && request.resource.data.items is list;
       
       // Users can update lists they created or are shared with
       allow update: if request.auth != null
-        && (resource.data.creatorId == request.auth.uid
-            || request.auth.uid in resource.data.sharedWith)
-        && request.resource.data.creatorId == resource.data.creatorId; // Prevent changing creator
+        && (resource.data.deviceUID == request.auth.uid
+            || resource.data.creatorId == request.auth.uid
+            || request.auth.uid in resource.data.get('sharedWith', []))
+        && (request.resource.data.deviceUID == resource.data.deviceUID
+            || request.resource.data.creatorId == resource.data.creatorId); // Prevent changing creator
       
       // Only the creator can delete lists
       allow delete: if request.auth != null
-        && resource.data.creatorId == request.auth.uid;
+        && (resource.data.deviceUID == request.auth.uid
+            || resource.data.creatorId == request.auth.uid);
     }
   }
 }
