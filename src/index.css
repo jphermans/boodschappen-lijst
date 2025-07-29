@@ -3,35 +3,104 @@
 @tailwind utilities;
 
 :root {
-  /* Gruvbox Light Theme */
+  /* Default Gruvbox Light Theme - Fallback values */
   --color-primary: 175 58 3; /* Gruvbox orange #af3a03 */
   --color-secondary: 121 116 14; /* Gruvbox green #79740e */
   --color-accent: 157 0 6; /* Gruvbox red #9d0006 */
-  --bg-color: 251 241 199; /* Gruvbox light background #fbf1c7 */
-  --text-color: 60 56 54; /* Gruvbox dark foreground #3c3836 */
+  --color-background: 251 241 199; /* Gruvbox light background #fbf1c7 */
+  --color-surface: 242 229 188; /* Gruvbox light1 #f2e5bc */
+  --color-text: 60 56 54; /* Gruvbox dark foreground #3c3836 */
+  --color-textSecondary: 102 92 84; /* Gruvbox gray #665c54 */
+  --color-success: 121 116 14; /* Gruvbox green #79740e */
+  --color-warning: 215 153 33; /* Gruvbox yellow #d79921 */
+  --color-error: 157 0 6; /* Gruvbox red #9d0006 */
+  --color-info: 69 133 136; /* Gruvbox blue #458588 */
+  
+  /* Legacy support */
+  --bg-color: var(--color-background);
+  --text-color: var(--color-text);
   --border-color: 213 196 161; /* Gruvbox light2 #d5c4a1 */
-  --card-bg: 242 229 188; /* Gruvbox light1 #f2e5bc */
-  --card-text: 60 56 54; /* Gruvbox dark foreground */
+  --card-bg: var(--color-surface);
+  --card-text: var(--color-text);
+  
+  /* Hex values for direct use */
+  --color-primary-hex: #af3a03;
+  --color-secondary-hex: #79740e;
+  --color-accent-hex: #9d0006;
+  --color-background-hex: #fbf1c7;
+  --color-surface-hex: #f2e5bc;
+  --color-text-hex: #3c3836;
+  --color-textSecondary-hex: #665c54;
+  --color-success-hex: #79740e;
+  --color-warning-hex: #d79921;
+  --color-error-hex: #9d0006;
+  --color-info-hex: #458588;
 }
 
 [data-theme="dark"] {
-  /* Gruvbox Dark Theme */
+  /* Default Gruvbox Dark Theme - Fallback values */
   --color-primary: 254 128 25; /* Gruvbox orange #fe8019 */
   --color-secondary: 184 187 38; /* Gruvbox green #b8bb26 */
   --color-accent: 251 73 52; /* Gruvbox red #fb4934 */
-  --bg-color: 40 40 40; /* Gruvbox dark background #282828 */
-  --text-color: 235 219 178; /* Gruvbox light foreground #ebdbb2 */
+  --color-background: 40 40 40; /* Gruvbox dark background #282828 */
+  --color-surface: 60 56 54; /* Gruvbox dark1 #3c3836 */
+  --color-text: 235 219 178; /* Gruvbox light foreground #ebdbb2 */
+  --color-textSecondary: 168 153 132; /* Gruvbox light2 #a89984 */
+  --color-success: 184 187 38; /* Gruvbox green #b8bb26 */
+  --color-warning: 250 189 47; /* Gruvbox yellow #fabd2f */
+  --color-error: 251 73 52; /* Gruvbox red #fb4934 */
+  --color-info: 131 165 152; /* Gruvbox blue #83a598 */
+  
+  /* Legacy support */
+  --bg-color: var(--color-background);
+  --text-color: var(--color-text);
   --border-color: 80 73 69; /* Gruvbox dark gray #504945 */
-  --card-bg: 60 56 54; /* Gruvbox dark1 #3c3836 */
-  --card-text: 235 219 178; /* Gruvbox light foreground */
+  --card-bg: var(--color-surface);
+  --card-text: var(--color-text);
+  
+  /* Hex values for direct use */
+  --color-primary-hex: #fe8019;
+  --color-secondary-hex: #b8bb26;
+  --color-accent-hex: #fb4934;
+  --color-background-hex: #282828;
+  --color-surface-hex: #3c3836;
+  --color-text-hex: #ebdbb2;
+  --color-textSecondary-hex: #a89984;
+  --color-success-hex: #b8bb26;
+  --color-warning-hex: #fabd2f;
+  --color-error-hex: #fb4934;
+  --color-info-hex: #83a598;
+}
+
+/* Dynamic theme support - these will be overridden by the unified theme system */
+.theme-dynamic {
+  /* Colors will be dynamically set by JavaScript */
+}
+
+/* Base styles */
+* {
+  box-sizing: border-box;
 }
 
 body {
-  background-color: rgb(var(--bg-color));
-  color: rgb(var(--text-color));
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: rgb(var(--color-background));
+  color: rgb(var(--color-text));
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+#root {
+  min-height: 100vh;
+  background-color: rgb(var(--color-background));
+  color: rgb(var(--color-text));
+}
+
+/* Unified theme color utilities */
 .text-primary {
   color: rgb(var(--color-primary));
 }
@@ -42,6 +111,22 @@ body {
 
 .text-accent {
   color: rgb(var(--color-accent));
+}
+
+.text-success {
+  color: rgb(var(--color-success));
+}
+
+.text-warning {
+  color: rgb(var(--color-warning));
+}
+
+.text-error {
+  color: rgb(var(--color-error));
+}
+
+.text-info {
+  color: rgb(var(--color-info));
 }
 
 .bg-primary {
@@ -56,22 +141,129 @@ body {
   background-color: rgb(var(--color-accent));
 }
 
-* {
-  box-sizing: border-box;
+.bg-success {
+  background-color: rgb(var(--color-success));
 }
 
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: rgb(var(--bg-color));
-  color: rgb(var(--text-color));
-  transition: background-color 0.3s ease, color 0.3s ease;
+.bg-warning {
+  background-color: rgb(var(--color-warning));
 }
 
-#root {
-  min-height: 100vh;
+.bg-error {
+  background-color: rgb(var(--color-error));
+}
+
+.bg-info {
+  background-color: rgb(var(--color-info));
+}
+
+.bg-surface {
+  background-color: rgb(var(--color-surface));
+}
+
+.bg-background {
+  background-color: rgb(var(--color-background));
+}
+
+/* Border utilities */
+.border-primary {
+  border-color: rgb(var(--color-primary));
+}
+
+.border-secondary {
+  border-color: rgb(var(--color-secondary));
+}
+
+.border-accent {
+  border-color: rgb(var(--color-accent));
+}
+
+.border-surface {
+  border-color: rgb(var(--color-surface));
+}
+
+/* Gradient utilities using theme colors */
+.bg-gradient-primary {
+  background: linear-gradient(135deg, rgb(var(--color-primary)), rgb(var(--color-secondary)));
+}
+
+.bg-gradient-accent {
+  background: linear-gradient(135deg, rgb(var(--color-accent)), rgb(var(--color-primary)));
+}
+
+.bg-gradient-surface {
+  background: linear-gradient(135deg, rgb(var(--color-surface)), rgb(var(--color-background)));
+}
+
+/* Theme transition animations */
+.theme-transition {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Accessibility helpers */
+.high-contrast {
+  filter: contrast(1.2);
+}
+
+.reduced-motion {
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Color picker specific styles */
+.color-picker-swatch {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  border: 2px solid rgb(var(--color-text) / 0.2);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.color-picker-swatch:hover {
+  transform: scale(1.1);
+  border-color: rgb(var(--color-primary));
+}
+
+.color-picker-swatch.active {
+  border-color: rgb(var(--color-primary));
+  box-shadow: 0 0 0 2px rgb(var(--color-primary) / 0.3);
+}
+
+/* Theme preview styles */
+.theme-preview {
+  border: 1px solid rgb(var(--color-text) / 0.2);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.theme-preview:hover {
+  border-color: rgb(var(--color-primary));
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgb(var(--color-text) / 0.1);
+}
+
+.theme-preview.active {
+  border-color: rgb(var(--color-primary));
+  box-shadow: 0 0 0 2px rgb(var(--color-primary) / 0.3);
+}
+
+/* Responsive design helpers */
+@media (prefers-reduced-motion: reduce) {
+  .theme-transition {
+    transition: none;
+  }
+}
+
+@media (prefers-contrast: high) {
+  :root {
+    --color-text: 0 0 0;
+    --color-background: 255 255 255;
+  }
+  
+  [data-theme="dark"] {
+    --color-text: 255 255 255;
+    --color-background: 0 0 0;
+  }
 }

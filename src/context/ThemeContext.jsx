@@ -37,28 +37,17 @@ export const ThemeProvider = ({ children }) => {
     // Keep data-theme for CSS custom properties
     document.documentElement.setAttribute('data-theme', savedTheme);
     
-    // Apply theme-specific colors
-    if (savedTheme === 'dark') {
-      document.documentElement.style.setProperty('--color-primary', hexToRgb('#3b82f6'));
-      document.documentElement.style.setProperty('--color-secondary', hexToRgb('#8b5cf6'));
-      document.documentElement.style.setProperty('--color-accent', hexToRgb('#ec4899'));
-    } else {
-      document.documentElement.style.setProperty('--color-primary', hexToRgb(savedPrimary));
-      document.documentElement.style.setProperty('--color-secondary', hexToRgb(savedSecondary));
-      document.documentElement.style.setProperty('--color-accent', hexToRgb(savedAccent));
-    }
+    // Apply theme colors (same colors for both light and dark mode)
+    document.documentElement.style.setProperty('--color-primary', hexToRgb(savedPrimary));
+    document.documentElement.style.setProperty('--color-secondary', hexToRgb(savedSecondary));
+    document.documentElement.style.setProperty('--color-accent', hexToRgb(savedAccent));
   }, []);
 
   useEffect(() => {
-    if (theme === 'dark') {
-      document.documentElement.style.setProperty('--color-primary', hexToRgb('#3b82f6'));
-      document.documentElement.style.setProperty('--color-secondary', hexToRgb('#8b5cf6'));
-      document.documentElement.style.setProperty('--color-accent', hexToRgb('#ec4899'));
-    } else {
-      document.documentElement.style.setProperty('--color-primary', hexToRgb(primaryColor));
-      document.documentElement.style.setProperty('--color-secondary', hexToRgb(secondaryColor));
-      document.documentElement.style.setProperty('--color-accent', hexToRgb(accentColor));
-    }
+    // Use the same colors for both light and dark mode
+    document.documentElement.style.setProperty('--color-primary', hexToRgb(primaryColor));
+    document.documentElement.style.setProperty('--color-secondary', hexToRgb(secondaryColor));
+    document.documentElement.style.setProperty('--color-accent', hexToRgb(accentColor));
   }, [theme, primaryColor, secondaryColor, accentColor]);
 
   const hexToRgb = (hex) => {

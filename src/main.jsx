@@ -3,17 +3,20 @@ import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import './index.css'
 import { ThemeProvider } from './context/ThemeContext'
+import { UnifiedThemeProvider } from './context/UnifiedThemeContext'
 import { ToastProvider } from './context/ToastContext'
 import { UndoProvider } from './context/UndoContext'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <ThemeProvider>
-      <ToastProvider>
-        <UndoProvider>
-          <App />
-        </UndoProvider>
-      </ToastProvider>
-    </ThemeProvider>
+    <UnifiedThemeProvider>
+      <ThemeProvider>
+        <ToastProvider>
+          <UndoProvider>
+            <App />
+          </UndoProvider>
+        </ToastProvider>
+      </ThemeProvider>
+    </UnifiedThemeProvider>
   </React.StrictMode>,
 )

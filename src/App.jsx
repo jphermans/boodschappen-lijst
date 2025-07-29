@@ -18,13 +18,16 @@ import UndoBar from './components/UndoBar';
 import { validateListName } from './utils/validation';
 import { validateQRData } from './utils/qrSecurity';
 import { userManager } from './utils/enhancedUserManager';
-import { useUserState, useShoppingLists, useTheme as usePersistentTheme } from './hooks/usePersistentState';
+import { useUserState, useShoppingLists } from './hooks/usePersistentState';
+import { useUnifiedThemeContext } from './context/UnifiedThemeContext';
 
 function App() {
   // Enhanced state management hooks
   const { userInfo, setUserName, isLoading: userLoading, error: userError } = useUserState();
   const { lists, addList, updateList, removeList, isLoading: listsLoading } = useShoppingLists();
-  const { theme, toggleTheme, isLoading: themeLoading } = usePersistentTheme();
+  
+  // Unified theme context
+  const { mode: theme, toggleMode: toggleTheme, isLoading: themeLoading } = useUnifiedThemeContext();
   
   // Legacy theme context for backward compatibility
   const { theme: legacyTheme, toggleTheme: legacyToggleTheme } = useTheme();

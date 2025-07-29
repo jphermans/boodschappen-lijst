@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { X, Palette, Moon, Sun, Link2, BarChart3 } from 'lucide-react';
+import { X, Palette, Moon, Sun, Link2, BarChart3, Settings } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { useUnifiedThemeContext } from '../context/UnifiedThemeContext';
 import { getDeviceInfo } from '../utils/deviceUID';
 import AnalyticsDashboard from './AnalyticsDashboard';
+import ColorPicker from './ColorPicker';
 
 const SettingsModal = ({ lists = [], onClose }) => {
   const [showAnalytics, setShowAnalytics] = useState(false);
+  const [showColorPicker, setShowColorPicker] = useState(false);
   
+  // Legacy theme context for backward compatibility
   const {
     theme,
     toggleTheme,
@@ -17,6 +21,15 @@ const SettingsModal = ({ lists = [], onClose }) => {
     updateColor,
     resetColors,
   } = useTheme();
+  
+  // New unified theme context
+  const {
+    mode: unifiedMode,
+    currentPalette,
+    toggleMode: unifiedToggleMode,
+    isLoading: themeLoading,
+    error: themeError
+  } = useUnifiedThemeContext();
   
   const deviceInfo = getDeviceInfo();
 
@@ -63,15 +76,53 @@ const SettingsModal = ({ lists = [], onClose }) => {
             <h3 className="text-lg font-medium text-[rgb(var(--card-text))] mb-3">
               Thema
             </h3>
-            <button
-              onClick={toggleTheme}
-              className="flex items-center justify-center space-x-3 p-4 w-full rounded-xl bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
-            >
-              {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
-              <span className="font-medium">
-                {theme === 'light' ? '🌙 Donker thema' : '☀️ Licht thema'}
-              </span>
-            </button>
+            
+            <div className="space-y-3">
+              {/* Theme toggle */}
+              <button
+                onClick={unifiedToggleMode}
+                disabled={themeLoading}
+                className="flex items-center justify-center space-x-3 p-4 w-full rounded-xl bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {unifiedMode === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+                <span className="font-medium">
+                  {unifiedMode === 'light' ? '🌙 Donker thema' : '☀️ Licht thema'}
+                </span>
+                {themeLoading && (
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                )}
+              </button>
+
+              {/* Current palette info */}
+              <div className="bg-[rgb(var(--border-color))]/10 p-3 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-[rgb(var(--card-text))]">
+                      Huidig palet: {currentPalette}
+                    </p>
+                    <p className="text-xs text-[rgb(var(--text-color))]/60">
+                      Modus: {unifiedMode === 'light' ? 'Licht' : 'Donker'}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setShowColorPicker(true)}
+                    className="flex items-center space-x-2 px-3 py-2 bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+                  >
+                    <Settings className="w-4 h-4" />
+                    <span className="text-sm font-medium">Aanpassen</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Error display */}
+              {themeError && (
+                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3">
+                  <p className="text-sm text-red-700 dark:text-red-300">
+                    Thema fout: {themeError.message || 'Onbekende fout'}
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
 
           <div>
