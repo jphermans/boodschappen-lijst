@@ -36,19 +36,23 @@ const initializeFirebase = async () => {
     db = getFirestore(app);
     auth = getAuth(app);
     
+    console.log('Firebase app initialized, attempting anonymous sign in...');
+    
     // Anonymous authentication
-    await signInAnonymously(auth);
+    const userCredential = await signInAnonymously(auth);
+    console.log('Anonymous sign in successful:', userCredential.user.uid);
     
     // Listen for auth state changes
     onAuthStateChanged(auth, (user) => {
       if (user) {
         currentUser = user;
         isConnected = true;
-        console.log('User signed in anonymously:', user.uid);
+        console.log('Auth state changed - User signed in:', user.uid);
+        console.log('Database reference:', db ? 'OK' : 'NULL');
       } else {
         currentUser = null;
         isConnected = false;
-        console.log('User signed out');
+        console.log('Auth state changed - User signed out');
       }
     });
     
@@ -71,12 +75,19 @@ const getCurrentUserID = () => {
 const createShoppingList = async (listData) => {
   try {
     if (!db) throw new Error('Firebase not initialized');
+    if (!currentUser) throw new Error('User not authenticated');
+    
+    console.log('Creating shopping list with data:', listData);
+    console.log('Current user UID:', currentUser.uid);
+    
     const docRef = await addDoc(collection(db, 'shoppingLists'), {
       ...listData,
-      deviceUID: currentUser?.uid, // Use deviceUID to match your Firebase rules
+      deviceUID: currentUser.uid, // Use deviceUID to match your Firebase rules
       createdAt: new Date(),
       updatedAt: new Date()
     });
+    
+    console.log('Shopping list created with ID:', docRef.id);
     return docRef.id;
   } catch (error) {
     console.error('Error creating shopping list:', error);
@@ -91,15 +102,22 @@ const getShoppingLists = async () => {
       return [];
     }
     
+    console.log('Querying shopping lists for user:', currentUser.uid);
+    
     // Query using deviceUID as that's what your Firebase rules expect
     const q = query(collection(db, 'shoppingLists'), where('deviceUID', '==', currentUser.uid));
     const querySnapshot = await getDocs(q);
     
-    return querySnapshot.docs.map(doc => ({
+    console.log('Found', querySnapshot.docs.length, 'shopping lists');
+    
+    const lists = querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
       isCreator: true
     }));
+    
+    console.log('Returning lists:', lists);
+    return lists;
   } catch (error) {
     console.error('Error getting shopping lists:', error);
     throw error;
@@ -219,14 +237,18 @@ const subscribeToShoppingLists = (callback) => {
       return () => {};
     }
     
+    console.log('Subscribing to shopping lists for user:', currentUser.uid);
+    
     // Subscribe using deviceUID as that's what your Firebase rules expect
     const q = query(collection(db, 'shoppingLists'), where('deviceUID', '==', currentUser.uid));
     return onSnapshot(q, (snapshot) => {
+      console.log('Subscription update: found', snapshot.docs.length, 'lists');
       const lists = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
         isCreator: true
       }));
+      console.log('Subscription returning lists:', lists);
       callback(lists);
     });
   } catch (error) {
