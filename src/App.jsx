@@ -268,28 +268,32 @@ function App() {
                   <p className="text-[rgb(var(--text-color))]/60 mb-4">
                     {list.items.length} item{list.items.length !== 1 ? 's' : ''}
                   </p>
-                  <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                  <div className="flex flex-col space-y-2">
                     <button
                       onClick={() => setSelectedList(list)}
-                      className="flex-1 flex items-center justify-center px-4 py-3 bg-primary hover:opacity-90 text-white rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+                      className="w-full flex items-center justify-center px-4 py-3 bg-primary hover:opacity-90 text-white rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
                     >
                       <Check className="w-4 h-4 mr-2" />
                       <span className="font-medium">Openen</span>
                     </button>
-                    <button
-                      onClick={() => handleShare(list.id)}
-                      className="flex items-center justify-center w-12 h-12 bg-secondary hover:opacity-90 text-white rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
-                      title="Delen"
-                    >
-                      <Share2 className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => deleteList(list.id)}
-                      className="flex items-center justify-center w-12 h-12 bg-accent hover:opacity-90 text-white rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
-                      title="Verwijderen"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handleShare(list.id)}
+                        className="flex-1 flex items-center justify-center px-4 py-3 bg-secondary hover:opacity-90 text-white rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+                        title="Delen"
+                      >
+                        <Share2 className="w-4 h-4 mr-2" />
+                        <span className="font-medium">Delen</span>
+                      </button>
+                      <button
+                        onClick={() => deleteList(list.id)}
+                        className="flex-1 flex items-center justify-center px-4 py-3 bg-accent hover:opacity-90 text-white rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+                        title="Verwijderen"
+                      >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        <span className="font-medium">Verwijderen</span>
+                      </button>
+                    </div>
                   </div>
                 </motion.div>
               ))}
