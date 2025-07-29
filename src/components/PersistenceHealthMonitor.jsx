@@ -86,7 +86,7 @@ const PersistenceHealthMonitor = ({ onClose }) => {
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
-        className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col"
+        className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-2xl w-full max-w-4xl max-h-[95vh] flex flex-col mx-auto my-4"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Fixed Header */}
@@ -113,7 +113,7 @@ const PersistenceHealthMonitor = ({ onClose }) => {
         </div>
 
         {/* Scrollable Content */}
-        <div className="p-4 lg:p-6 overflow-y-auto flex-1 overscroll-contain">
+        <div className="p-4 lg:p-6 overflow-y-auto flex-1 overscroll-contain min-h-0">
           {/* Storage Health Overview */}
           <div className="mb-6">
             <h3 className="text-lg font-semibold text-[rgb(var(--card-text))] mb-4 flex items-center">
@@ -121,7 +121,7 @@ const PersistenceHealthMonitor = ({ onClose }) => {
               Opslag Mechanismen
             </h3>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 lg:gap-4">
               {healthInfo?.storageHealth?.available && Object.entries(healthInfo.storageHealth.available).map(([storage, available]) => (
                 <div
                   key={storage}
@@ -200,7 +200,7 @@ const PersistenceHealthMonitor = ({ onClose }) => {
               Status Statistieken
             </h3>
             
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
               <div className="text-center p-4 bg-[rgb(var(--border-color))]/10 rounded-xl">
                 <div className="text-2xl font-bold text-primary">
                   {healthInfo?.state?.lists?.length || 0}
