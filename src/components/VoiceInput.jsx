@@ -253,9 +253,9 @@ const VoiceInput = ({
         )}
       </AnimatePresence>
 
-      {/* Help text - only show when explicitly needed */}
+      {/* Help text - DISABLED to fix popup issue */}
       <AnimatePresence>
-        {showPopup && !isListening && (
+        {false && showPopup && !isListening && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}

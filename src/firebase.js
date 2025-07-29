@@ -104,33 +104,41 @@ const getShoppingLists = async () => {
       getDocs(sharedQuery)
     ]);
     
-    const createdLists = createdSnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-      isCreator: true
-    }));
+    // Use a Map to prevent duplicates by ID
+    const listsMap = new Map();
     
-    const legacyLists = legacySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-      isCreator: true
-    }));
+    // Add created lists
+    createdSnapshot.docs.forEach(doc => {
+      listsMap.set(doc.id, {
+        id: doc.id,
+        ...doc.data(),
+        isCreator: true
+      });
+    });
     
-    const sharedLists = sharedSnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-      isCreator: false
-    }));
-    
-    // Combine and deduplicate (in case a user is both creator and in sharedWith)
-    const allLists = [...createdLists, ...legacyLists];
-    sharedLists.forEach(sharedList => {
-      if (!allLists.find(list => list.id === sharedList.id)) {
-        allLists.push(sharedList);
+    // Add legacy lists (only if not already added)
+    legacySnapshot.docs.forEach(doc => {
+      if (!listsMap.has(doc.id)) {
+        listsMap.set(doc.id, {
+          id: doc.id,
+          ...doc.data(),
+          isCreator: true
+        });
       }
     });
     
-    return allLists;
+    // Add shared lists (only if not already added)
+    sharedSnapshot.docs.forEach(doc => {
+      if (!listsMap.has(doc.id)) {
+        listsMap.set(doc.id, {
+          id: doc.id,
+          ...doc.data(),
+          isCreator: false
+        });
+      }
+    });
+    
+    return Array.from(listsMap.values());
   } catch (error) {
     console.error('Error getting shopping lists:', error);
     throw error;
@@ -288,13 +296,29 @@ const subscribeToShoppingLists = (callback) => {
     });
     
     const updateCombinedLists = () => {
-      const allLists = [...createdLists, ...legacyLists];
-      sharedLists.forEach(sharedList => {
-        if (!allLists.find(list => list.id === sharedList.id)) {
-          allLists.push(sharedList);
+      // Use a Map to prevent duplicates by ID
+      const listsMap = new Map();
+      
+      // Add created lists
+      createdLists.forEach(list => {
+        listsMap.set(list.id, list);
+      });
+      
+      // Add legacy lists (only if not already added)
+      legacyLists.forEach(list => {
+        if (!listsMap.has(list.id)) {
+          listsMap.set(list.id, list);
         }
       });
-      callback(allLists);
+      
+      // Add shared lists (only if not already added)
+      sharedLists.forEach(list => {
+        if (!listsMap.has(list.id)) {
+          listsMap.set(list.id, list);
+        }
+      });
+      
+      callback(Array.from(listsMap.values()));
     };
     
     return () => {
