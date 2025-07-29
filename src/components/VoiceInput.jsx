@@ -17,15 +17,38 @@ const VoiceInput = ({
 
   // Check microphone permission
   useEffect(() => {
-    if (navigator.permissions) {
-      navigator.permissions.query({ name: 'microphone' }).then((result) => {
-        setHasPermission(result.state === 'granted');
-        
-        result.onchange = () => {
+    const checkPermission = async () => {
+      if (navigator.permissions) {
+        try {
+          const result = await navigator.permissions.query({ name: 'microphone' });
           setHasPermission(result.state === 'granted');
-        };
-      });
-    }
+          
+          result.onchange = () => {
+            setHasPermission(result.state === 'granted');
+          };
+        } catch (err) {
+          // Fallback: try to access media to check permission
+          try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            stream.getTracks().forEach(track => track.stop());
+            setHasPermission(true);
+          } catch (mediaErr) {
+            setHasPermission(false);
+          }
+        }
+      } else {
+        // Fallback for browsers without permissions API
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          stream.getTracks().forEach(track => track.stop());
+          setHasPermission(true);
+        } catch (err) {
+          setHasPermission(false);
+        }
+      }
+    };
+    
+    checkPermission();
   }, []);
 
   // Handle transcript changes
@@ -83,7 +106,9 @@ const VoiceInput = ({
     // Request microphone permission if not already granted
     if (hasPermission !== true) {
       try {
-        await navigator.mediaDevices.getUserMedia({ audio: true });
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        // Stop the stream immediately as we only needed it for permission
+        stream.getTracks().forEach(track => track.stop());
         setHasPermission(true);
         success('Microfoon toegang verleend! 🎤', 2000);
         // Auto-start listening after permission granted
@@ -244,9 +269,9 @@ const VoiceInput = ({
         )}
       </AnimatePresence>
 
-      {/* Help text for users */}
+      {/* Help text for users - only show when not listening and permission issues exist */}
       <AnimatePresence>
-        {hasPermission === null && (
+        {!isListening && hasPermission === null && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -261,7 +286,7 @@ const VoiceInput = ({
             </div>
           </motion.div>
         )}
-        {hasPermission === false && (
+        {!isListening && hasPermission === false && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
