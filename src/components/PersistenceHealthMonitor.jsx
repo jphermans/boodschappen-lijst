@@ -86,11 +86,11 @@ const PersistenceHealthMonitor = ({ onClose }) => {
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
-        className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-2xl w-full max-w-4xl max-h-[95vh] flex flex-col mx-auto my-4"
+        className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-2xl w-full max-w-4xl max-h-[95vh] overflow-y-auto mx-auto my-4"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Fixed Header */}
-        <div className="flex items-center justify-between p-4 lg:p-6 border-b border-[rgb(var(--border-color))]/20 flex-shrink-0">
+        {/* Header - Now Scrollable */}
+        <div className="flex items-center justify-between p-4 lg:p-6 border-b border-[rgb(var(--border-color))]/20 sticky top-0 bg-[rgb(var(--card-bg))] z-10">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center">
               <Database className="w-5 h-5 text-white" />
@@ -112,8 +112,8 @@ const PersistenceHealthMonitor = ({ onClose }) => {
           </button>
         </div>
 
-        {/* Scrollable Content */}
-        <div className="p-4 lg:p-6 overflow-y-auto flex-1 overscroll-contain min-h-0">
+        {/* Content - Now Part of Scrollable Area */}
+        <div className="p-4 lg:p-6">
           {/* Storage Health Overview */}
           <div className="mb-6">
             <h3 className="text-lg font-semibold text-[rgb(var(--card-text))] mb-4 flex items-center">
@@ -327,8 +327,8 @@ const PersistenceHealthMonitor = ({ onClose }) => {
           </AnimatePresence>
         </div>
 
-        {/* Fixed Footer with Close Button */}
-        <div className="flex-shrink-0 border-t border-[rgb(var(--border-color))]/20 p-4 lg:p-6 bg-[rgb(var(--card-bg))]/95 backdrop-blur-sm">
+        {/* Footer - Now Part of Scrollable Area */}
+        <div className="border-t border-[rgb(var(--border-color))]/20 p-4 lg:p-6 bg-[rgb(var(--card-bg))]/95 backdrop-blur-sm">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mb-3">
             <div className="text-sm text-[rgb(var(--text-color))]/60 text-center sm:text-left">
               Laatste sync: {healthInfo?.lastSyncTime
