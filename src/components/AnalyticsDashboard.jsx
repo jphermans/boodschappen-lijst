@@ -113,15 +113,16 @@ const AnalyticsDashboard = ({ lists, onClose }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-start lg:pt-[88px] justify-center p-4 z-50"
       onClick={onClose}
     >
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-[rgb(var(--card-bg))] rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] flex flex-col"
+        className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-xl max-w-4xl w-full max-h-[calc(100vh-88px)] flex flex-col mt-0"
         onClick={(e) => e.stopPropagation()}
+        style={{ overflow: 'hidden' }}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-[rgb(var(--border-color))]/50">
@@ -145,7 +146,7 @@ const AnalyticsDashboard = ({ lists, onClose }) => {
         </div>
 
         {/* Content */}
-        <div className="flex-1 p-6 overflow-y-auto">
+        <div className="flex-1 p-6 overflow-y-auto" style={{ minHeight: 0 }}>
           {/* Overview Statistics */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg p-4 text-center">
