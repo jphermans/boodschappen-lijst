@@ -237,42 +237,81 @@ function App() {
   };
 
   const handleScanSuccess = async (scannedData) => {
+    console.log('🔍 QR Scan Debug - Starting scan process');
+    console.log('📱 Scanned data:', scannedData);
+    console.log('📱 Data type:', typeof scannedData);
+    console.log('📱 Data length:', scannedData?.length);
+    
     try {
+      // Step 1: Validate QR data
+      console.log('🔍 Step 1: Validating QR data...');
       const validation = validateQRData(scannedData);
+      console.log('✅ Validation result:', validation);
       
       if (!validation.valid) {
+        console.error('❌ QR validation failed:', validation.error);
         error(validation.error);
         return;
       }
 
       const { listId } = validation;
+      console.log('🔍 Step 2: Extracted list ID:', listId);
       
-      // Check if the list exists and get its details
+      // Step 2: Check if the list exists and get its details
+      console.log('🔍 Step 3: Fetching list from Firebase...');
       const sharedList = await getListById(listId);
+      console.log('📋 Retrieved list:', sharedList);
       
       if (!sharedList) {
+        console.error('❌ List not found in Firebase for ID:', listId);
         error('Gedeelde lijst niet gevonden of niet toegankelijk');
         return;
       }
       
-      // Check if user already has access to this list
+      // Step 3: Check if user already has access to this list
+      console.log('🔍 Step 4: Checking user access...');
       const currentUserId = getCurrentUserID();
+      console.log('👤 Current user ID:', currentUserId);
+      console.log('📋 Current lists count:', lists.length);
+      console.log('📋 Current list IDs:', lists.map(l => l.id));
+      
       const alreadyHasAccess = lists.some(list => list.id === listId);
+      console.log('🔐 Already has access:', alreadyHasAccess);
       
       if (alreadyHasAccess) {
+        console.log('ℹ️ User already has access to this list');
         info(`Je hebt al toegang tot lijst "${sharedList.name}"`);
         return;
       }
       
-      // Share the list with the current user
+      // Step 4: Share the list with the current user
+      console.log('🔍 Step 5: Sharing list with user...');
+      console.log('🔗 Sharing list ID:', listId, 'with user:', currentUserId);
+      
       await shareListWithUser(listId, currentUserId);
+      console.log('✅ List shared successfully!');
       
       success(`Lijst "${sharedList.name}" is gedeeld met jou! 🎉`);
       info('De lijst verschijnt nu in je overzicht', 3000);
       
     } catch (err) {
-      console.error('Error processing scanned QR code:', err);
-      error('Fout bij verwerken van gescande code');
+      console.error('❌ Error processing scanned QR code:', err);
+      console.error('❌ Error details:', {
+        message: err.message,
+        code: err.code,
+        stack: err.stack
+      });
+      
+      // Provide more specific error messages based on error type
+      if (err.code === 'permission-denied') {
+        error('Geen toegang tot deze lijst. Controleer of de lijst nog bestaat.');
+      } else if (err.code === 'not-found') {
+        error('Lijst niet gevonden. De QR-code is mogelijk verlopen.');
+      } else if (err.message?.includes('network')) {
+        error('Netwerkfout. Controleer je internetverbinding.');
+      } else {
+        error(`Fout bij verwerken van gescande code: ${err.message || 'Onbekende fout'}`);
+      }
     }
   };
 

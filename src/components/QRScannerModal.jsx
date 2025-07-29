@@ -79,16 +79,14 @@ const QRScannerModal = ({ onClose, onScanSuccess }) => {
   };
 
   const processQRCode = (code) => {
+    console.log('📱 QRScannerModal - Processing QR code:', code);
     try {
-      // Check if it's a valid shopping list URL
-      if (code.includes('/shared/') || code.includes('boodschappenlijst')) {
-        onScanSuccess(code);
-        success('QR-code succesvol gescand! 🎉');
-        onClose();
-      } else {
-        showError('Dit lijkt geen geldige boodschappenlijst QR-code te zijn');
-      }
+      // Pass the code directly to the main handler - let it do all validation
+      onScanSuccess(code);
+      success('QR-code succesvol gescand! 🎉');
+      onClose();
     } catch (err) {
+      console.error('📱 QRScannerModal - Error processing QR code:', err);
       showError('Fout bij verwerken van QR-code');
     }
   };
