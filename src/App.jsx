@@ -663,48 +663,51 @@ function App() {
                         <span>Lijst Openen</span>
                       </button>
                       
-                      {/* Secondary Actions */}
-                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-3">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleShare(list.id);
-                          }}
-                          className="w-full flex items-center justify-center px-4 py-3 lg:py-4 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 text-white rounded-xl lg:rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 font-semibold text-base lg:text-lg"
-                          title="Delen"
-                        >
-                          <Share2 className="w-5 h-5 lg:w-6 lg:h-6 mr-3" />
-                          <span>Delen</span>
-                        </button>
-                        
-                        {list.isCreator && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleUserManagement(list.id);
-                            }}
-                            className="w-full flex items-center justify-center px-4 py-2.5 lg:py-3 bg-gradient-to-r from-blue-500 to-purple-500 hover:opacity-90 text-white rounded-lg lg:rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 font-medium text-sm lg:text-base"
-                            title="Gebruikers beheren"
-                          >
-                            <Users className="w-4 h-4 lg:w-5 lg:h-5 mr-2" />
-                            <span>Gebruikers</span>
-                          </button>
-                        )}
-                        
-                        {canDeleteList(list) && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              deleteList(list.id);
-                            }}
-                            className="w-full flex items-center justify-center px-4 py-2.5 lg:py-3 bg-accent hover:opacity-90 text-white rounded-lg lg:rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 font-medium text-sm lg:text-base"
-                            title="Verwijderen"
-                          >
-                            <Trash2 className="w-4 h-4 lg:w-5 lg:h-5 mr-2" />
-                            <span>Verwijderen</span>
-                          </button>
-                        )}
-                      </div>
+                      {/* Share Button - Full Width */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleShare(list.id);
+                        }}
+                        className="w-full flex items-center justify-center px-4 py-3 lg:py-4 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 text-white rounded-xl lg:rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 font-semibold text-base lg:text-lg"
+                        title="Delen"
+                      >
+                        <Share2 className="w-5 h-5 lg:w-6 lg:h-6 mr-3" />
+                        <span>Delen</span>
+                      </button>
+                      
+                      {/* Other Actions */}
+                      {(list.isCreator || canDeleteList(list)) && (
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-3">
+                          {list.isCreator && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleUserManagement(list.id);
+                              }}
+                              className="w-full flex items-center justify-center px-4 py-2.5 lg:py-3 bg-gradient-to-r from-blue-500 to-purple-500 hover:opacity-90 text-white rounded-lg lg:rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 font-medium text-sm lg:text-base"
+                              title="Gebruikers beheren"
+                            >
+                              <Users className="w-4 h-4 lg:w-5 lg:h-5 mr-2" />
+                              <span>Gebruikers</span>
+                            </button>
+                          )}
+                          
+                          {canDeleteList(list) && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteList(list.id);
+                              }}
+                              className="w-full flex items-center justify-center px-4 py-2.5 lg:py-3 bg-accent hover:opacity-90 text-white rounded-lg lg:rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 font-medium text-sm lg:text-base"
+                              title="Verwijderen"
+                            >
+                              <Trash2 className="w-4 h-4 lg:w-5 lg:h-5 mr-2" />
+                              <span>Verwijderen</span>
+                            </button>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </motion.div>
