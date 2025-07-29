@@ -14,14 +14,15 @@
 }
 
 [data-theme="dark"] {
-  --color-primary: 59 130 246;
-  --color-secondary: 139 92 246;
-  --color-accent: 236 72 153;
-  --bg-color: 15 23 42; /* Dark navy blue */
-  --text-color: 226 232 240;
-  --border-color: 51 65 85;
-  --card-bg: 30 41 59; /* Darker slate */
-  --card-text: 226 232 240;
+  /* Gruvbox color scheme */
+  --color-primary: 254 128 25; /* Gruvbox orange #fe8019 */
+  --color-secondary: 184 187 38; /* Gruvbox green #b8bb26 */
+  --color-accent: 251 73 52; /* Gruvbox red #fb4934 */
+  --bg-color: 40 40 40; /* Gruvbox dark background #282828 */
+  --text-color: 235 219 178; /* Gruvbox light foreground #ebdbb2 */
+  --border-color: 80 73 69; /* Gruvbox dark gray #504945 */
+  --card-bg: 60 56 54; /* Gruvbox dark1 #3c3836 */
+  --card-text: 235 219 178; /* Gruvbox light foreground */
 }
 
 body {

@@ -477,7 +477,12 @@ function App() {
   }
 
   if (firebaseError) {
-    return <ConnectionError error={firebaseError} onRetry={retryConnection} />;
+    // For testing purposes, allow bypassing Firebase error to test themes
+    const isTestMode = window.location.search.includes('test=true');
+    if (!isTestMode) {
+      return <ConnectionError error={firebaseError} onRetry={retryConnection} />;
+    }
+    // In test mode, continue with empty lists
   }
 
   const isOffline = !isConnected;
