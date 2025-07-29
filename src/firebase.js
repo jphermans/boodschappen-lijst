@@ -92,40 +92,54 @@ const getShoppingLists = async () => {
       return [];
     }
     
-    // Simple approach: get lists where user is creator (using both creatorId and userId for backward compatibility)
-    const createdQuery = query(collection(db, 'shoppingLists'), where('creatorId', '==', currentUser.uid));
-    const legacyQuery = query(collection(db, 'shoppingLists'), where('userId', '==', currentUser.uid));
+    // Get all lists for this user - try multiple field names to be compatible with existing data
+    const queries = [];
     
-    const [createdSnapshot, legacySnapshot] = await Promise.all([
-      getDocs(createdQuery),
-      getDocs(legacyQuery)
-    ]);
+    // Try different possible field names that might exist in your data
+    const possibleFields = ['userId', 'creatorId', 'userID', 'user'];
     
+    for (const field of possibleFields) {
+      try {
+        const q = query(collection(db, 'shoppingLists'), where(field, '==', currentUser.uid));
+        queries.push(getDocs(q));
+      } catch (err) {
+        // Field might not exist, continue
+        console.log(`Field ${field} not found, trying next...`);
+      }
+    }
+    
+    // Also try to get all lists (in case there's no user field filtering)
+    try {
+      queries.push(getDocs(collection(db, 'shoppingLists')));
+    } catch (err) {
+      console.log('Could not get all lists');
+    }
+    
+    const snapshots = await Promise.all(queries);
     const allLists = [];
     const seenIds = new Set();
     
-    // Add created lists
-    createdSnapshot.docs.forEach(doc => {
-      if (!seenIds.has(doc.id)) {
-        allLists.push({
-          id: doc.id,
-          ...doc.data(),
-          isCreator: true
-        });
-        seenIds.add(doc.id);
-      }
-    });
-    
-    // Add legacy lists (avoid duplicates)
-    legacySnapshot.docs.forEach(doc => {
-      if (!seenIds.has(doc.id)) {
-        allLists.push({
-          id: doc.id,
-          ...doc.data(),
-          isCreator: true
-        });
-        seenIds.add(doc.id);
-      }
+    snapshots.forEach(snapshot => {
+      snapshot.docs.forEach(doc => {
+        if (!seenIds.has(doc.id)) {
+          const data = doc.data();
+          // Check if this list belongs to current user or has no user restriction
+          const belongsToUser = !data.userId ||
+                               data.userId === currentUser.uid ||
+                               data.creatorId === currentUser.uid ||
+                               data.userID === currentUser.uid ||
+                               data.user === currentUser.uid;
+          
+          if (belongsToUser) {
+            allLists.push({
+              id: doc.id,
+              ...data,
+              isCreator: true
+            });
+            seenIds.add(doc.id);
+          }
+        }
+      });
     });
     
     return allLists;
@@ -248,58 +262,36 @@ const subscribeToShoppingLists = (callback) => {
       return () => {};
     }
     
-    // Simple approach: subscribe to lists where user is creator
-    const createdQuery = query(collection(db, 'shoppingLists'), where('creatorId', '==', currentUser.uid));
-    const legacyQuery = query(collection(db, 'shoppingLists'), where('userId', '==', currentUser.uid));
-    
-    let createdLists = [];
-    let legacyLists = [];
-    
-    const unsubscribeCreated = onSnapshot(createdQuery, (snapshot) => {
-      createdLists = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-        isCreator: true
-      }));
-      updateCombinedLists();
-    });
-    
-    const unsubscribeLegacy = onSnapshot(legacyQuery, (snapshot) => {
-      legacyLists = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-        isCreator: true
-      }));
-      updateCombinedLists();
-    });
-    
-    const updateCombinedLists = () => {
+    // Subscribe to all lists and filter on client side to be compatible with existing data
+    const unsubscribe = onSnapshot(collection(db, 'shoppingLists'), (snapshot) => {
       const allLists = [];
       const seenIds = new Set();
       
-      // Add created lists
-      createdLists.forEach(list => {
-        if (!seenIds.has(list.id)) {
-          allLists.push(list);
-          seenIds.add(list.id);
-        }
-      });
-      
-      // Add legacy lists (avoid duplicates)
-      legacyLists.forEach(list => {
-        if (!seenIds.has(list.id)) {
-          allLists.push(list);
-          seenIds.add(list.id);
+      snapshot.docs.forEach(doc => {
+        if (!seenIds.has(doc.id)) {
+          const data = doc.data();
+          // Check if this list belongs to current user or has no user restriction
+          const belongsToUser = !data.userId ||
+                               data.userId === currentUser.uid ||
+                               data.creatorId === currentUser.uid ||
+                               data.userID === currentUser.uid ||
+                               data.user === currentUser.uid;
+          
+          if (belongsToUser) {
+            allLists.push({
+              id: doc.id,
+              ...data,
+              isCreator: true
+            });
+            seenIds.add(doc.id);
+          }
         }
       });
       
       callback(allLists);
-    };
+    });
     
-    return () => {
-      unsubscribeCreated();
-      unsubscribeLegacy();
-    };
+    return unsubscribe;
   } catch (error) {
     console.error('Error subscribing to shopping lists:', error);
     throw error;
