@@ -3,6 +3,28 @@
 @tailwind utilities;
 
 :root {
+  /* SafeArea environment variables for mobile devices */
+  --safe-area-inset-top: env(safe-area-inset-top, 0px);
+  --safe-area-inset-right: env(safe-area-inset-right, 0px);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-inset-left: env(safe-area-inset-left, 0px);
+  
+  /* Additional safe area variables for flexible usage */
+  --safe-area-top: max(env(safe-area-inset-top), 20px); /* Minimum 20px for status bar */
+  --safe-area-bottom: max(env(safe-area-inset-bottom), 0px);
+  --safe-area-left: env(safe-area-inset-left);
+  --safe-area-right: env(safe-area-inset-right);
+  
+  /* Header height accounting for safe area */
+  --header-height: calc(64px + var(--safe-area-inset-top));
+  --header-height-lg: calc(80px + var(--safe-area-inset-top));
+  
+  /* Content padding with safe areas */
+  --content-padding-top: var(--safe-area-inset-top);
+  --content-padding-bottom: var(--safe-area-inset-bottom);
+  --content-padding-left: var(--safe-area-inset-left);
+  --content-padding-right: var(--safe-area-inset-right);
+  
   /* Default Gruvbox Light Theme - Fallback values */
   --color-primary: 175 58 3; /* Gruvbox orange #af3a03 */
   --color-secondary: 121 116 14; /* Gruvbox green #79740e */
@@ -92,12 +114,24 @@ body {
   background-color: rgb(var(--color-background));
   color: rgb(var(--color-text));
   transition: background-color 0.3s ease, color 0.3s ease;
+  
+  /* SafeArea support - extend background to edges */
+  padding: var(--safe-area-inset-top) var(--safe-area-inset-right) var(--safe-area-inset-bottom) var(--safe-area-inset-left);
+  
+  /* Ensure full viewport coverage on mobile */
+  min-height: 100vh;
+  min-height: 100dvh; /* Dynamic viewport height for mobile browsers */
 }
 
 #root {
-  min-height: 100vh;
+  min-height: calc(100vh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom));
+  min-height: calc(100dvh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom));
   background-color: rgb(var(--color-background));
   color: rgb(var(--color-text));
+  
+  /* Remove body padding from content area */
+  margin: calc(-1 * var(--safe-area-inset-top)) calc(-1 * var(--safe-area-inset-right)) calc(-1 * var(--safe-area-inset-bottom)) calc(-1 * var(--safe-area-inset-left));
+  padding: 0;
 }
 
 /* Unified theme color utilities */
@@ -265,5 +299,131 @@ body {
   [data-theme="dark"] {
     --color-text: 255 255 255;
     --color-background: 0 0 0;
+  }
+}
+
+/* SafeArea utility classes */
+.safe-area-top {
+  padding-top: var(--safe-area-inset-top);
+}
+
+.safe-area-bottom {
+  padding-bottom: var(--safe-area-inset-bottom);
+}
+
+.safe-area-left {
+  padding-left: var(--safe-area-inset-left);
+}
+
+.safe-area-right {
+  padding-right: var(--safe-area-inset-right);
+}
+
+.safe-area-x {
+  padding-left: var(--safe-area-inset-left);
+  padding-right: var(--safe-area-inset-right);
+}
+
+.safe-area-y {
+  padding-top: var(--safe-area-inset-top);
+  padding-bottom: var(--safe-area-inset-bottom);
+}
+
+.safe-area-all {
+  padding: var(--safe-area-inset-top) var(--safe-area-inset-right) var(--safe-area-inset-bottom) var(--safe-area-inset-left);
+}
+
+/* Header-specific SafeArea classes */
+.header-safe-area {
+  padding-top: var(--safe-area-top);
+  min-height: var(--header-height);
+}
+
+.header-safe-area-lg {
+  padding-top: var(--safe-area-top);
+  min-height: var(--header-height-lg);
+}
+
+/* Content area with safe spacing */
+.content-safe-area {
+  padding-top: var(--content-padding-top);
+  padding-bottom: var(--content-padding-bottom);
+  padding-left: var(--content-padding-left);
+  padding-right: var(--content-padding-right);
+}
+
+/* Fixed positioning with SafeArea support */
+.fixed-top-safe {
+  position: fixed;
+  top: var(--safe-area-inset-top);
+  left: var(--safe-area-inset-left);
+  right: var(--safe-area-inset-right);
+  z-index: 1000;
+}
+
+.fixed-bottom-safe {
+  position: fixed;
+  bottom: var(--safe-area-inset-bottom);
+  left: var(--safe-area-inset-left);
+  right: var(--safe-area-inset-right);
+  z-index: 1000;
+}
+
+/* Margin utilities for SafeArea */
+.mt-safe {
+  margin-top: var(--safe-area-inset-top);
+}
+
+.mb-safe {
+  margin-bottom: var(--safe-area-inset-bottom);
+}
+
+.ml-safe {
+  margin-left: var(--safe-area-inset-left);
+}
+
+.mr-safe {
+  margin-right: var(--safe-area-inset-right);
+}
+
+/* Full viewport height accounting for safe areas */
+.min-h-screen-safe {
+  min-height: calc(100vh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom));
+  min-height: calc(100dvh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom));
+}
+
+.h-screen-safe {
+  height: calc(100vh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom));
+  height: calc(100dvh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom));
+}
+
+/* Mobile-specific optimizations */
+@media (max-width: 768px) {
+  /* Ensure touch targets are accessible on mobile */
+  .mobile-touch-safe {
+    padding-bottom: max(var(--safe-area-inset-bottom), 16px);
+  }
+  
+  /* Floating action buttons with safe area */
+  .fab-safe {
+    bottom: calc(var(--safe-area-inset-bottom) + 1rem);
+    right: calc(var(--safe-area-inset-right) + 1rem);
+  }
+  
+  /* Modal positioning with safe areas */
+  .modal-safe {
+    padding: var(--safe-area-inset-top) var(--safe-area-inset-right) var(--safe-area-inset-bottom) var(--safe-area-inset-left);
+  }
+}
+
+/* Landscape orientation adjustments */
+@media (orientation: landscape) and (max-height: 500px) {
+  /* Reduce header height in landscape on small screens */
+  .header-safe-area {
+    min-height: calc(48px + var(--safe-area-inset-top));
+  }
+  
+  .header-safe-area-lg {
+    min-height: calc(56px + var(--safe-area-inset-top));
   }
 }

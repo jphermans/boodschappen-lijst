@@ -502,7 +502,7 @@ function App() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[rgb(var(--bg-color))]">
+      <div className="min-h-screen-safe flex items-center justify-center bg-[rgb(var(--bg-color))] safe-area-all">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
           <p className="text-[rgb(var(--text-color))]/80">
@@ -525,10 +525,10 @@ function App() {
   const isOffline = !isConnected;
 
   return (
-    <div className="min-h-screen bg-[rgb(var(--bg-color))] transition-colors duration-300">
+    <div className="min-h-screen-safe bg-[rgb(var(--bg-color))] transition-colors duration-300">
       {/* Desktop Navigation Bar */}
-      <header className="bg-[rgb(var(--card-bg))] shadow-sm border-b border-[rgb(var(--border-color))]/20">
-        <div className="max-w-[1920px] mx-auto px-4 lg:px-8 xl:px-12">
+      <header className="fixed-top-safe bg-[rgb(var(--card-bg))] shadow-sm border-b border-[rgb(var(--border-color))]/20 header-safe-area">
+        <div className="max-w-[1920px] mx-auto px-4 lg:px-8 xl:px-12 safe-area-x">
           <div className="flex items-center justify-between h-16 lg:h-20">
             {/* Logo and Brand */}
             <div className="flex items-center space-x-3 lg:space-x-4">
@@ -620,7 +620,7 @@ function App() {
       </header>
 
       {/* Main Content Area */}
-      <main className="max-w-[1920px] mx-auto px-4 lg:px-8 xl:px-12 py-6 lg:py-8 xl:py-12">
+      <main className="max-w-[1920px] mx-auto px-4 lg:px-8 xl:px-12 py-6 lg:py-8 xl:py-12 safe-area-x content-safe-area" style={{ paddingTop: 'calc(var(--header-height) + 1.5rem)' }}>
         {!selectedList ? (
           <div className="lg:flex lg:space-x-8 xl:space-x-12">
             {/* Main Content Area */}
@@ -996,7 +996,7 @@ function App() {
       </main>
 
       {isOffline && (
-        <div className="fixed bottom-20 right-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-2 rounded-lg shadow-lg flex items-center space-x-2">
+        <div className="fixed bottom-20 right-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-2 rounded-lg shadow-lg flex items-center space-x-2 mobile-touch-safe mr-safe">
           <Wifi className="w-4 h-4" />
           <span className="text-sm">Offline mode</span>
         </div>
@@ -1004,7 +1004,7 @@ function App() {
 
       {/* Floating QR Scanner Button for Mobile */}
       {!selectedList && lists.length > 0 && (
-        <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 lg:hidden">
+        <div className="fixed lg:hidden fab-safe">
           <button
             onClick={() => setShowScanner(true)}
             className="flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-secondary to-accent hover:opacity-90 text-white rounded-full shadow-xl hover:shadow-2xl transform hover:scale-110 transition-all duration-200"
