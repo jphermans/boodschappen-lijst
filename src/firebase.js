@@ -382,10 +382,22 @@ service cloud.firestore {
         && request.resource.data.items is list
         && request.resource.data.sharedWith is list;
       
-      // Users can update lists they created or are shared with
+      // Users can update lists they created, are shared with, OR are adding themselves via QR sharing
       allow update: if request.auth != null
-        && (resource.data.creatorId == request.auth.uid
-            || request.auth.uid in resource.data.sharedWith)
+        && (
+          // Creator can always update
+          resource.data.creatorId == request.auth.uid
+          // Users already shared with can update
+          || request.auth.uid in resource.data.sharedWith
+          // QR sharing: allow users to add themselves to sharedWith array
+          || (
+            request.auth.uid in request.resource.data.sharedWith
+            && !(request.auth.uid in resource.data.sharedWith)
+            && request.resource.data.creatorId == resource.data.creatorId
+            && request.resource.data.name == resource.data.name
+            && request.resource.data.items == resource.data.items
+          )
+        )
         && request.resource.data.creatorId == resource.data.creatorId; // Prevent changing creator
       
       // Only the creator can delete lists
