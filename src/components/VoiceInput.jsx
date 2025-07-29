@@ -15,6 +15,7 @@ const VoiceInput = ({
   const { error: showError, success } = useToast();
   const [hasPermission, setHasPermission] = useState(null);
   const [permissionChecked, setPermissionChecked] = useState(false);
+  const [showPermissionHelp, setShowPermissionHelp] = useState(true);
 
   // Check microphone permission
   useEffect(() => {
@@ -29,11 +30,27 @@ const VoiceInput = ({
             setHasPermission(isGranted);
             setPermissionChecked(true);
             
+            // If permission is already granted, hide help text after a short delay
+            if (isGranted) {
+              setTimeout(() => {
+                setShowPermissionHelp(false);
+              }, 2000);
+            }
+            
             // Set up permission change listener
             result.onchange = () => {
               const newState = result.state === 'granted';
               setHasPermission(newState);
               console.log('Permission changed:', result.state);
+              
+              // Hide help text when permission is granted
+              if (newState) {
+                setTimeout(() => {
+                  setShowPermissionHelp(false);
+                }, 2000);
+              } else {
+                setShowPermissionHelp(true);
+              }
             };
             
             return; // Exit early if permissions API worked
@@ -54,15 +71,22 @@ const VoiceInput = ({
           stream.getTracks().forEach(track => track.stop());
           setHasPermission(true);
           setPermissionChecked(true);
+          
+          // Hide help text since permission is already granted
+          setTimeout(() => {
+            setShowPermissionHelp(false);
+          }, 2000);
         } catch (mediaErr) {
           // If getUserMedia fails, permission is likely not granted
           setHasPermission(false);
           setPermissionChecked(true);
+          setShowPermissionHelp(true);
         }
       } catch (err) {
         console.error('Permission check failed:', err);
         setHasPermission(false);
         setPermissionChecked(true);
+        setShowPermissionHelp(true);
       }
     };
     
@@ -146,13 +170,16 @@ const VoiceInput = ({
       
       // Only show success message if permission was previously denied or unknown
       if (hasPermission !== true) {
-        success('Microfoon toegang verleend! 🎤', 2000);
+        success('Microfoon toegang verleend! Klik nogmaals om te beginnen. 🎤', 2000);
+        
+        // Hide permission help text after 2 seconds
+        setTimeout(() => {
+          setShowPermissionHelp(false);
+        }, 2000);
       }
       
-      // Start listening immediately after permission granted
-      setTimeout(() => {
-        startListening();
-      }, 100);
+      // DON'T auto-start listening - let user click again to start
+      // This prevents the popup from persisting
     } catch (err) {
       setHasPermission(false);
       setPermissionChecked(true);
@@ -307,7 +334,7 @@ const VoiceInput = ({
 
       {/* Help text for users - only show when not listening and permission issues exist */}
       <AnimatePresence>
-        {!isListening && permissionChecked && hasPermission === null && (
+        {!isListening && permissionChecked && hasPermission === null && showPermissionHelp && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -322,7 +349,7 @@ const VoiceInput = ({
             </div>
           </motion.div>
         )}
-        {!isListening && permissionChecked && hasPermission === false && (
+        {!isListening && permissionChecked && hasPermission === false && showPermissionHelp && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
