@@ -664,17 +664,17 @@ function App() {
                       </button>
                       
                       {/* Secondary Actions */}
-                      <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 lg:gap-3">
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-3">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             handleShare(list.id);
                           }}
-                          className="flex items-center justify-center px-3 py-2.5 lg:py-3 bg-gradient-to-r from-accent to-secondary hover:from-accent/90 hover:to-secondary/90 text-white rounded-lg lg:rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 font-medium text-sm lg:text-base"
+                          className="w-full flex items-center justify-center px-4 py-2.5 lg:py-3 bg-gradient-to-r from-accent to-secondary hover:from-accent/90 hover:to-secondary/90 text-white rounded-lg lg:rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 font-medium text-sm lg:text-base"
                           title="Delen"
                         >
                           <Share2 className="w-4 h-4 lg:w-5 lg:h-5 mr-2" />
-                          <span className="hidden lg:inline">Delen</span>
+                          <span>Delen</span>
                         </button>
                         
                         {list.isCreator && (
@@ -683,11 +683,11 @@ function App() {
                               e.stopPropagation();
                               handleUserManagement(list.id);
                             }}
-                            className="flex items-center justify-center px-3 py-2.5 lg:py-3 bg-gradient-to-r from-blue-500 to-purple-500 hover:opacity-90 text-white rounded-lg lg:rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 font-medium text-sm lg:text-base"
+                            className="w-full flex items-center justify-center px-4 py-2.5 lg:py-3 bg-gradient-to-r from-blue-500 to-purple-500 hover:opacity-90 text-white rounded-lg lg:rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 font-medium text-sm lg:text-base"
                             title="Gebruikers beheren"
                           >
                             <Users className="w-4 h-4 lg:w-5 lg:h-5 mr-2" />
-                            <span className="hidden lg:inline">Gebruikers</span>
+                            <span>Gebruikers</span>
                           </button>
                         )}
                         
@@ -697,11 +697,11 @@ function App() {
                               e.stopPropagation();
                               deleteList(list.id);
                             }}
-                            className="flex items-center justify-center px-3 py-2.5 lg:py-3 bg-accent hover:opacity-90 text-white rounded-lg lg:rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 font-medium text-sm lg:text-base"
+                            className="w-full flex items-center justify-center px-4 py-2.5 lg:py-3 bg-accent hover:opacity-90 text-white rounded-lg lg:rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 font-medium text-sm lg:text-base"
                             title="Verwijderen"
                           >
                             <Trash2 className="w-4 h-4 lg:w-5 lg:h-5 mr-2" />
-                            <span className="hidden lg:inline">Verwijderen</span>
+                            <span>Verwijderen</span>
                           </button>
                         )}
                       </div>
