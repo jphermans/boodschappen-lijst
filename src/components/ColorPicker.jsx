@@ -155,7 +155,7 @@ export default function ColorPicker({ isOpen, onClose }) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-start justify-center p-4 overflow-y-auto"
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center p-4"
         onClick={onClose}
       >
         <motion.div
@@ -163,104 +163,87 @@ export default function ColorPicker({ isOpen, onClose }) {
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
           onClick={(e) => e.stopPropagation()}
-          className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-4xl w-full my-8 flex flex-col max-h-[calc(100vh-4rem)]"
+          className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col"
         >
           {/* Fixed Header */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+          <div className="flex-shrink-0 flex items-center justify-between p-4 lg:p-6 border-b border-gray-200 dark:border-gray-700">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              <h2 className="text-xl lg:text-2xl font-bold text-gray-900 dark:text-gray-100">
                 Thema Aanpassen
               </h2>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                Huidige modus: {currentMode === 'light' ? 'Licht' : 'Donker'} •
-                Palet: {currentPalette}
+                Huidige modus: {currentMode === 'light' ? 'Licht' : 'Donker'} • Palet: {currentPalette}
               </p>
             </div>
             
-            <div className="flex items-center space-x-3">
-              {/* Mode toggle */}
-              <button
-                onClick={toggleMode}
-                disabled={isChangingPalette}
-                className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors disabled:opacity-50"
-              >
-                {currentMode === 'light' ? '🌙' : '☀️'}
-              </button>
-              
-              {/* Close button */}
-              <button
-                onClick={onClose}
-                className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors z-10 touch-manipulation"
-              >
-                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
+            {/* Mode toggle */}
+            <button
+              onClick={toggleMode}
+              disabled={isChangingPalette}
+              className="px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 text-lg"
+            >
+              {currentMode === 'light' ? '🌙' : '☀️'}
+            </button>
           </div>
 
           {/* Scrollable Content */}
-          <div className="flex flex-1 overflow-hidden">
-            {/* Sidebar */}
-            {/* Simplified single content area */}
-            <div className="flex-1 p-4 overflow-y-auto overscroll-contain">
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                    🎨 Kleurpaletten
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {availablePalettes.map(palette => (
-                      <PalettePreview
-                        key={palette.key}
-                        palette={palette}
-                        isActive={currentPalette === palette.name}
-                        onClick={handlePaletteChange}
-                        disabled={isChangingPalette}
-                      />
-                    ))}
-                  </div>
+          <div className="flex-1 overflow-y-auto p-4 lg:p-6">
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                  🎨 Kleurpaletten
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {availablePalettes.map(palette => (
+                    <PalettePreview
+                      key={palette.key}
+                      palette={palette}
+                      isActive={currentPalette === palette.name}
+                      onClick={handlePaletteChange}
+                      disabled={isChangingPalette}
+                    />
+                  ))}
                 </div>
+              </div>
 
-                {/* Reset theme section */}
-                <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                  <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2">
-                    ⚙️ Thema Resetten
-                  </h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                    Reset terug naar het standaard Gruvbox thema.
-                  </p>
-                  <button
-                    onClick={handleResetTheme}
-                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-                  >
-                    Thema Resetten
-                  </button>
-                </div>
+              {/* Reset theme section */}
+              <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2">
+                  ⚙️ Thema Resetten
+                </h4>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                  Reset terug naar het standaard Gruvbox thema.
+                </p>
+                <button
+                  onClick={handleResetTheme}
+                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                >
+                  Thema Resetten
+                </button>
+              </div>
 
-                {/* Theme info */}
-                <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                  <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2">
-                    ℹ️ Thema Informatie
-                  </h4>
-                  <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                    <p>Huidige modus: {currentMode === 'light' ? 'Licht' : 'Donker'}</p>
-                    <p>Actief palet: {currentPalette}</p>
-                  </div>
+              {/* Theme info */}
+              <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 mb-6">
+                <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2">
+                  ℹ️ Thema Informatie
+                </h4>
+                <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                  <p>Huidige modus: {currentMode === 'light' ? 'Licht' : 'Donker'}</p>
+                  <p>Actief palet: {currentPalette}</p>
                 </div>
               </div>
             </div>
           </div>
           
-          {/* Footer */}
-          <div className="flex-shrink-0 border-t border-[rgb(var(--border-color))]/50 p-6">
-            <div className="flex items-center justify-between">
-              <div className="text-sm text-[rgb(var(--text-color))]/60">
+          {/* Fixed Footer with Close Button */}
+          <div className="flex-shrink-0 border-t border-gray-200 dark:border-gray-700 p-4 lg:p-6 bg-gray-50 dark:bg-gray-900/50">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div className="text-sm text-gray-500 dark:text-gray-400 text-center sm:text-left">
                 Wijzigingen worden automatisch opgeslagen
               </div>
               <button
                 onClick={onClose}
-                className="px-4 py-2 bg-primary hover:opacity-90 text-white rounded-lg transition-colors"
+                className="w-full sm:w-auto px-6 py-3 bg-primary hover:opacity-90 text-white rounded-lg transition-colors font-medium text-base touch-manipulation min-h-[48px] flex items-center justify-center"
               >
                 Sluiten
               </button>

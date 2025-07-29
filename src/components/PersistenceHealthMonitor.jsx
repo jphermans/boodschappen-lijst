@@ -81,22 +81,22 @@ const PersistenceHealthMonitor = ({ onClose }) => {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-start justify-center z-50 p-4 overflow-y-auto" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
-        className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-2xl max-w-2xl w-full my-8 flex flex-col max-h-[calc(100vh-4rem)]"
+        className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Fixed Header */}
-        <div className="flex items-center justify-between p-4 border-b border-[rgb(var(--border-color))]/20 flex-shrink-0">
+        <div className="flex items-center justify-between p-4 lg:p-6 border-b border-[rgb(var(--border-color))]/20 flex-shrink-0">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center">
               <Database className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-[rgb(var(--card-text))]">
+              <h2 className="text-xl lg:text-2xl font-bold text-[rgb(var(--card-text))]">
                 Persistentie Monitor
               </h2>
               <p className="text-sm text-[rgb(var(--text-color))]/60">
@@ -113,7 +113,7 @@ const PersistenceHealthMonitor = ({ onClose }) => {
         </div>
 
         {/* Scrollable Content */}
-        <div className="p-4 overflow-y-auto flex-1 overscroll-contain">
+        <div className="p-4 lg:p-6 overflow-y-auto flex-1 overscroll-contain">
           {/* Storage Health Overview */}
           <div className="mb-6">
             <h3 className="text-lg font-semibold text-[rgb(var(--card-text))] mb-4 flex items-center">
@@ -327,22 +327,33 @@ const PersistenceHealthMonitor = ({ onClose }) => {
           </AnimatePresence>
         </div>
 
-        {/* Fixed Footer */}
-        <div className="flex items-center justify-between p-4 border-t border-[rgb(var(--border-color))]/20 flex-shrink-0">
-          <div className="text-sm text-[rgb(var(--text-color))]/60">
-            Laatste sync: {healthInfo?.lastSyncTime
-              ? new Date(healthInfo.lastSyncTime).toLocaleTimeString('nl-NL')
-              : 'Nooit'
-            }
+        {/* Fixed Footer with Close Button */}
+        <div className="flex-shrink-0 border-t border-[rgb(var(--border-color))]/20 p-4 lg:p-6 bg-[rgb(var(--card-bg))]/95 backdrop-blur-sm">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mb-3">
+            <div className="text-sm text-[rgb(var(--text-color))]/60 text-center sm:text-left">
+              Laatste sync: {healthInfo?.lastSyncTime
+                ? new Date(healthInfo.lastSyncTime).toLocaleTimeString('nl-NL')
+                : 'Nooit'
+              }
+            </div>
+            <button
+              onClick={refreshHealthInfo}
+              disabled={isLoading}
+              className="flex items-center px-4 py-2 text-primary hover:bg-primary/10 rounded-lg transition-colors"
+            >
+              <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+              Vernieuwen
+            </button>
           </div>
-          <button
-            onClick={refreshHealthInfo}
-            disabled={isLoading}
-            className="flex items-center px-4 py-2 text-primary hover:bg-primary/10 rounded-lg transition-colors"
-          >
-            <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-            Vernieuwen
-          </button>
+          
+          <div className="flex justify-center">
+            <button
+              onClick={onClose}
+              className="w-full sm:w-auto px-6 py-3 bg-primary hover:opacity-90 text-white rounded-lg transition-colors font-medium text-base touch-manipulation min-h-[48px] flex items-center justify-center"
+            >
+              Sluiten
+            </button>
+          </div>
         </div>
       </motion.div>
     </div>

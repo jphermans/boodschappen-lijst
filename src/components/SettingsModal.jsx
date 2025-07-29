@@ -49,19 +49,19 @@ const SettingsModal = ({ lists = [], onClose }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center p-4 z-50 overflow-y-auto"
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
       onClick={onClose}
     >
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-[rgb(var(--card-bg))] rounded-lg shadow-xl max-w-md w-full my-8 flex flex-col max-h-[calc(100vh-4rem)]"
+        className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Fixed Header */}
-        <div className="flex items-center justify-between p-4 border-b border-[rgb(var(--border-color))]/50 flex-shrink-0">
-          <h2 className="text-xl font-semibold text-[rgb(var(--card-text))]">
+        <div className="flex items-center justify-between p-4 lg:p-6 border-b border-[rgb(var(--border-color))]/50 flex-shrink-0">
+          <h2 className="text-xl lg:text-2xl font-semibold text-[rgb(var(--card-text))]">
             Instellingen
           </h2>
           <button
@@ -73,7 +73,7 @@ const SettingsModal = ({ lists = [], onClose }) => {
         </div>
 
         {/* Scrollable Content */}
-        <div className="p-4 space-y-6 overflow-y-auto flex-1 overscroll-contain">
+        <div className="p-4 lg:p-6 space-y-6 overflow-y-auto flex-1 overscroll-contain">
           <div>
             <h3 className="text-lg font-medium text-[rgb(var(--card-text))] mb-3">
               Thema
@@ -298,6 +298,21 @@ const SettingsModal = ({ lists = [], onClose }) => {
                 )}
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Fixed Footer with Close Button */}
+        <div className="flex-shrink-0 border-t border-[rgb(var(--border-color))]/50 p-4 lg:p-6 bg-[rgb(var(--card-bg))]/95 backdrop-blur-sm">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="text-sm text-[rgb(var(--text-color))]/60 text-center sm:text-left">
+              Instellingen worden automatisch opgeslagen
+            </div>
+            <button
+              onClick={onClose}
+              className="w-full sm:w-auto px-6 py-3 bg-primary hover:opacity-90 text-white rounded-lg transition-colors font-medium text-base touch-manipulation min-h-[48px] flex items-center justify-center"
+            >
+              Sluiten
+            </button>
           </div>
         </div>
       </motion.div>
