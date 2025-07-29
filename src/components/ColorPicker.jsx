@@ -314,7 +314,7 @@ export default function ColorPicker({ isOpen, onClose }) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center p-4"
         onClick={onClose}
       >
         <motion.div
@@ -322,16 +322,16 @@ export default function ColorPicker({ isOpen, onClose }) {
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
           onClick={(e) => e.stopPropagation()}
-          className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden"
+          className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col"
         >
-          {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+          {/* Fixed Header */}
+          <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
             <div>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                 Thema Aanpassen
               </h2>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                Huidige modus: {currentMode === 'light' ? 'Licht' : 'Donker'} • 
+                Huidige modus: {currentMode === 'light' ? 'Licht' : 'Donker'} •
                 Palet: {currentPalette}
               </p>
             </div>
@@ -349,7 +349,7 @@ export default function ColorPicker({ isOpen, onClose }) {
               {/* Close button */}
               <button
                 onClick={onClose}
-                className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors z-10"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -358,10 +358,10 @@ export default function ColorPicker({ isOpen, onClose }) {
             </div>
           </div>
 
-          {/* Content */}
-          <div className="flex h-[calc(90vh-120px)]">
+          {/* Scrollable Content */}
+          <div className="flex flex-1 overflow-hidden">
             {/* Sidebar */}
-            <div className="w-64 border-r border-gray-200 dark:border-gray-700 p-4">
+            <div className="w-64 border-r border-gray-200 dark:border-gray-700 p-4 flex-shrink-0">
               <nav className="space-y-2">
                 {[
                   { key: 'palettes', label: 'Kleurpaletten', icon: '🎨' },
@@ -580,6 +580,19 @@ export default function ColorPicker({ isOpen, onClose }) {
                 </div>
               )}
             </div>
+          </div>
+          
+          {/* Footer with Apply/Save button */}
+          <div className="flex items-center justify-between p-6 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              Wijzigingen worden automatisch opgeslagen
+            </div>
+            <button
+              onClick={onClose}
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            >
+              Sluiten
+            </button>
           </div>
         </motion.div>
       </motion.div>
