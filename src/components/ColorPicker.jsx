@@ -1,181 +1,10 @@
 // Color picker component for unified theme customization
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useUnifiedTheme, useColorAccessibility, useCustomColors } from '../hooks/useUnifiedTheme';
-import { colorUtils } from '../utils/colorManager';
-
-// Individual color input component
-function ColorInput({ 
-  label, 
-  colorKey, 
-  value, 
-  onChange, 
-  onValidation,
-  disabled = false,
-  showAccessibility = true 
-}) {
-  const [inputValue, setInputValue] = useState(value || '#6b7280');
-  const [isValid, setIsValid] = useState(true);
-  const [validation, setValidation] = useState(null);
-  const { validateColor, getContrastRatio } = useColorAccessibility();
-  const inputRef = useRef(null);
-
-  // Update input when value changes externally
-  useEffect(() => {
-    if (value && value !== inputValue) {
-      setInputValue(value);
-    }
-  }, [value]);
-
-  // Validate color on change
-  useEffect(() => {
-    const validateCurrentColor = async () => {
-      if (!inputValue || inputValue.length < 7) {
-        setIsValid(false);
-        setValidation(null);
-        return;
-      }
-
-      try {
-        const result = validateColor(colorKey, inputValue);
-        setIsValid(result.valid);
-        setValidation(result);
-        
-        if (onValidation) {
-          onValidation(colorKey, result);
-        }
-      } catch (error) {
-        console.error('Color validation error:', error);
-        setIsValid(false);
-        setValidation({ valid: false, reason: 'Validation error' });
-      }
-    };
-
-    const debounceTimer = setTimeout(validateCurrentColor, 300);
-    return () => clearTimeout(debounceTimer);
-  }, [inputValue, colorKey, validateColor, onValidation]);
-
-  const handleInputChange = useCallback((e) => {
-    const newValue = e.target.value;
-    setInputValue(newValue);
-    
-    if (newValue.length === 7 && newValue.startsWith('#')) {
-      onChange(colorKey, newValue);
-    }
-  }, [colorKey, onChange]);
-
-  const handleColorPickerChange = useCallback((e) => {
-    const newValue = e.target.value;
-    setInputValue(newValue);
-    onChange(colorKey, newValue);
-  }, [colorKey, onChange]);
-
-  const getAccessibilityIcon = () => {
-    if (!validation || !showAccessibility) return null;
-    
-    if (validation.valid) {
-      return (
-        <div className="flex items-center text-green-600 dark:text-green-400">
-          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-          </svg>
-        </div>
-      );
-    } else {
-      return (
-        <div className="flex items-center text-red-600 dark:text-red-400" title={validation.reason}>
-          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-          </svg>
-        </div>
-      );
-    }
-  };
-
-  return (
-    <div className="space-y-2">
-      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-        {label}
-      </label>
-      
-      <div className="flex items-center space-x-3">
-        {/* Color preview and picker */}
-        <div className="relative">
-          <input
-            type="color"
-            value={inputValue}
-            onChange={handleColorPickerChange}
-            disabled={disabled}
-            className="w-10 h-10 rounded-lg border-2 border-gray-300 dark:border-gray-600 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
-            title="Klik om kleur te kiezen"
-          />
-          <div 
-            className="absolute inset-0 rounded-lg border-2 pointer-events-none"
-            style={{ 
-              borderColor: isValid ? 'transparent' : '#ef4444',
-              backgroundColor: inputValue 
-            }}
-          />
-        </div>
-
-        {/* Hex input */}
-        <div className="flex-1">
-          <input
-            ref={inputRef}
-            type="text"
-            value={inputValue}
-            onChange={handleInputChange}
-            disabled={disabled}
-            placeholder="#6b7280"
-            className={`w-full px-3 py-2 border rounded-lg font-mono text-sm
-              ${isValid 
-                ? 'border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400' 
-                : 'border-red-500 dark:border-red-400'
-              }
-              bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
-              focus:outline-none focus:ring-2 focus:ring-blue-500/20
-              disabled:opacity-50 disabled:cursor-not-allowed
-            `}
-          />
-        </div>
-
-        {/* Accessibility indicator */}
-        {getAccessibilityIcon()}
-      </div>
-
-      {/* Validation message */}
-      <AnimatePresence>
-        {validation && !validation.valid && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="text-sm text-red-600 dark:text-red-400"
-          >
-            {validation.reason}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Contrast information */}
-      {validation && validation.valid && validation.contrastRatio && showAccessibility && (
-        <div className="text-xs text-gray-500 dark:text-gray-400">
-          Contrast: {validation.contrastRatio.toFixed(2)}:1
-          {validation.meetsAA && (
-            <span className="ml-2 text-green-600 dark:text-green-400">✓ AA</span>
-          )}
-          {validation.meetsAAA && (
-            <span className="ml-1 text-green-600 dark:text-green-400">✓ AAA</span>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
 
 // Color palette preview component
 function PalettePreview({ palette, isActive, onClick, disabled = false }) {
-  const colorKeys = ['primary', 'secondary', 'accent', 'background', 'surface'];
+  const colorKeys = ['primary', 'secondary', 'accent'];
   
   return (
     <motion.button
@@ -185,8 +14,8 @@ function PalettePreview({ palette, isActive, onClick, disabled = false }) {
       whileTap={!disabled ? { scale: 0.98 } : {}}
       className={`
         relative p-4 rounded-xl border-2 transition-all duration-200
-        ${isActive 
-          ? 'border-blue-500 dark:border-blue-400 bg-blue-50 dark:bg-blue-900/20' 
+        ${isActive
+          ? 'border-blue-500 dark:border-blue-400 bg-blue-50 dark:bg-blue-900/20'
           : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
         }
         ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
@@ -204,7 +33,7 @@ function PalettePreview({ palette, isActive, onClick, disabled = false }) {
           return (
             <div
               key={colorKey}
-              className="w-6 h-6 rounded-md border border-gray-300 dark:border-gray-600"
+              className="w-8 h-8 rounded-md border border-gray-300 dark:border-gray-600"
               style={{ backgroundColor: color }}
               title={`${colorKey}: ${color}`}
             />
@@ -352,7 +181,7 @@ export default function ColorPicker({ isOpen, onClose }) {
               {/* Mode toggle */}
               <button
                 onClick={toggleMode}
-                disabled={isLoading}
+                disabled={isChangingPalette}
                 className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors disabled:opacity-50"
               >
                 {currentMode === 'light' ? '🌙' : '☀️'}
@@ -423,17 +252,19 @@ export default function ColorPicker({ isOpen, onClose }) {
             </div>
           </div>
           
-          {/* Footer with Apply/Save button */}
-          <div className="flex items-center justify-between p-4 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
-            <div className="text-sm text-gray-500 dark:text-gray-400">
-              Wijzigingen worden automatisch opgeslagen
+          {/* Footer */}
+          <div className="flex-shrink-0 border-t border-[rgb(var(--border-color))]/50 p-6">
+            <div className="flex items-center justify-between">
+              <div className="text-sm text-[rgb(var(--text-color))]/60">
+                Wijzigingen worden automatisch opgeslagen
+              </div>
+              <button
+                onClick={onClose}
+                className="px-4 py-2 bg-primary hover:opacity-90 text-white rounded-lg transition-colors"
+              >
+                Sluiten
+              </button>
             </div>
-            <button
-              onClick={onClose}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-            >
-              Sluiten
-            </button>
           </div>
         </motion.div>
       </motion.div>
