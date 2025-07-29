@@ -238,18 +238,46 @@ const removeUserFromList = async (listId, userIdToRemove) => {
 const getListById = async (listId) => {
   try {
     if (!db) throw new Error('Firebase not initialized');
+    if (!currentUser) throw new Error('User not authenticated');
+    
+    console.log('Getting list by ID:', listId, 'for user:', currentUser.uid);
+    
     const listDoc = await getDoc(doc(db, 'shoppingLists', listId));
     if (listDoc.exists()) {
       const data = listDoc.data();
+      console.log('List data retrieved:', {
+        id: listDoc.id,
+        name: data.name,
+        creatorId: data.creatorId,
+        deviceUID: data.deviceUID,
+        sharedWith: data.sharedWith,
+        currentUser: currentUser.uid
+      });
+      
       return {
         id: listDoc.id,
         ...data,
-        isCreator: data.deviceUID === currentUser?.uid
+        isCreator: (data.deviceUID === currentUser?.uid) || (data.creatorId === currentUser?.uid)
       };
+    } else {
+      console.log('List document does not exist for ID:', listId);
+      return null;
     }
-    return null;
   } catch (error) {
     console.error('Error getting list by ID:', error);
+    
+    // If it's a permission error, it might be because the user doesn't have access yet
+    // This is expected when scanning QR codes for lists they haven't been shared with
+    if (error.code === 'permission-denied') {
+      console.log('Permission denied - this is expected for QR scanning of unshared lists');
+      // Return a special object indicating permission denied but list might exist
+      return {
+        permissionDenied: true,
+        listId: listId,
+        error: 'permission-denied'
+      };
+    }
+    
     throw error;
   }
 };

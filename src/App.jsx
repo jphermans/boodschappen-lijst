@@ -312,6 +312,44 @@ function App() {
       const sharedList = await getListById(listId);
       console.log('📋 Retrieved list:', sharedList);
       
+      // Handle permission denied case (expected for QR scanning)
+      if (sharedList && sharedList.permissionDenied) {
+        console.log('🔍 Step 3a: Permission denied - attempting to share list anyway...');
+        
+        // Check if user already has access to this list
+        const currentUserId = getCurrentUserID();
+        console.log('👤 Current user ID:', currentUserId);
+        console.log('📋 Current lists count:', lists.length);
+        console.log('📋 Current list IDs:', lists.map(l => l.id));
+        
+        const alreadyHasAccess = lists.some(list => list.id === listId);
+        console.log('🔐 Already has access:', alreadyHasAccess);
+        
+        if (alreadyHasAccess) {
+          console.log('ℹ️ User already has access to this list');
+          info('Je hebt al toegang tot deze lijst');
+          return;
+        }
+        
+        // Try to share the list directly (this might work if the list exists)
+        console.log('🔍 Step 4: Attempting to share list with permission denied...');
+        try {
+          await shareListWithUser(listId, currentUserId);
+          console.log('✅ List shared successfully despite initial permission denial!');
+          success('Lijst succesvol gedeeld! 🎉');
+          info('De lijst verschijnt nu in je overzicht', 3000);
+          return;
+        } catch (shareError) {
+          console.error('❌ Failed to share list:', shareError);
+          if (shareError.code === 'not-found') {
+            error('Lijst niet gevonden. De QR-code is mogelijk verlopen.');
+          } else {
+            error('Geen toegang tot deze lijst. Controleer of de lijst nog bestaat.');
+          }
+          return;
+        }
+      }
+      
       if (!sharedList) {
         console.error('❌ List not found in Firebase for ID:', listId);
         error('Gedeelde lijst niet gevonden of niet toegankelijk');
