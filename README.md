@@ -142,12 +142,20 @@ Voor automatische deployment naar GitHub Pages met Firebase secrets:
 1. **Delen**: Klik "Delen" knop op lijst
 2. **QR-code**: Toon QR-code aan ander apparaat
 3. **Link kopiëren**: Klik "Link kopiëren" voor delen via bericht
+4. **Cross-device toegang**: Anderen krijgen automatisch toegang wanneer ze de link openen
 
 ### 📷 **QR-code scannen**
 1. **Scanner openen**: Klik QR icoon in header
 2. **Camera gebruiken**: Richt camera op QR-code
 3. **Handmatig invoeren**: Typ code in tekstveld
 4. **Bestand uploaden**: Upload QR-code afbeelding
+5. **Automatische toegang**: Lijst wordt automatisch toegevoegd aan je account
+
+### 🔗 **Link delen tussen apparaten**
+1. **Deel link**: Kopieer de deellink en stuur naar ander apparaat
+2. **Open link**: Open de link op het andere apparaat
+3. **Automatische toegang**: De lijst wordt automatisch gedeeld met het nieuwe apparaat
+4. **Realtime sync**: Wijzigingen zijn direct zichtbaar op alle apparaten
 
 ## ⚙️ Scripts
 

@@ -29,6 +29,55 @@ function App() {
   const [firebaseError, setFirebaseError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Handle shared list URLs
+  const handleSharedListFromURL = async (currentLists = lists) => {
+    const hash = window.location.hash;
+    const sharedMatch = hash.match(/^#\/shared\/(.+)$/);
+    
+    if (sharedMatch) {
+      const listId = sharedMatch[1];
+      console.log('Found shared list ID in URL:', listId);
+      
+      try {
+        // Get the shared list
+        const sharedList = await getListById(listId);
+        
+        if (!sharedList) {
+          error('Gedeelde lijst niet gevonden of niet toegankelijk');
+          // Clear the hash
+          window.location.hash = '';
+          return;
+        }
+        
+        // Check if user already has access to this list
+        const currentUserId = getCurrentUserID();
+        const alreadyHasAccess = currentLists.some(list => list.id === listId);
+        
+        if (alreadyHasAccess) {
+          info(`Je hebt al toegang tot lijst "${sharedList.name}"`);
+          // Clear the hash
+          window.location.hash = '';
+          return;
+        }
+        
+        // Share the list with the current user
+        await shareListWithUser(listId, currentUserId);
+        
+        success(`Lijst "${sharedList.name}" is gedeeld met jou! 🎉`);
+        info('De lijst verschijnt nu in je overzicht', 3000);
+        
+        // Clear the hash
+        window.location.hash = '';
+        
+      } catch (err) {
+        console.error('Error processing shared list from URL:', err);
+        error('Fout bij verwerken van gedeelde lijst');
+        // Clear the hash
+        window.location.hash = '';
+      }
+    }
+  };
+
   useEffect(() => {
     const initAuth = async () => {
       try {
@@ -53,6 +102,11 @@ function App() {
                 setLists(firebaseLists);
               });
               
+              // Check for shared list in URL hash after lists are loaded
+              setTimeout(() => {
+                handleSharedListFromURL(initialLists);
+              }, 500);
+              
               return () => unsubscribe();
             }
           } catch (error) {
@@ -71,6 +125,19 @@ function App() {
 
     initAuth();
   }, []);
+
+  // Listen for hash changes (when someone navigates to a shared link)
+  useEffect(() => {
+    const handleHashChange = () => {
+      if (!isLoading && !firebaseError) {
+        handleSharedListFromURL(lists);
+      }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, [isLoading, firebaseError, lists]);
+
 
   const retryConnection = () => {
     setIsLoading(true);

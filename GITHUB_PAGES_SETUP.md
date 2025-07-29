@@ -163,6 +163,28 @@ Na succesvolle deployment:
 4. Voeg toe: `jouwusername.github.io`
 5. Klik "Add"
 
+### Cross-Device Sharing Problemen
+
+**Probleem:** Gedeelde lijst is niet zichtbaar op ander apparaat
+
+**Mogelijke oorzaken:**
+- ❌ URL routing werkt niet correct
+- ❌ Firestore security rules blokkeren toegang
+- ❌ Anonymous authentication problemen
+
+**Oplossingen:**
+1. **Controleer URL format**: Zorg dat de gedeelde link het format `#/shared/listId` heeft
+2. **Test URL routing**: Open de gedeelde link direct in browser - je zou een success melding moeten zien
+3. **Controleer browser console** voor JavaScript errors
+4. **Verifieer Firestore rules** zijn correct ingesteld (zie boven)
+5. **Test met verschillende browsers** om browser-specifieke problemen uit te sluiten
+
+**Verwacht gedrag:**
+- ✅ Gedeelde link openen toont success melding: "Lijst [naam] is gedeeld met jou! 🎉"
+- ✅ Lijst verschijnt automatisch in het overzicht
+- ✅ Badge toont "Gedeeld" in plaats van "Eigenaar"
+- ✅ Realtime updates werken tussen alle apparaten
+
 ### Build Fails in GitHub Actions
 
 **Controleer:**
