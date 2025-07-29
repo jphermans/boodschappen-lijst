@@ -270,7 +270,7 @@ function App() {
         }
       });
       
-      success(deleteMessage, 8000);
+      success(deleteMessage, 3000);
     } catch (error) {
       console.error('Error deleting shopping list:', error);
       error('Er ging iets mis bij het verwijderen van de lijst', 3000);
@@ -616,6 +616,7 @@ function App() {
       {showShare && (
         <QRShareModal
           listId={shareListId}
+          list={lists.find(l => l.id === shareListId)}
           onClose={() => {
             setShowShare(false);
             setShareListId(null);

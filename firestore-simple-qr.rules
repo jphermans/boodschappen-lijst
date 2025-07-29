@@ -1,0 +1,42 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Shopping lists with creator permissions and sharing support
+    match /shoppingLists/{listId} {
+      // Users can read lists they created or are shared with
+      // Support both deviceUID (legacy) and creatorId (new)
+      allow read: if request.auth != null
+        && (resource.data.deviceUID == request.auth.uid
+            || resource.data.creatorId == request.auth.uid
+            || request.auth.uid in resource.data.get('sharedWith', []));
+      
+      // Only authenticated users can create lists
+      allow create: if request.auth != null
+        && (request.resource.data.deviceUID == request.auth.uid
+            || request.resource.data.creatorId == request.auth.uid)
+        && request.resource.data.name is string
+        && request.resource.data.name.size() <= 100
+        && request.resource.data.items is list;
+      
+      // SIMPLIFIED: Allow updates for creators, shared users, AND QR sharing
+      allow update: if request.auth != null
+        && (
+          // Creator can always update (legacy deviceUID or new creatorId)
+          resource.data.deviceUID == request.auth.uid
+          || resource.data.creatorId == request.auth.uid
+          // Users already shared with can update
+          || request.auth.uid in resource.data.get('sharedWith', [])
+          // QR sharing: allow adding to sharedWith if user is being added
+          || (
+            request.auth.uid in request.resource.data.get('sharedWith', [])
+            && request.resource.data.keys().hasAll(['name', 'items', 'sharedWith'])
+          )
+        );
+      
+      // Only the creator can delete lists
+      allow delete: if request.auth != null
+        && (resource.data.deviceUID == request.auth.uid
+            || resource.data.creatorId == request.auth.uid);
+    }
+  }
+}

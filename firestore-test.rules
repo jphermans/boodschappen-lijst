@@ -1,0 +1,38 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // TEMPORARY: More permissive rules for QR testing
+    match /shoppingLists/{listId} {
+      // Users can read lists they created or are shared with
+      allow read: if request.auth != null
+        && (resource.data.deviceUID == request.auth.uid
+            || resource.data.creatorId == request.auth.uid
+            || request.auth.uid in resource.data.get('sharedWith', []));
+      
+      // Only authenticated users can create lists
+      allow create: if request.auth != null
+        && (request.resource.data.deviceUID == request.auth.uid
+            || request.resource.data.creatorId == request.auth.uid)
+        && request.resource.data.name is string
+        && request.resource.data.name.size() <= 100
+        && request.resource.data.items is list;
+      
+      // TEMPORARY: Allow authenticated users to update sharedWith for QR scanning
+      allow update: if request.auth != null
+        && (
+          // Creator can always update
+          resource.data.deviceUID == request.auth.uid
+          || resource.data.creatorId == request.auth.uid
+          // Users already shared with can update
+          || request.auth.uid in resource.data.get('sharedWith', [])
+          // QR sharing: allow if user is adding themselves to sharedWith
+          || request.auth.uid in request.resource.data.get('sharedWith', [])
+        );
+      
+      // Only the creator can delete lists
+      allow delete: if request.auth != null
+        && (resource.data.deviceUID == request.auth.uid
+            || resource.data.creatorId == request.auth.uid);
+    }
+  }
+}

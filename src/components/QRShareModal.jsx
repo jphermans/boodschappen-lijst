@@ -3,8 +3,9 @@ import { motion } from 'framer-motion';
 import { X, Copy, Download } from 'lucide-react';
 import QRCode from 'react-qr-code';
 
-const QRShareModal = ({ listId, onClose }) => {
+const QRShareModal = ({ listId, list, onClose }) => {
   const shareUrl = `${window.location.origin}${window.location.pathname}#/shared/${listId}`;
+  const isOwner = list?.isCreator || false;
 
   const copyToClipboard = async () => {
     try {
@@ -61,7 +62,7 @@ const QRShareModal = ({ listId, onClose }) => {
       >
         <div className="flex items-center justify-between p-6 border-b border-[rgb(var(--border-color))]/50">
           <h2 className="text-xl font-semibold text-[rgb(var(--card-text))]">
-            Deel boodschappenlijst
+            {isOwner ? 'Deel boodschappenlijst' : 'Doorsturen boodschappenlijst'}
           </h2>
           <button
             onClick={onClose}
@@ -74,7 +75,10 @@ const QRShareModal = ({ listId, onClose }) => {
         <div className="p-6 space-y-6">
           <div className="text-center">
             <p className="text-[rgb(var(--text-color))]/80 mb-4">
-              Scan de QR-code om deze boodschappenlijst te delen
+              {isOwner
+                ? 'Scan de QR-code om deze boodschappenlijst te delen'
+                : 'Scan de QR-code om deze gedeelde boodschappenlijst door te sturen'
+              }
             </p>
             
             <div className="flex justify-center mb-4">
@@ -118,12 +122,16 @@ const QRShareModal = ({ listId, onClose }) => {
 
           <div className="text-xs text-[rgb(var(--text-color))]/60 text-center space-y-2">
             <p>
-              <strong>Delen met anderen:</strong>
+              <strong>{isOwner ? 'Delen met anderen:' : 'Doorsturen naar anderen:'}</strong>
             </p>
             <div className="bg-[rgb(var(--border-color))]/10 p-3 rounded-lg text-left">
               <p className="mb-1">✅ Anderen kunnen items toevoegen en bewerken</p>
               <p className="mb-1">✅ Anderen kunnen items als voltooid markeren</p>
-              <p className="text-accent">🔒 Alleen jij kunt de lijst verwijderen</p>
+              {isOwner ? (
+                <p className="text-accent">🔒 Alleen jij kunt de lijst verwijderen</p>
+              ) : (
+                <p className="text-accent">🔒 Alleen de eigenaar kan de lijst verwijderen</p>
+              )}
             </div>
           </div>
         </div>
