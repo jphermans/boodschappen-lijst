@@ -120,7 +120,7 @@ const AnalyticsDashboard = ({ lists, onClose }) => {
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-[rgb(var(--card-bg))] rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden"
+        className="bg-[rgb(var(--card-bg))] rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -145,7 +145,7 @@ const AnalyticsDashboard = ({ lists, onClose }) => {
         </div>
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto max-h-[75vh]">
+        <div className="flex-1 p-6 overflow-y-auto">
           {/* Overview Statistics */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg p-4 text-center">
@@ -318,7 +318,7 @@ const AnalyticsDashboard = ({ lists, onClose }) => {
         </div>
 
         {/* Footer */}
-        <div className="border-t border-[rgb(var(--border-color))]/50 p-6">
+        <div className="flex-shrink-0 border-t border-[rgb(var(--border-color))]/50 p-6">
           <div className="flex items-center justify-between">
             <div className="text-sm text-[rgb(var(--text-color))]/60">
               <Eye className="w-4 h-4 inline mr-1" />

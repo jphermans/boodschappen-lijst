@@ -436,135 +436,275 @@ function App() {
 
   return (
     <div className="min-h-screen bg-[rgb(var(--bg-color))] transition-colors duration-300">
-      <header className="bg-[rgb(var(--card-bg))] shadow-sm">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-3 sm:py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <List className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
-            <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-[rgb(var(--card-text))]">
-              Boodschappenlijst
-            </h1>
-          </div>
-          <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-3">
-            <button
-              onClick={() => setShowScanner(true)}
-              className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-gradient-to-r from-secondary to-accent hover:opacity-90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
-              aria-label="QR-code scannen"
-            >
-              <QrCode className="w-4 h-4 sm:w-5 sm:h-5" />
-            </button>
-            <button
-              onClick={toggleTheme}
-              className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
-              aria-label="Thema wisselen"
-            >
-              <span className="text-base sm:text-lg">
-                {theme === 'light' ? '🌙' : '☀️'}
-              </span>
-            </button>
-            <button
-              onClick={() => setShowSettings(true)}
-              className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-[rgb(var(--border-color))]/60 hover:bg-[rgb(var(--border-color))]/80 text-[rgb(var(--card-text))] shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
-              aria-label="Instellingen"
-            >
-              <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
-            </button>
+      {/* Desktop Navigation Bar */}
+      <header className="bg-[rgb(var(--card-bg))] shadow-sm border-b border-[rgb(var(--border-color))]/20">
+        <div className="max-w-[1920px] mx-auto px-4 lg:px-8 xl:px-12">
+          <div className="flex items-center justify-between h-16 lg:h-20">
+            {/* Logo and Brand */}
+            <div className="flex items-center space-x-3 lg:space-x-4">
+              <div className="flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-primary to-secondary rounded-xl shadow-lg">
+                <List className="w-5 h-5 lg:w-6 lg:h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-xl lg:text-2xl xl:text-3xl font-bold text-[rgb(var(--card-text))] tracking-tight">
+                  Boodschappenlijst
+                </h1>
+                <p className="hidden lg:block text-sm text-[rgb(var(--text-color))]/60 font-medium">
+                  Beheer en deel je lijsten
+                </p>
+              </div>
+            </div>
+
+            {/* Desktop Navigation Menu */}
+            <nav className="hidden lg:flex items-center space-x-2 xl:space-x-4">
+              <button
+                onClick={() => setSelectedList(null)}
+                className={`px-4 xl:px-6 py-2.5 rounded-xl font-medium transition-all duration-200 ${
+                  !selectedList
+                    ? 'bg-primary text-white shadow-lg'
+                    : 'text-[rgb(var(--text-color))]/80 hover:bg-[rgb(var(--border-color))]/20 hover:text-[rgb(var(--card-text))]'
+                }`}
+              >
+                <List className="w-4 h-4 inline mr-2" />
+                Overzicht
+              </button>
+              <button
+                onClick={() => setShowScanner(true)}
+                className="px-4 xl:px-6 py-2.5 rounded-xl font-medium text-[rgb(var(--text-color))]/80 hover:bg-[rgb(var(--border-color))]/20 hover:text-[rgb(var(--card-text))] transition-all duration-200"
+              >
+                <QrCode className="w-4 h-4 inline mr-2" />
+                QR Scanner
+              </button>
+              <div className="w-px h-8 bg-[rgb(var(--border-color))]/30"></div>
+              <div className="flex items-center space-x-1 xl:space-x-2">
+                <span className="text-sm text-[rgb(var(--text-color))]/60 font-medium">
+                  {lists.length} lijst{lists.length !== 1 ? 'en' : ''}
+                </span>
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              </div>
+            </nav>
+
+            {/* Action Buttons */}
+            <div className="flex items-center space-x-2 lg:space-x-3">
+              {/* Mobile QR Scanner */}
+              <button
+                onClick={() => setShowScanner(true)}
+                className="lg:hidden flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-r from-secondary to-accent hover:opacity-90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                aria-label="QR-code scannen"
+              >
+                <QrCode className="w-5 h-5" />
+              </button>
+              
+              {/* Theme Toggle */}
+              <button
+                onClick={toggleTheme}
+                className="flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 group"
+                aria-label="Thema wisselen"
+              >
+                <span className="text-lg lg:text-xl group-hover:scale-110 transition-transform duration-200">
+                  {theme === 'light' ? '🌙' : '☀️'}
+                </span>
+              </button>
+              
+              {/* Settings */}
+              <button
+                onClick={() => setShowSettings(true)}
+                className="flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-[rgb(var(--border-color))]/60 hover:bg-[rgb(var(--border-color))]/80 text-[rgb(var(--card-text))] shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 group"
+                aria-label="Instellingen"
+              >
+                <Settings className="w-5 h-5 lg:w-6 lg:h-6 group-hover:rotate-90 transition-transform duration-300" />
+              </button>
+            </div>
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-3 sm:py-4 lg:py-8">
+      {/* Main Content Area */}
+      <main className="max-w-[1920px] mx-auto px-4 lg:px-8 xl:px-12 py-6 lg:py-8 xl:py-12">
         {!selectedList ? (
-          <div>
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-[rgb(var(--card-bg))] rounded-lg shadow-lg p-6 mb-6"
-            >
-              <h2 className="text-lg sm:text-xl font-semibold text-[rgb(var(--card-text))] mb-3 sm:mb-4">
-                Nieuwe lijst maken
-              </h2>
-              <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-                <div className="flex-1 relative">
-                  <input
-                    type="text"
-                    value={newListName}
-                    onChange={(e) => setNewListName(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && createList()}
-                    placeholder="Naam van je boodschappenlijst..."
-                    className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-[rgb(var(--border-color))] rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 focus:ring-primary bg-[rgb(var(--card-bg))] text-[rgb(var(--card-text))] text-base sm:text-lg"
-                  />
+          <div className="lg:flex lg:space-x-8 xl:space-x-12">
+            {/* Main Content Area */}
+            <div className="flex-1">
+              {/* Create New List Section - Desktop Optimized */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-lg border border-[rgb(var(--border-color))]/20 p-6 lg:p-8 xl:p-10 mb-8"
+              >
+                <div className="flex items-center justify-between mb-6 lg:mb-8">
+                  <div>
+                    <h2 className="text-xl lg:text-2xl xl:text-3xl font-bold text-[rgb(var(--card-text))] mb-2">
+                      Nieuwe lijst maken
+                    </h2>
+                    <p className="text-[rgb(var(--text-color))]/60 text-sm lg:text-base">
+                      Maak een nieuwe boodschappenlijst en deel deze met anderen
+                    </p>
+                  </div>
+                  <div className="hidden lg:flex items-center space-x-4 text-sm text-[rgb(var(--text-color))]/60">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-2 h-2 bg-primary rounded-full"></div>
+                      <span>{lists.filter(l => l.isCreator).length} eigenaar</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-2 h-2 bg-secondary rounded-full"></div>
+                      <span>{lists.filter(l => !l.isCreator).length} gedeeld</span>
+                    </div>
+                  </div>
                 </div>
-                <button
-                  onClick={createList}
-                  disabled={!newListName.trim()}
-                  className="flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 bg-primary hover:opacity-90 text-white rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200"
-                >
-                  <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                  <span className="font-medium text-sm sm:text-base">Aanmaken</span>
-                </button>
-              </div>
-            </motion.div>
+                
+                <div className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4 xl:space-x-6">
+                  <div className="flex-1 relative group">
+                    <input
+                      type="text"
+                      value={newListName}
+                      onChange={(e) => setNewListName(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && createList()}
+                      placeholder="Naam van je boodschappenlijst..."
+                      className="w-full px-4 lg:px-6 py-3 lg:py-4 border-2 border-[rgb(var(--border-color))]/30 rounded-xl lg:rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary/50 bg-[rgb(var(--card-bg))] text-[rgb(var(--card-text))] text-base lg:text-lg placeholder:text-[rgb(var(--text-color))]/40 transition-all duration-200 group-hover:border-[rgb(var(--border-color))]/50"
+                    />
+                    <div className="absolute inset-0 rounded-xl lg:rounded-2xl bg-gradient-to-r from-primary/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"></div>
+                  </div>
+                  <button
+                    onClick={createList}
+                    disabled={!newListName.trim()}
+                    className="flex items-center justify-center px-6 lg:px-8 xl:px-10 py-3 lg:py-4 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white rounded-xl lg:rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:hover:shadow-lg transition-all duration-200 font-semibold text-base lg:text-lg whitespace-nowrap"
+                  >
+                    <Plus className="w-5 h-5 lg:w-6 lg:h-6 mr-2 lg:mr-3" />
+                    <span>Lijst Aanmaken</span>
+                  </button>
+                </div>
+              </motion.div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {/* Lists Grid - Enhanced for Desktop */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 lg:gap-6 xl:gap-8">
               {lists.map((list) => (
                 <motion.div
                   key={list.id}
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="bg-[rgb(var(--card-bg))] rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow"
+                  className="group bg-[rgb(var(--card-bg))] rounded-2xl shadow-lg border border-[rgb(var(--border-color))]/20 p-6 lg:p-8 hover:shadow-2xl hover:border-[rgb(var(--border-color))]/40 transition-all duration-300 cursor-pointer relative overflow-hidden"
+                  onClick={() => setSelectedList(list)}
                 >
-                  <div className="flex items-start justify-between mb-2">
-                    <h3 className="text-base sm:text-lg font-semibold text-[rgb(var(--card-text))] flex-1 pr-2">
-                      {list.name}
-                    </h3>
-                    <span className={`px-1.5 sm:px-2 py-0.5 sm:py-1 text-xs font-medium rounded-full flex-shrink-0 ${
-                      list.isCreator
-                        ? 'bg-primary/20 text-primary'
-                        : 'bg-secondary/20 text-secondary'
-                    }`}>
-                      {list.isCreator ? 'Eigenaar' : 'Gedeeld'}
-                    </span>
-                  </div>
-                  <p className="text-[rgb(var(--text-color))]/60 mb-3 sm:mb-4 text-sm">
-                    {list.items.length} item{list.items.length !== 1 ? 's' : ''}
-                  </p>
-                  <div className="flex flex-col space-y-2">
-                    <button
-                      onClick={() => setSelectedList(list)}
-                      className="w-full flex items-center justify-center px-3 sm:px-4 py-2 sm:py-3 bg-primary hover:opacity-90 text-white rounded-lg sm:rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
-                    >
-                      <Check className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
-                      <span className="font-medium text-sm sm:text-base">Openen</span>
-                    </button>
-                    <div className="flex space-x-2">
+                  {/* Hover Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                  
+                  {/* Content */}
+                  <div className="relative z-10">
+                    {/* Header */}
+                    <div className="flex items-start justify-between mb-4 lg:mb-6">
+                      <div className="flex-1 pr-4">
+                        <h3 className="text-lg lg:text-xl xl:text-2xl font-bold text-[rgb(var(--card-text))] mb-2 group-hover:text-primary transition-colors duration-200">
+                          {list.name}
+                        </h3>
+                        <div className="flex items-center space-x-4 text-sm text-[rgb(var(--text-color))]/60">
+                          <span>{list.items.length} item{list.items.length !== 1 ? 's' : ''}</span>
+                          {list.sharedWith && list.sharedWith.length > 0 && (
+                            <span className="flex items-center">
+                              <Users className="w-3 h-3 mr-1" />
+                              {list.sharedWith.length} gedeeld
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-end space-y-2">
+                        <span className={`px-3 py-1.5 text-xs font-semibold rounded-full ${
+                          list.isCreator
+                            ? 'bg-gradient-to-r from-primary/20 to-primary/10 text-primary border border-primary/20'
+                            : 'bg-gradient-to-r from-secondary/20 to-secondary/10 text-secondary border border-secondary/20'
+                        }`}>
+                          {list.isCreator ? 'Eigenaar' : 'Gedeeld'}
+                        </span>
+                        {list.updatedAt && (
+                          <span className="text-xs text-[rgb(var(--text-color))]/40">
+                            {(() => {
+                              const date = list.updatedAt.toDate ? list.updatedAt.toDate() : new Date(list.updatedAt);
+                              const now = new Date();
+                              const diffHours = Math.floor((now - date) / (1000 * 60 * 60));
+                              if (diffHours < 1) return 'Zojuist';
+                              if (diffHours < 24) return `${diffHours}u geleden`;
+                              return date.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' });
+                            })()}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Progress Bar for Items */}
+                    {list.items.length > 0 && (
+                      <div className="mb-6">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs text-[rgb(var(--text-color))]/60">Voortgang</span>
+                          <span className="text-xs font-medium text-[rgb(var(--card-text))]">
+                            {Math.round((list.items.filter(item => item.completed).length / list.items.length) * 100)}%
+                          </span>
+                        </div>
+                        <div className="w-full bg-[rgb(var(--border-color))]/20 rounded-full h-2">
+                          <div
+                            className="bg-gradient-to-r from-green-500 to-green-400 h-2 rounded-full transition-all duration-500"
+                            style={{
+                              width: `${(list.items.filter(item => item.completed).length / list.items.length) * 100}%`
+                            }}
+                          ></div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Action Buttons */}
+                    <div className="space-y-3">
+                      {/* Primary Action */}
                       <button
-                        onClick={() => handleShare(list.id)}
-                        className="flex-1 flex items-center justify-center px-2 sm:px-4 py-2 sm:py-3 bg-secondary hover:opacity-90 text-white rounded-lg sm:rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
-                        title="Delen"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedList(list);
+                        }}
+                        className="w-full flex items-center justify-center px-4 py-3 lg:py-4 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 text-white rounded-xl lg:rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 font-semibold text-base lg:text-lg"
                       >
-                        <Share2 className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                        <span className="font-medium text-xs sm:text-sm">Delen</span>
+                        <Check className="w-5 h-5 lg:w-6 lg:h-6 mr-3" />
+                        <span>Lijst Openen</span>
                       </button>
-                      {list.isCreator && (
+                      
+                      {/* Secondary Actions */}
+                      <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 lg:gap-3">
                         <button
-                          onClick={() => handleUserManagement(list.id)}
-                          className="flex-1 flex items-center justify-center px-2 sm:px-4 py-2 sm:py-3 bg-gradient-to-r from-blue-500 to-purple-500 hover:opacity-90 text-white rounded-lg sm:rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
-                          title="Gebruikers beheren"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleShare(list.id);
+                          }}
+                          className="flex items-center justify-center px-3 py-2.5 lg:py-3 bg-secondary hover:opacity-90 text-white rounded-lg lg:rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 font-medium text-sm lg:text-base"
+                          title="Delen"
                         >
-                          <Users className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                          <span className="font-medium text-xs sm:text-sm">Gebruikers</span>
+                          <Share2 className="w-4 h-4 lg:w-5 lg:h-5 mr-2" />
+                          <span className="hidden lg:inline">Delen</span>
                         </button>
-                      )}
-                      {canDeleteList(list) && (
-                        <button
-                          onClick={() => deleteList(list.id)}
-                          className="flex-1 flex items-center justify-center px-2 sm:px-4 py-2 sm:py-3 bg-accent hover:opacity-90 text-white rounded-lg sm:rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
-                          title="Verwijderen"
-                        >
-                          <Trash2 className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                          <span className="font-medium text-xs sm:text-sm">Verwijderen</span>
-                        </button>
-                      )}
+                        
+                        {list.isCreator && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleUserManagement(list.id);
+                            }}
+                            className="flex items-center justify-center px-3 py-2.5 lg:py-3 bg-gradient-to-r from-blue-500 to-purple-500 hover:opacity-90 text-white rounded-lg lg:rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 font-medium text-sm lg:text-base"
+                            title="Gebruikers beheren"
+                          >
+                            <Users className="w-4 h-4 lg:w-5 lg:h-5 mr-2" />
+                            <span className="hidden lg:inline">Gebruikers</span>
+                          </button>
+                        )}
+                        
+                        {canDeleteList(list) && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteList(list.id);
+                            }}
+                            className="flex items-center justify-center px-3 py-2.5 lg:py-3 bg-accent hover:opacity-90 text-white rounded-lg lg:rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 font-medium text-sm lg:text-base"
+                            title="Verwijderen"
+                          >
+                            <Trash2 className="w-4 h-4 lg:w-5 lg:h-5 mr-2" />
+                            <span className="hidden lg:inline">Verwijderen</span>
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </motion.div>
@@ -575,25 +715,164 @@ function App() {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="text-center py-12"
+                className="col-span-full"
               >
-                <List className="w-12 h-12 sm:w-16 sm:h-16 text-[rgb(var(--text-color))]/40 mx-auto mb-3 sm:mb-4" />
-                <p className="text-[rgb(var(--text-color))]/60 mb-4 sm:mb-6 text-sm sm:text-base px-4 text-center">
-                  Je hebt nog geen boodschappenlijsten. Maak er een aan om te beginnen!
-                </p>
-                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 justify-center items-center px-4">
-                  <button
-                    onClick={() => setShowScanner(true)}
-                    className="flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-secondary to-accent hover:opacity-90 text-white rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
-                  >
-                    <QrCode className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                    <span className="font-medium text-sm sm:text-base">Scan gedeelde lijst</span>
-                  </button>
-                  <span className="text-[rgb(var(--text-color))]/40 text-xs sm:text-sm">of</span>
-                  <span className="text-[rgb(var(--text-color))]/60 text-xs sm:text-sm text-center">Maak hierboven een nieuwe lijst aan</span>
+                <div className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-lg border border-[rgb(var(--border-color))]/20 p-12 lg:p-16 xl:p-20 text-center">
+                  <div className="max-w-md mx-auto">
+                    <div className="w-20 h-20 lg:w-24 lg:h-24 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full flex items-center justify-center mx-auto mb-6 lg:mb-8">
+                      <List className="w-10 h-10 lg:w-12 lg:h-12 text-primary" />
+                    </div>
+                    
+                    <h3 className="text-xl lg:text-2xl xl:text-3xl font-bold text-[rgb(var(--card-text))] mb-4 lg:mb-6">
+                      Welkom bij Boodschappenlijst!
+                    </h3>
+                    
+                    <p className="text-[rgb(var(--text-color))]/60 mb-8 lg:mb-10 text-base lg:text-lg leading-relaxed">
+                      Je hebt nog geen lijsten. Begin door een nieuwe lijst aan te maken of scan een gedeelde lijst van iemand anders.
+                    </p>
+                    
+                    <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 justify-center items-center">
+                      <button
+                        onClick={() => setShowScanner(true)}
+                        className="flex items-center justify-center px-6 lg:px-8 py-3 lg:py-4 bg-gradient-to-r from-secondary to-accent hover:from-secondary/90 hover:to-accent/90 text-white rounded-xl lg:rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 font-semibold text-base lg:text-lg"
+                      >
+                        <QrCode className="w-5 h-5 lg:w-6 lg:h-6 mr-3" />
+                        <span>Scan Gedeelde Lijst</span>
+                      </button>
+                      
+                      <div className="flex items-center space-x-4 text-[rgb(var(--text-color))]/40">
+                        <div className="w-12 h-px bg-[rgb(var(--border-color))]/30"></div>
+                        <span className="text-sm lg:text-base font-medium">of</span>
+                        <div className="w-12 h-px bg-[rgb(var(--border-color))]/30"></div>
+                      </div>
+                      
+                      <p className="text-[rgb(var(--text-color))]/60 text-sm lg:text-base">
+                        Maak hierboven een nieuwe lijst aan
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </motion.div>
             )}
+            </div>
+
+            {/* Desktop Sidebar - Quick Actions & Analytics */}
+            <div className="hidden lg:block lg:w-80 xl:w-96">
+              <div className="sticky top-8 space-y-6">
+                {/* Quick Stats Card */}
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-lg border border-[rgb(var(--border-color))]/20 p-6"
+                >
+                  <h3 className="text-lg font-bold text-[rgb(var(--card-text))] mb-4 flex items-center">
+                    <div className="w-2 h-2 bg-primary rounded-full mr-3"></div>
+                    Overzicht
+                  </h3>
+                  
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[rgb(var(--text-color))]/70 text-sm">Totaal lijsten</span>
+                      <span className="font-semibold text-[rgb(var(--card-text))]">{lists.length}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[rgb(var(--text-color))]/70 text-sm">Eigenaar van</span>
+                      <span className="font-semibold text-primary">{lists.filter(l => l.isCreator).length}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[rgb(var(--text-color))]/70 text-sm">Gedeeld met jou</span>
+                      <span className="font-semibold text-secondary">{lists.filter(l => !l.isCreator).length}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[rgb(var(--text-color))]/70 text-sm">Totaal items</span>
+                      <span className="font-semibold text-accent">
+                        {lists.reduce((sum, list) => sum + (list.items || []).length, 0)}
+                      </span>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Quick Actions Card */}
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-lg border border-[rgb(var(--border-color))]/20 p-6"
+                >
+                  <h3 className="text-lg font-bold text-[rgb(var(--card-text))] mb-4 flex items-center">
+                    <div className="w-2 h-2 bg-secondary rounded-full mr-3"></div>
+                    Snelle acties
+                  </h3>
+                  
+                  <div className="space-y-3">
+                    <button
+                      onClick={() => setShowScanner(true)}
+                      className="w-full flex items-center px-4 py-3 bg-gradient-to-r from-secondary to-accent hover:opacity-90 text-white rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+                    >
+                      <QrCode className="w-5 h-5 mr-3" />
+                      <span className="font-medium">QR Scanner</span>
+                    </button>
+                    
+                    <button
+                      onClick={() => setShowSettings(true)}
+                      className="w-full flex items-center px-4 py-3 bg-[rgb(var(--border-color))]/20 hover:bg-[rgb(var(--border-color))]/30 text-[rgb(var(--card-text))] rounded-xl transition-all duration-200"
+                    >
+                      <Settings className="w-5 h-5 mr-3" />
+                      <span className="font-medium">Instellingen & Analytics</span>
+                    </button>
+                  </div>
+                </motion.div>
+
+                {/* Recent Activity Card */}
+                {lists.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-lg border border-[rgb(var(--border-color))]/20 p-6"
+                  >
+                    <h3 className="text-lg font-bold text-[rgb(var(--card-text))] mb-4 flex items-center">
+                      <div className="w-2 h-2 bg-accent rounded-full mr-3"></div>
+                      Recente activiteit
+                    </h3>
+                    
+                    <div className="space-y-3">
+                      {lists
+                        .filter(list => list.updatedAt)
+                        .sort((a, b) => {
+                          const dateA = a.updatedAt.toDate ? a.updatedAt.toDate() : new Date(a.updatedAt);
+                          const dateB = b.updatedAt.toDate ? b.updatedAt.toDate() : new Date(b.updatedAt);
+                          return dateB - dateA;
+                        })
+                        .slice(0, 3)
+                        .map((list, index) => (
+                          <div
+                            key={list.id}
+                            className="flex items-center space-x-3 p-3 rounded-xl bg-[rgb(var(--border-color))]/10 hover:bg-[rgb(var(--border-color))]/20 transition-colors cursor-pointer"
+                            onClick={() => setSelectedList(list)}
+                          >
+                            <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0"></div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-[rgb(var(--card-text))] truncate text-sm">
+                                {list.name}
+                              </p>
+                              <p className="text-xs text-[rgb(var(--text-color))]/60">
+                                {list.items?.length || 0} items • {list.isCreator ? 'Eigenaar' : 'Gedeeld'}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      
+                      {lists.filter(list => list.updatedAt).length === 0 && (
+                        <p className="text-sm text-[rgb(var(--text-color))]/60 text-center py-4">
+                          Geen recente activiteit
+                        </p>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </div>
+            </div>
           </div>
         ) : (
           <ShoppingList
