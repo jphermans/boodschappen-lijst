@@ -81,8 +81,19 @@ const QRScannerModal = ({ onClose, onScanSuccess }) => {
   const processQRCode = (code) => {
     console.log('📱 QRScannerModal - Processing QR code:', code);
     try {
+      // Prevent the URL from changing the browser hash when processing QR codes
+      // This prevents triggering the hash change listener
+      const originalHash = window.location.hash;
+      
       // Pass the code directly to the main handler - let it do all validation
       onScanSuccess(code);
+      
+      // Restore the original hash if it was changed during processing
+      if (window.location.hash !== originalHash) {
+        console.log('📱 QRScannerModal - Restoring original hash:', originalHash);
+        window.location.hash = originalHash;
+      }
+      
       success('QR-code succesvol gescand! 🎉');
       onClose();
     } catch (err) {

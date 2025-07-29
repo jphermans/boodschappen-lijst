@@ -28,40 +28,53 @@ function App() {
   const [shareListId, setShareListId] = useState(null);
   const [firebaseError, setFirebaseError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isProcessingQRScan, setIsProcessingQRScan] = useState(false);
 
   // Handle shared list URLs
   const handleSharedListFromURL = async (currentLists = lists) => {
     const hash = window.location.hash;
+    console.log('🌐 URL Hash Handler - Current hash:', hash);
+    
     const sharedMatch = hash.match(/^#\/shared\/(.+)$/);
     
     if (sharedMatch) {
       const listId = sharedMatch[1];
-      console.log('Found shared list ID in URL:', listId);
+      console.log('🌐 URL Hash Handler - Found shared list ID in URL:', listId);
+      console.log('🌐 URL Hash Handler - Current lists count:', currentLists.length);
+      console.log('🌐 URL Hash Handler - Current user ID:', getCurrentUserID());
       
       try {
+        console.log('🌐 Step 1: Fetching list from Firebase...');
         // Get the shared list
         const sharedList = await getListById(listId);
+        console.log('🌐 Step 1 Result: Retrieved list:', sharedList);
         
         if (!sharedList) {
+          console.error('❌ URL Hash Handler - List not found for ID:', listId);
           error('Gedeelde lijst niet gevonden of niet toegankelijk');
           // Clear the hash
           window.location.hash = '';
           return;
         }
         
+        console.log('🌐 Step 2: Checking user access...');
         // Check if user already has access to this list
         const currentUserId = getCurrentUserID();
         const alreadyHasAccess = currentLists.some(list => list.id === listId);
+        console.log('🌐 Step 2 Result: Already has access:', alreadyHasAccess);
         
         if (alreadyHasAccess) {
+          console.log('ℹ️ URL Hash Handler - User already has access to this list');
           info(`Je hebt al toegang tot lijst "${sharedList.name}"`);
           // Clear the hash
           window.location.hash = '';
           return;
         }
         
+        console.log('🌐 Step 3: Sharing list with user...');
         // Share the list with the current user
         await shareListWithUser(listId, currentUserId);
+        console.log('✅ URL Hash Handler - List shared successfully!');
         
         success(`Lijst "${sharedList.name}" is gedeeld met jou! 🎉`);
         info('De lijst verschijnt nu in je overzicht', 3000);
@@ -70,11 +83,31 @@ function App() {
         window.location.hash = '';
         
       } catch (err) {
-        console.error('Error processing shared list from URL:', err);
-        error('Fout bij verwerken van gedeelde lijst');
+        console.error('❌ URL Hash Handler - Error processing shared list from URL:', err);
+        console.error('❌ URL Hash Handler - Error details:', {
+          message: err.message,
+          code: err.code,
+          stack: err.stack,
+          listId: listId,
+          hash: hash
+        });
+        
+        // Provide more specific error messages based on error type
+        if (err.code === 'permission-denied') {
+          error('Geen toegang tot deze lijst. Controleer of de lijst nog bestaat.');
+        } else if (err.code === 'not-found') {
+          error('Lijst niet gevonden. De link is mogelijk verlopen.');
+        } else if (err.message?.includes('network')) {
+          error('Netwerkfout. Controleer je internetverbinding.');
+        } else {
+          error(`Fout bij verwerken van gedeelde lijst: ${err.message || 'Onbekende fout'}`);
+        }
+        
         // Clear the hash
         window.location.hash = '';
       }
+    } else {
+      console.log('🌐 URL Hash Handler - No shared list pattern found in hash:', hash);
     }
   };
 
@@ -129,14 +162,17 @@ function App() {
   // Listen for hash changes (when someone navigates to a shared link)
   useEffect(() => {
     const handleHashChange = () => {
-      if (!isLoading && !firebaseError) {
+      if (!isLoading && !firebaseError && !isProcessingQRScan) {
+        console.log('🌐 Hash change detected, processing URL...');
         handleSharedListFromURL(lists);
+      } else if (isProcessingQRScan) {
+        console.log('🌐 Hash change ignored - QR scan in progress');
       }
     };
 
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
-  }, [isLoading, firebaseError, lists]);
+  }, [isLoading, firebaseError, lists, isProcessingQRScan]);
 
 
   const retryConnection = () => {
@@ -242,6 +278,9 @@ function App() {
     console.log('📱 Data type:', typeof scannedData);
     console.log('📱 Data length:', scannedData?.length);
     
+    // Set flag to prevent hash change interference
+    setIsProcessingQRScan(true);
+    
     try {
       // Step 1: Validate QR data
       console.log('🔍 Step 1: Validating QR data...');
@@ -312,6 +351,9 @@ function App() {
       } else {
         error(`Fout bij verwerken van gescande code: ${err.message || 'Onbekende fout'}`);
       }
+    } finally {
+      // Always clear the flag when done
+      setIsProcessingQRScan(false);
     }
   };
 
