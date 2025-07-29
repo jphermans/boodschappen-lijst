@@ -1,14 +1,10 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { X, Palette, Moon, Sun, Link2, Smartphone, QrCode } from 'lucide-react';
-import QRCode from 'react-qr-code';
+import { X, Palette, Moon, Sun, Link2 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
-import { getDeviceInfo, generateLinkCode, linkToMasterDevice, unlinkFromMasterDevice, isLinkedToMaster, parseLinkCode } from '../utils/deviceUID';
+import { getDeviceInfo } from '../utils/deviceUID';
 
 const SettingsModal = ({ onClose }) => {
-  const [showQR, setShowQR] = useState(false);
-  const [scanCode, setScanCode] = useState('');
-  const [isLinking, setIsLinking] = useState(false);
   
   const {
     theme,
@@ -21,25 +17,6 @@ const SettingsModal = ({ onClose }) => {
   } = useTheme();
   
   const deviceInfo = getDeviceInfo();
-  
-  const handleDeviceLink = () => {
-    if (isLinkedToMaster()) {
-      unlinkFromMasterDevice();
-      window.location.reload();
-    } else {
-      setShowQR(!showQR);
-    }
-  };
-  
-  const handleScanCode = () => {
-    if (scanCode.trim()) {
-      const masterDevice = parseLinkCode(scanCode.trim());
-      if (masterDevice) {
-        linkToMasterDevice(masterDevice);
-        window.location.reload();
-      }
-    }
-  };
 
   const presetColors = [
     { name: 'Blauw', value: '#3b82f6' },
@@ -197,78 +174,33 @@ const SettingsModal = ({ onClose }) => {
             <div>
               <h3 className="text-lg font-medium text-[rgb(var(--card-text))] mb-3 flex items-center">
                 <Link2 className="w-5 h-5 mr-2" />
-                Apparaat koppelen
+                Lijsten delen
               </h3>
               
               <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-[rgb(var(--text-color))]/80">
-                      Status: {deviceInfo.isMaster ? 'Hoofdapparaat' : 'Gekoppeld'}
-                    </p>
-                    <p className="text-xs text-[rgb(var(--text-color))]/60">
-                      ID: {deviceInfo.deviceId.substring(0, 8)}...
-                    </p>
+                <div className="bg-[rgb(var(--border-color))]/10 p-4 rounded-lg">
+                  <p className="text-sm text-[rgb(var(--text-color))]/80 mb-2">
+                    <strong>Hoe lijsten delen:</strong>
+                  </p>
+                  <div className="space-y-1 text-xs text-[rgb(var(--text-color))]/70">
+                    <p>• Klik op "Delen" bij een lijst</p>
+                    <p>• Deel de QR-code of link met anderen</p>
+                    <p>• Anderen kunnen de QR-code scannen of de link openen</p>
+                    <p>• De lijst verschijnt automatisch in hun overzicht</p>
                   </div>
-                  <button
-                    onClick={handleDeviceLink}
-                    className={`flex items-center justify-center px-4 py-2 rounded-xl text-sm font-medium shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 ${
-                      isLinkedToMaster()
-                                              ? 'bg-accent hover:opacity-90 text-white'
-                      : 'bg-primary hover:opacity-90 text-white'
-                    }`}
-                  >
-                    {isLinkedToMaster() ? (
-                      <>
-                        <span className="mr-1">🔗</span>
-                        Ontkoppelen
-                      </>
-                    ) : (
-                      <>
-                        <Link2 className="w-4 h-4 mr-1" />
-                        Koppelen
-                      </>
-                    )}
-                  </button>
                 </div>
                 
-                {showQR && (
-                  <div className="space-y-3 pt-3 border-t border-[rgb(var(--border-color))]/50">
-                    <div>
-                      <p className="text-sm text-[rgb(var(--text-color))]/80 mb-2">
-                        Scan deze QR-code op een ander apparaat:
-                      </p>
-                      <div className="flex justify-center mb-2">
-                        <div className="bg-white p-2 rounded-lg shadow border border-[rgb(var(--border-color))]/20">
-                          <QRCode
-                            value={generateLinkCode()}
-                            size={150}
-                            level="H"
-                            bgColor="#ffffff"
-                            fgColor="#000000"
-                          />
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <input
-                          type="text"
-                          value={scanCode}
-                          onChange={(e) => setScanCode(e.target.value)}
-                          placeholder="Of vul code handmatig in..."
-                          className="w-full px-3 py-2 border border-[rgb(var(--border-color))] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-[rgb(var(--card-bg))] text-[rgb(var(--card-text))] text-sm"
-                        />
-                        <button
-                          onClick={handleScanCode}
-                          disabled={!scanCode.trim()}
-                          className="w-full flex items-center justify-center px-3 py-3 bg-primary hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200 text-sm"
-                        >
-                          <QrCode className="w-4 h-4 mr-2" />
-                          <span className="font-medium">Apparaat koppelen</span>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                <div className="bg-[rgb(var(--border-color))]/10 p-4 rounded-lg">
+                  <p className="text-sm text-[rgb(var(--text-color))]/80 mb-2">
+                    <strong>Gebruiker ID:</strong>
+                  </p>
+                  <p className="text-xs text-[rgb(var(--text-color))]/60 font-mono">
+                    {deviceInfo.deviceId.substring(0, 12)}...
+                  </p>
+                  <p className="text-xs text-[rgb(var(--text-color))]/60 mt-1">
+                    Dit ID wordt automatisch gebruikt voor het delen van lijsten
+                  </p>
+                </div>
               </div>
             </div>
           </div>

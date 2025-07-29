@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { X, Camera, Upload, AlertCircle } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
+import QrScanner from 'qr-scanner';
 
 const QRScannerModal = ({ onClose, onScanSuccess }) => {
   const [isScanning, setIsScanning] = useState(false);
@@ -10,6 +11,7 @@ const QRScannerModal = ({ onClose, onScanSuccess }) => {
   const [scanMethod, setScanMethod] = useState('camera'); // 'camera' or 'manual'
   const videoRef = useRef(null);
   const streamRef = useRef(null);
+  const qrScannerRef = useRef(null);
   const { success, error: showError } = useToast();
 
   useEffect(() => {
@@ -19,7 +21,10 @@ const QRScannerModal = ({ onClose, onScanSuccess }) => {
       stopCamera();
     }
 
-    return () => stopCamera();
+    return () => {
+      stopCamera();
+      stopQRScanner();
+    };
   }, [scanMethod]);
 
   const startCamera = async () => {
@@ -27,18 +32,23 @@ const QRScannerModal = ({ onClose, onScanSuccess }) => {
       setError('');
       setIsScanning(true);
       
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { 
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
           facingMode: 'environment',
           width: { ideal: 400 },
           height: { ideal: 400 }
-        } 
+        }
       });
       
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         streamRef.current = stream;
         videoRef.current.play();
+        
+        // Start QR scanner after video is playing
+        videoRef.current.addEventListener('loadedmetadata', () => {
+          startQRScanner();
+        });
       }
     } catch (err) {
       console.error('Camera access error:', err);
@@ -49,6 +59,7 @@ const QRScannerModal = ({ onClose, onScanSuccess }) => {
   };
 
   const stopCamera = () => {
+    stopQRScanner();
     if (streamRef.current) {
       streamRef.current.getTracks().forEach(track => track.stop());
       streamRef.current = null;
@@ -56,19 +67,55 @@ const QRScannerModal = ({ onClose, onScanSuccess }) => {
     setIsScanning(false);
   };
 
+  const startQRScanner = () => {
+    if (videoRef.current && !qrScannerRef.current) {
+      console.log('📱 Starting QR scanner on video element');
+      qrScannerRef.current = new QrScanner(
+        videoRef.current,
+        (result) => {
+          console.log('📱 QR code detected:', result.data);
+          processQRCode(result.data);
+        },
+        {
+          onDecodeError: (err) => {
+            // Don't log decode errors as they happen constantly while scanning
+            // console.log('QR decode error:', err);
+          },
+          highlightScanRegion: true,
+          highlightCodeOutline: true,
+          preferredCamera: 'environment'
+        }
+      );
+      
+      qrScannerRef.current.start().catch(err => {
+        console.error('Failed to start QR scanner:', err);
+        setError('QR scanner kon niet worden gestart. Gebruik handmatige invoer.');
+      });
+    }
+  };
+
+  const stopQRScanner = () => {
+    if (qrScannerRef.current) {
+      console.log('📱 Stopping QR scanner');
+      qrScannerRef.current.stop();
+      qrScannerRef.current.destroy();
+      qrScannerRef.current = null;
+    }
+  };
+
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const img = new Image();
-        img.onload = () => {
-          // For now, we'll just show a message that file upload QR scanning needs additional library
-          showError('QR code scannen van bestanden vereist aanvullende bibliotheek. Gebruik handmatige invoer.');
-        };
-        img.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
+      console.log('📱 Processing uploaded QR image file');
+      QrScanner.scanImage(file, { returnDetailedScanResult: true })
+        .then(result => {
+          console.log('📱 QR code detected from file:', result.data);
+          processQRCode(result.data);
+        })
+        .catch(err => {
+          console.error('📱 Failed to scan QR from file:', err);
+          showError('Geen geldige QR-code gevonden in de afbeelding. Probeer handmatige invoer.');
+        });
     }
   };
 
