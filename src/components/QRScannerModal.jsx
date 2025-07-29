@@ -1,105 +1,27 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { X, Camera, Upload, AlertCircle } from 'lucide-react';
+import { X, Camera, Upload, AlertCircle, Scan } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
-import QrScanner from 'qr-scanner';
+import { QrReader } from '@marcuwynu23/react-qr-reader';
 
 const QRScannerModal = ({ onClose, onScanSuccess }) => {
-  const [isScanning, setIsScanning] = useState(false);
   const [error, setError] = useState('');
   const [manualCode, setManualCode] = useState('');
   const [scanMethod, setScanMethod] = useState('camera'); // 'camera' or 'manual'
-  const videoRef = useRef(null);
-  const streamRef = useRef(null);
-  const qrScannerRef = useRef(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const fileInputRef = useRef(null);
   const { success, error: showError } = useToast();
 
-  useEffect(() => {
-    if (scanMethod === 'camera') {
-      startCamera();
-    } else {
-      stopCamera();
+  const handleScan = (result, error) => {
+    if (result && !isProcessing) {
+      setIsProcessing(true);
+      console.log('📱 QR code detected:', result?.text);
+      processQRCode(result.text);
     }
-
-    return () => {
-      stopCamera();
-      stopQRScanner();
-    };
-  }, [scanMethod]);
-
-  const startCamera = async () => {
-    try {
-      setError('');
-      setIsScanning(true);
-      
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: 'environment',
-          width: { ideal: 400 },
-          height: { ideal: 400 }
-        }
-      });
-      
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        streamRef.current = stream;
-        videoRef.current.play();
-        
-        // Start QR scanner after video is playing
-        videoRef.current.addEventListener('loadedmetadata', () => {
-          startQRScanner();
-        });
-      }
-    } catch (err) {
-      console.error('Camera access error:', err);
-      setError('Camera toegang geweigerd. Gebruik de handmatige invoer optie.');
-      setScanMethod('manual');
-      setIsScanning(false);
-    }
-  };
-
-  const stopCamera = () => {
-    stopQRScanner();
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
-      streamRef.current = null;
-    }
-    setIsScanning(false);
-  };
-
-  const startQRScanner = () => {
-    if (videoRef.current && !qrScannerRef.current) {
-      console.log('📱 Starting QR scanner on video element');
-      qrScannerRef.current = new QrScanner(
-        videoRef.current,
-        (result) => {
-          console.log('📱 QR code detected:', result.data);
-          processQRCode(result.data);
-        },
-        {
-          onDecodeError: (err) => {
-            // Don't log decode errors as they happen constantly while scanning
-            // console.log('QR decode error:', err);
-          },
-          highlightScanRegion: true,
-          highlightCodeOutline: true,
-          preferredCamera: 'environment'
-        }
-      );
-      
-      qrScannerRef.current.start().catch(err => {
-        console.error('Failed to start QR scanner:', err);
-        setError('QR scanner kon niet worden gestart. Gebruik handmatige invoer.');
-      });
-    }
-  };
-
-  const stopQRScanner = () => {
-    if (qrScannerRef.current) {
-      console.log('📱 Stopping QR scanner');
-      qrScannerRef.current.stop();
-      qrScannerRef.current.destroy();
-      qrScannerRef.current = null;
+    
+    if (error && error.name !== 'NotFoundException') {
+      console.error('QR scan error:', error);
+      setError('Camera toegang geweigerd of niet beschikbaar. Gebruik handmatige invoer.');
     }
   };
 
@@ -107,15 +29,31 @@ const QRScannerModal = ({ onClose, onScanSuccess }) => {
     const file = event.target.files[0];
     if (file) {
       console.log('📱 Processing uploaded QR image file');
-      QrScanner.scanImage(file, { returnDetailedScanResult: true })
-        .then(result => {
-          console.log('📱 QR code detected from file:', result.data);
-          processQRCode(result.data);
-        })
-        .catch(err => {
-          console.error('📱 Failed to scan QR from file:', err);
-          showError('Geen geldige QR-code gevonden in de afbeelding. Probeer handmatige invoer.');
-        });
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        // Create an image element to process
+        const img = new Image();
+        img.onload = () => {
+          // Use canvas to process the image
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          ctx.drawImage(img, 0, 0);
+          
+          // Try to extract QR code using jsQR or similar approach
+          try {
+            // For now, show manual input as fallback
+            showError('Upload functie wordt nog verbeterd. Gebruik handmatige invoer voor nu.');
+            setScanMethod('manual');
+          } catch (err) {
+            console.error('Failed to process uploaded image:', err);
+            showError('Geen geldige QR-code gevonden in de afbeelding. Probeer handmatige invoer.');
+          }
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -157,6 +95,8 @@ const QRScannerModal = ({ onClose, onScanSuccess }) => {
     } catch (err) {
       console.error('📱 QRScannerModal - Error processing QR code:', err);
       showError('Fout bij verwerken van QR-code');
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -172,29 +112,38 @@ const QRScannerModal = ({ onClose, onScanSuccess }) => {
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-[rgb(var(--card-bg))] rounded-lg shadow-xl max-w-md w-full"
+        className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-xl max-w-md w-full max-h-[90vh] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between p-6 border-b border-[rgb(var(--border-color))]/50">
-          <h2 className="text-xl font-semibold text-[rgb(var(--card-text))]">
-            QR-code scannen
-          </h2>
+        <div className="flex items-center justify-between p-6 border-b border-[rgb(var(--border-color))]/20">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-xl flex items-center justify-center">
+              <Scan className="w-5 h-5 text-primary" />
+            </div>
+            <h2 className="text-xl font-bold text-[rgb(var(--card-text))]">
+              QR-code scannen
+            </h2>
+          </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-[rgb(var(--border-color))]/20 transition-colors"
+            className="p-2 rounded-xl hover:bg-[rgb(var(--border-color))]/20 transition-colors"
           >
             <X className="w-5 h-5 text-[rgb(var(--text-color))]/60" />
           </button>
         </div>
 
-        <div className="p-6 space-y-4">
+        <div className="p-6 space-y-6">
           {/* Method Selection */}
-          <div className="flex space-x-2">
+          <div className="flex space-x-3">
             <button
-              onClick={() => setScanMethod('camera')}
-              className={`flex-1 flex items-center justify-center px-4 py-2 rounded-lg transition-all duration-200 ${
+              onClick={() => {
+                setScanMethod('camera');
+                setError('');
+                setIsProcessing(false);
+              }}
+              className={`flex-1 flex items-center justify-center px-4 py-3 rounded-xl transition-all duration-200 font-medium ${
                 scanMethod === 'camera'
-                  ? 'bg-primary text-white'
+                  ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-lg'
                   : 'bg-[rgb(var(--border-color))]/20 text-[rgb(var(--text-color))]/80 hover:bg-[rgb(var(--border-color))]/30'
               }`}
             >
@@ -202,10 +151,14 @@ const QRScannerModal = ({ onClose, onScanSuccess }) => {
               Camera
             </button>
             <button
-              onClick={() => setScanMethod('manual')}
-              className={`flex-1 flex items-center justify-center px-4 py-2 rounded-lg transition-all duration-200 ${
+              onClick={() => {
+                setScanMethod('manual');
+                setError('');
+                setIsProcessing(false);
+              }}
+              className={`flex-1 flex items-center justify-center px-4 py-3 rounded-xl transition-all duration-200 font-medium ${
                 scanMethod === 'manual'
-                  ? 'bg-primary text-white'
+                  ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-lg'
                   : 'bg-[rgb(var(--border-color))]/20 text-[rgb(var(--text-color))]/80 hover:bg-[rgb(var(--border-color))]/30'
               }`}
             >
@@ -217,40 +170,67 @@ const QRScannerModal = ({ onClose, onScanSuccess }) => {
             <div className="space-y-4">
               {error ? (
                 <div className="text-center py-8">
-                  <AlertCircle className="w-12 h-12 text-accent mx-auto mb-4" />
-                  <p className="text-[rgb(var(--text-color))]/80 mb-4">{error}</p>
+                  <div className="w-16 h-16 bg-gradient-to-br from-red-500/20 to-red-400/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <AlertCircle className="w-8 h-8 text-red-500" />
+                  </div>
+                  <p className="text-[rgb(var(--text-color))]/80 mb-6 leading-relaxed">{error}</p>
                   <button
                     onClick={() => setScanMethod('manual')}
-                    className="px-4 py-2 bg-primary hover:opacity-90 text-white rounded-lg transition-colors"
+                    className="px-6 py-3 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
                   >
                     Gebruik handmatige invoer
                   </button>
                 </div>
               ) : (
                 <div className="space-y-4">
-                  <div className="relative bg-black rounded-lg overflow-hidden aspect-square">
-                    <video
-                      ref={videoRef}
-                      className="w-full h-full object-cover"
-                      autoPlay
-                      playsInline
-                      muted
+                  <div className="relative bg-black rounded-2xl overflow-hidden aspect-square">
+                    <QrReader
+                      onResult={handleScan}
+                      style={{ width: '100%', height: '100%' }}
+                      constraints={{
+                        facingMode: 'environment'
+                      }}
+                      videoStyle={{
+                        objectFit: 'cover',
+                        width: '100%',
+                        height: '100%'
+                      }}
                     />
-                    <div className="absolute inset-0 border-2 border-primary rounded-lg pointer-events-none">
-                      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 h-48 border-2 border-white rounded-lg"></div>
+                    
+                    {/* Scanning overlay */}
+                    <div className="absolute inset-0 pointer-events-none">
+                      <div className="absolute inset-4 border-2 border-white/30 rounded-2xl">
+                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 h-48 border-2 border-white rounded-xl">
+                          {/* Corner indicators */}
+                          <div className="absolute -top-1 -left-1 w-6 h-6 border-t-4 border-l-4 border-primary rounded-tl-lg"></div>
+                          <div className="absolute -top-1 -right-1 w-6 h-6 border-t-4 border-r-4 border-primary rounded-tr-lg"></div>
+                          <div className="absolute -bottom-1 -left-1 w-6 h-6 border-b-4 border-l-4 border-primary rounded-bl-lg"></div>
+                          <div className="absolute -bottom-1 -right-1 w-6 h-6 border-b-4 border-r-4 border-primary rounded-br-lg"></div>
+                        </div>
+                      </div>
                     </div>
+                    
+                    {isProcessing && (
+                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                        <div className="bg-white rounded-xl px-4 py-2 flex items-center space-x-2">
+                          <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                          <span className="text-sm font-medium">Verwerken...</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                   
-                  <div className="text-center">
-                    <p className="text-[rgb(var(--text-color))]/80 mb-4">
-                      Houd de QR-code binnen het vierkant
+                  <div className="text-center space-y-4">
+                    <p className="text-[rgb(var(--text-color))]/80 leading-relaxed">
+                      Houd de QR-code binnen het vierkant voor automatische detectie
                     </p>
                     
-                    <div className="space-y-2">
-                      <label className="flex items-center justify-center px-4 py-2 bg-secondary hover:opacity-90 text-white rounded-lg cursor-pointer transition-colors">
+                    <div className="flex space-x-3">
+                      <label className="flex-1 flex items-center justify-center px-4 py-3 bg-gradient-to-r from-secondary to-accent hover:from-secondary/90 hover:to-accent/90 text-white rounded-xl cursor-pointer transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:scale-105">
                         <Upload className="w-4 h-4 mr-2" />
-                        Upload QR-afbeelding
+                        Upload Afbeelding
                         <input
+                          ref={fileInputRef}
                           type="file"
                           accept="image/*"
                           onChange={handleFileUpload}
@@ -263,9 +243,9 @@ const QRScannerModal = ({ onClose, onScanSuccess }) => {
               )}
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-[rgb(var(--text-color))]/80 mb-2">
+                <label className="block text-sm font-semibold text-[rgb(var(--text-color))]/80 mb-3">
                   Plak de gedeelde link of QR-code hier:
                 </label>
                 <input
@@ -273,16 +253,26 @@ const QRScannerModal = ({ onClose, onScanSuccess }) => {
                   value={manualCode}
                   onChange={(e) => setManualCode(e.target.value)}
                   placeholder="https://... of QR-code tekst"
-                  className="w-full px-4 py-3 border border-[rgb(var(--border-color))] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-[rgb(var(--card-bg))] text-[rgb(var(--card-text))]"
+                  className="w-full px-4 py-4 border border-[rgb(var(--border-color))]/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-[rgb(var(--card-bg))] text-[rgb(var(--card-text))] placeholder-[rgb(var(--text-color))]/40 transition-all duration-200"
                 />
               </div>
               
               <button
                 onClick={handleManualSubmit}
-                disabled={!manualCode.trim()}
-                className="w-full flex items-center justify-center px-4 py-3 bg-primary hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200"
+                disabled={!manualCode.trim() || isProcessing}
+                className="w-full flex items-center justify-center px-6 py-4 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200 font-semibold"
               >
-                <span className="font-medium">📝 Code verwerken</span>
+                {isProcessing ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-3"></div>
+                    <span>Verwerken...</span>
+                  </>
+                ) : (
+                  <>
+                    <Scan className="w-5 h-5 mr-3" />
+                    <span>Code Verwerken</span>
+                  </>
+                )}
               </button>
             </div>
           )}
@@ -292,4 +282,4 @@ const QRScannerModal = ({ onClose, onScanSuccess }) => {
   );
 };
 
-export default QRScannerModal; 
+export default QRScannerModal;

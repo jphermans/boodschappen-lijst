@@ -670,7 +670,7 @@ function App() {
                             e.stopPropagation();
                             handleShare(list.id);
                           }}
-                          className="flex items-center justify-center px-3 py-2.5 lg:py-3 bg-secondary hover:opacity-90 text-white rounded-lg lg:rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 font-medium text-sm lg:text-base"
+                          className="flex items-center justify-center px-3 py-2.5 lg:py-3 bg-gradient-to-r from-accent to-secondary hover:from-accent/90 hover:to-secondary/90 text-white rounded-lg lg:rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 font-medium text-sm lg:text-base"
                           title="Delen"
                         >
                           <Share2 className="w-4 h-4 lg:w-5 lg:h-5 mr-2" />
