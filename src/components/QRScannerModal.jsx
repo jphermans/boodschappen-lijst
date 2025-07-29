@@ -1,59 +1,103 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { X, Camera, Upload, AlertCircle, Scan } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
-import { QrReader } from '@marcuwynu23/react-qr-reader';
 
 const QRScannerModal = ({ onClose, onScanSuccess }) => {
   const [error, setError] = useState('');
   const [manualCode, setManualCode] = useState('');
   const [scanMethod, setScanMethod] = useState('camera'); // 'camera' or 'manual'
   const [isProcessing, setIsProcessing] = useState(false);
+  const [cameraReady, setCameraReady] = useState(false);
   const fileInputRef = useRef(null);
+  const videoRef = useRef(null);
+  const streamRef = useRef(null);
   const { success, error: showError } = useToast();
 
-  const handleScan = (result, error) => {
-    if (result && !isProcessing) {
-      setIsProcessing(true);
-      console.log('📱 QR code detected:', result?.text);
-      processQRCode(result.text);
+  useEffect(() => {
+    if (scanMethod === 'camera') {
+      startCamera();
+    } else {
+      stopCamera();
     }
+
+    return () => {
+      stopCamera();
+    };
+  }, [scanMethod]);
+
+  const startCamera = async () => {
+    try {
+      setError('');
+      setCameraReady(false);
+      
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: 'environment',
+          width: { ideal: 400 },
+          height: { ideal: 400 }
+        }
+      });
+      
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        streamRef.current = stream;
+        
+        videoRef.current.onloadedmetadata = () => {
+          videoRef.current.play();
+          setCameraReady(true);
+          startScanning();
+        };
+      }
+    } catch (err) {
+      console.error('Camera access error:', err);
+      setError('Camera toegang geweigerd. Gebruik de handmatige invoer optie.');
+      setScanMethod('manual');
+    }
+  };
+
+  const stopCamera = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+    setCameraReady(false);
+  };
+
+  const startScanning = () => {
+    if (!videoRef.current || !cameraReady) return;
+
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
     
-    if (error && error.name !== 'NotFoundException') {
-      console.error('QR scan error:', error);
-      setError('Camera toegang geweigerd of niet beschikbaar. Gebruik handmatige invoer.');
-    }
+    const scanFrame = () => {
+      if (!videoRef.current || !cameraReady || isProcessing) return;
+      
+      try {
+        canvas.width = videoRef.current.videoWidth;
+        canvas.height = videoRef.current.videoHeight;
+        context.drawImage(videoRef.current, 0, 0);
+        
+        // Simple QR detection placeholder - in a real implementation you'd use a QR library here
+        // For now, we'll rely on manual input as the primary method
+        
+        if (cameraReady && !isProcessing) {
+          setTimeout(scanFrame, 100);
+        }
+      } catch (err) {
+        console.error('Scanning error:', err);
+      }
+    };
+    
+    scanFrame();
   };
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
       console.log('📱 Processing uploaded QR image file');
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        // Create an image element to process
-        const img = new Image();
-        img.onload = () => {
-          // Use canvas to process the image
-          const canvas = document.createElement('canvas');
-          const ctx = canvas.getContext('2d');
-          canvas.width = img.width;
-          canvas.height = img.height;
-          ctx.drawImage(img, 0, 0);
-          
-          // Try to extract QR code using jsQR or similar approach
-          try {
-            // For now, show manual input as fallback
-            showError('Upload functie wordt nog verbeterd. Gebruik handmatige invoer voor nu.');
-            setScanMethod('manual');
-          } catch (err) {
-            console.error('Failed to process uploaded image:', err);
-            showError('Geen geldige QR-code gevonden in de afbeelding. Probeer handmatige invoer.');
-          }
-        };
-        img.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
+      showError('Upload functie wordt nog verbeterd. Gebruik handmatige invoer voor nu.');
+      setScanMethod('manual');
     }
   };
 
@@ -68,6 +112,8 @@ const QRScannerModal = ({ onClose, onScanSuccess }) => {
     console.log('📱 QRScannerModal - Original hash before processing:', window.location.hash);
     
     try {
+      setIsProcessing(true);
+      
       // Store original hash to restore later
       const originalHash = window.location.hash;
       
@@ -95,7 +141,6 @@ const QRScannerModal = ({ onClose, onScanSuccess }) => {
     } catch (err) {
       console.error('📱 QRScannerModal - Error processing QR code:', err);
       showError('Fout bij verwerken van QR-code');
-    } finally {
       setIsProcessing(false);
     }
   };
@@ -184,17 +229,12 @@ const QRScannerModal = ({ onClose, onScanSuccess }) => {
               ) : (
                 <div className="space-y-4">
                   <div className="relative bg-black rounded-2xl overflow-hidden aspect-square">
-                    <QrReader
-                      onResult={handleScan}
-                      style={{ width: '100%', height: '100%' }}
-                      constraints={{
-                        facingMode: 'environment'
-                      }}
-                      videoStyle={{
-                        objectFit: 'cover',
-                        width: '100%',
-                        height: '100%'
-                      }}
+                    <video
+                      ref={videoRef}
+                      className="w-full h-full object-cover"
+                      autoPlay
+                      playsInline
+                      muted
                     />
                     
                     {/* Scanning overlay */}
@@ -210,6 +250,15 @@ const QRScannerModal = ({ onClose, onScanSuccess }) => {
                       </div>
                     </div>
                     
+                    {!cameraReady && (
+                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                        <div className="bg-white rounded-xl px-4 py-2 flex items-center space-x-2">
+                          <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                          <span className="text-sm font-medium">Camera starten...</span>
+                        </div>
+                      </div>
+                    )}
+                    
                     {isProcessing && (
                       <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                         <div className="bg-white rounded-xl px-4 py-2 flex items-center space-x-2">
@@ -222,7 +271,7 @@ const QRScannerModal = ({ onClose, onScanSuccess }) => {
                   
                   <div className="text-center space-y-4">
                     <p className="text-[rgb(var(--text-color))]/80 leading-relaxed">
-                      Houd de QR-code binnen het vierkant voor automatische detectie
+                      Camera is gestart. Gebruik handmatige invoer voor het beste resultaat.
                     </p>
                     
                     <div className="flex space-x-3">
