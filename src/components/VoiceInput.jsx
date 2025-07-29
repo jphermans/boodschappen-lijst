@@ -57,26 +57,27 @@ const VoiceInput = ({
       return;
     }
 
-    if (hasPermission === false) {
-      showError('Microfoon toegang is vereist voor spraakherkenning.', 4000);
+    if (isListening) {
+      stopListening();
       return;
     }
 
-    if (isListening) {
-      stopListening();
-    } else {
-      // Request microphone permission if not already granted
-      if (hasPermission === null) {
-        try {
-          await navigator.mediaDevices.getUserMedia({ audio: true });
-          setHasPermission(true);
-        } catch (err) {
-          setHasPermission(false);
-          showError('Microfoon toegang geweigerd.', 3000);
-          return;
-        }
+    // Request microphone permission if not already granted
+    if (hasPermission !== true) {
+      try {
+        await navigator.mediaDevices.getUserMedia({ audio: true });
+        setHasPermission(true);
+        success('Microfoon toegang verleend! 🎤', 2000);
+        // Auto-start listening after permission granted
+        setTimeout(() => {
+          startListening();
+        }, 500);
+      } catch (err) {
+        setHasPermission(false);
+        showError('Microfoon toegang geweigerd. Klik op het slot-icoon in de adresbalk om toegang te verlenen.', 6000);
+        return;
       }
-      
+    } else {
       startListening();
     }
   };
@@ -92,15 +93,22 @@ const VoiceInput = ({
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         className={`
-          relative flex items-center justify-center p-3 rounded-xl shadow-lg hover:shadow-xl 
+          relative flex items-center justify-center rounded-xl shadow-lg hover:shadow-xl 
           transform transition-all duration-200 overflow-hidden
-          ${isListening 
-            ? 'bg-gradient-to-r from-accent to-accent/80 text-white' 
-            : 'bg-gradient-to-r from-secondary to-secondary/80 hover:opacity-90 text-white'
+          ${hasPermission === false 
+            ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-3 animate-pulse' 
+            : isListening 
+              ? 'bg-gradient-to-r from-accent to-accent/80 text-white p-3' 
+              : 'bg-gradient-to-r from-secondary to-secondary/80 hover:opacity-90 text-white p-3'
           }
         `}
-        title={isListening ? 'Stop opname' : `${placeholder}`}
-        disabled={hasPermission === false}
+        title={
+          hasPermission === false 
+            ? 'Klik om microfoon toegang te verlenen'
+            : isListening 
+              ? 'Stop opname' 
+              : `${placeholder}`
+        }
       >
         {/* Background pulse animation when listening */}
         <AnimatePresence>
@@ -115,14 +123,17 @@ const VoiceInput = ({
           )}
         </AnimatePresence>
 
-        {/* Icon */}
+        {/* Icon and Text */}
         <motion.div
           animate={isListening ? { scale: [1, 1.1, 1] } : { scale: 1 }}
           transition={{ duration: 0.6, repeat: isListening ? Infinity : 0 }}
-          className="relative z-10"
+          className="relative z-10 flex items-center space-x-2"
         >
           {hasPermission === false ? (
-            <AlertCircle className="w-5 h-5" />
+            <>
+              <AlertCircle className="w-5 h-5" />
+              <span className="font-medium text-sm">Microfoon toegang</span>
+            </>
           ) : isListening ? (
             <MicOff className="w-5 h-5" />
           ) : (
@@ -166,8 +177,23 @@ const VoiceInput = ({
         )}
       </AnimatePresence>
 
-      {/* Permission warning */}
+      {/* Help text for users */}
       <AnimatePresence>
+        {hasPermission === null && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 z-20"
+          >
+            <div className="bg-[rgb(var(--card-bg))] text-[rgb(var(--card-text))] px-3 py-2 rounded-lg shadow-lg border border-[rgb(var(--border-color))]/20 max-w-xs">
+              <div className="flex items-center space-x-2">
+                <Mic className="w-4 h-4 flex-shrink-0 text-secondary" />
+                <span className="text-xs">Klik om spraakherkenning te gebruiken</span>
+              </div>
+            </div>
+          </motion.div>
+        )}
         {hasPermission === false && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -175,10 +201,15 @@ const VoiceInput = ({
             exit={{ opacity: 0, y: 10 }}
             className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 z-20"
           >
-            <div className="bg-accent/10 text-accent px-3 py-2 rounded-lg shadow-lg border border-accent/20 max-w-xs">
-              <div className="flex items-center space-x-2">
-                <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                <span className="text-xs">Microfoon toegang vereist</span>
+            <div className="bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 px-3 py-2 rounded-lg shadow-lg border border-red-200 dark:border-red-800 max-w-sm">
+              <div className="text-xs space-y-1">
+                <div className="flex items-center space-x-2">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                  <span className="font-medium">Microfoon toegang vereist</span>
+                </div>
+                <div className="text-xs opacity-90">
+                  Klik op het 🔒 icoon in de adresbalk → Microfoon → Toestaan
+                </div>
               </div>
             </div>
           </motion.div>
