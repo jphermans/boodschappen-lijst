@@ -200,22 +200,22 @@ const ShoppingList = ({ list, onBack, onShare }) => {
     <motion.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
-      className="max-w-2xl mx-auto px-4 sm:px-0"
+      className="max-w-2xl mx-auto px-3 sm:px-4 lg:px-0"
     >
-      <div className="bg-[rgb(var(--card-bg))] rounded-lg shadow-lg p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center space-x-3">
+      <div className="bg-[rgb(var(--card-bg))] rounded-lg shadow-lg p-4 sm:p-6">
+        <div className="flex items-center justify-between mb-4 sm:mb-6">
+          <div className="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
             <button
               onClick={onBack}
-              className="flex items-center justify-center p-3 rounded-xl bg-[rgb(var(--border-color))]/60 hover:bg-[rgb(var(--border-color))]/80 text-[rgb(var(--card-text))] shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+              className="flex items-center justify-center p-2 sm:p-3 rounded-lg sm:rounded-xl bg-[rgb(var(--border-color))]/60 hover:bg-[rgb(var(--border-color))]/80 text-[rgb(var(--card-text))] shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex-shrink-0"
             >
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
-            <div className="flex flex-col">
-              <h2 className="text-2xl font-bold text-[rgb(var(--card-text))]">
+            <div className="flex flex-col min-w-0 flex-1">
+              <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-[rgb(var(--card-text))] truncate">
                 {currentList.name}
               </h2>
-              <span className={`text-xs font-medium px-2 py-1 rounded-full self-start mt-1 ${
+              <span className={`text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full self-start mt-1 ${
                 currentList.isCreator
                   ? 'bg-primary/20 text-primary'
                   : 'bg-secondary/20 text-secondary'
@@ -230,14 +230,14 @@ const ShoppingList = ({ list, onBack, onShare }) => {
                 onShare(currentList.id);
               }
             }}
-            className="flex items-center justify-center p-3 rounded-xl bg-secondary hover:opacity-90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+            className="flex items-center justify-center p-2 sm:p-3 rounded-lg sm:rounded-xl bg-secondary hover:opacity-90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex-shrink-0"
             title="Lijst delen"
           >
-            <Share2 className="w-5 h-5" />
+            <Share2 className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
         </div>
 
-        <div className="mb-4">
+        <div className="mb-3 sm:mb-4">
           <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 relative">
             <div className="flex-1 relative">
               <input
@@ -247,8 +247,8 @@ const ShoppingList = ({ list, onBack, onShare }) => {
                 onKeyDown={(e) => e.key === 'Enter' && addItem()}
                 onFocus={handleInputFocus}
                 onBlur={handleInputBlur}
-                placeholder="Voeg item toe... (bijv. melk, brood, appels)"
-                className="w-full px-4 py-2 border border-[rgb(var(--border-color))] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-[rgb(var(--card-bg))] text-[rgb(var(--card-text))]"
+                placeholder="Voeg item toe..."
+                className="w-full px-3 sm:px-4 py-2 border border-[rgb(var(--border-color))] rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-[rgb(var(--card-bg))] text-[rgb(var(--card-text))] text-sm sm:text-base"
               />
               
               {showSuggestions && suggestions.length > 0 && (
@@ -257,7 +257,7 @@ const ShoppingList = ({ list, onBack, onShare }) => {
                     <button
                       key={index}
                       onClick={() => handleSuggestionClick(suggestion)}
-                      className="w-full text-left px-4 py-2 hover:bg-[rgb(var(--border-color))]/10 transition-colors first:rounded-t-lg last:rounded-b-lg text-[rgb(var(--card-text))]"
+                      className="w-full text-left px-3 sm:px-4 py-2 hover:bg-[rgb(var(--border-color))]/10 transition-colors first:rounded-t-lg last:rounded-b-lg text-[rgb(var(--card-text))] text-sm sm:text-base"
                     >
                       {suggestion}
                     </button>
@@ -268,22 +268,22 @@ const ShoppingList = ({ list, onBack, onShare }) => {
             <button
               onClick={() => addItem()}
               disabled={!newItem.trim()}
-              className="flex items-center justify-center px-6 py-3 bg-primary hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200"
+              className="flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 bg-primary hover:opacity-90 text-white rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200"
             >
-              <Plus className="w-5 h-5 mr-2" />
-              <span className="font-medium">Toevoegen</span>
+              <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+              <span className="font-medium text-sm sm:text-base">Toevoegen</span>
             </button>
           </div>
           
           {currentList.items.length === 0 && newItem.length === 0 && (
-            <div className="mt-3">
-              <p className="text-sm text-[rgb(var(--text-color))]/60 mb-2">Populaire items:</p>
-              <div className="flex flex-wrap gap-2">
+            <div className="mt-2 sm:mt-3">
+              <p className="text-xs sm:text-sm text-[rgb(var(--text-color))]/60 mb-2">Populaire items:</p>
+              <div className="flex flex-wrap gap-1 sm:gap-2">
                 {getPopularItems().map((item, index) => (
                   <button
                     key={index}
                     onClick={() => addItem(item)}
-                    className="px-3 py-1 bg-[rgb(var(--border-color))]/20 hover:bg-[rgb(var(--border-color))]/30 text-[rgb(var(--text-color))]/80 rounded-lg text-sm transition-colors"
+                    className="px-2 sm:px-3 py-1 bg-[rgb(var(--border-color))]/20 hover:bg-[rgb(var(--border-color))]/30 text-[rgb(var(--text-color))]/80 rounded-lg text-xs sm:text-sm transition-colors"
                   >
                     {item}
                   </button>
@@ -293,8 +293,8 @@ const ShoppingList = ({ list, onBack, onShare }) => {
           )}
         </div>
 
-        <div className="mb-4">
-          <div className="flex flex-wrap gap-2">
+        <div className="mb-3 sm:mb-4">
+          <div className="flex flex-wrap gap-1 sm:gap-2">
             {[
               { type: 'all', label: 'Alles', icon: '📋' },
               { type: 'active', label: 'Actief', icon: '⏳' },
@@ -303,7 +303,7 @@ const ShoppingList = ({ list, onBack, onShare }) => {
               <button
                 key={filterOption.type}
                 onClick={() => setFilter(filterOption.type)}
-                className={`flex items-center justify-center px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
+                className={`flex items-center justify-center px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
                   filter === filterOption.type
                     ? 'bg-primary text-white shadow-lg transform scale-105'
                     : 'bg-[rgb(var(--border-color))]/20 text-[rgb(var(--text-color))]/80 hover:bg-[rgb(var(--border-color))]/30 hover:scale-105'
@@ -316,7 +316,7 @@ const ShoppingList = ({ list, onBack, onShare }) => {
           </div>
         </div>
 
-        <div className="mb-4 text-sm text-[rgb(var(--text-color))]/80">
+        <div className="mb-3 sm:mb-4 text-xs sm:text-sm text-[rgb(var(--text-color))]/80">
           {completedCount} van {totalCount} items voltooid
         </div>
 
@@ -327,20 +327,20 @@ const ShoppingList = ({ list, onBack, onShare }) => {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="flex items-center space-x-3 p-3 bg-[rgb(var(--border-color))]/10 rounded-lg min-w-0"
+              className="flex items-center space-x-2 sm:space-x-3 p-2 sm:p-3 bg-[rgb(var(--border-color))]/10 rounded-lg min-w-0"
             >
               <button
                 onClick={() => toggleItem(item.id)}
-                className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all duration-200 flex-shrink-0 transform hover:scale-110 ${
+                className={`w-5 h-5 sm:w-6 sm:h-6 rounded-lg border-2 flex items-center justify-center transition-all duration-200 flex-shrink-0 transform hover:scale-110 ${
                   item.completed
                                       ? 'bg-gradient-to-r from-primary to-primary border-primary shadow-lg'
                   : 'border-[rgb(var(--border-color))] hover:border-primary hover:bg-primary/10'
                 }`}
               >
-                {item.completed && <Check className="w-4 h-4 text-white" />}
+                {item.completed && <Check className="w-3 h-3 sm:w-4 sm:h-4 text-white" />}
               </button>
               <span
-                className={`flex-1 min-w-0 break-words ${
+                className={`flex-1 min-w-0 break-words text-sm sm:text-base ${
                   item.completed
                     ? 'line-through text-[rgb(var(--text-color))]/60'
                     : 'text-[rgb(var(--card-text))]'
@@ -350,30 +350,30 @@ const ShoppingList = ({ list, onBack, onShare }) => {
               </span>
               <button
                 onClick={() => deleteItem(item.id)}
-                className="flex items-center justify-center p-2 rounded-lg bg-accent/20 hover:bg-accent/30 text-accent hover:text-accent transform hover:scale-110 transition-all duration-200 flex-shrink-0"
+                className="flex items-center justify-center p-1.5 sm:p-2 rounded-lg bg-accent/20 hover:bg-accent/30 text-accent hover:text-accent transform hover:scale-110 transition-all duration-200 flex-shrink-0"
                 title="Item verwijderen"
               >
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
               </button>
             </motion.div>
           ))}
         </div>
 
         {completedCount > 0 && (
-          <div className="mt-6">
+          <div className="mt-4 sm:mt-6">
             <button
               onClick={clearCompleted}
-              className="w-full flex items-center justify-center px-4 py-3 bg-accent hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+              className="w-full flex items-center justify-center px-3 sm:px-4 py-2 sm:py-3 bg-accent hover:opacity-90 text-white rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
             >
-              <Trash2 className="w-5 h-5 mr-2" />
-              <span className="font-medium">Verwijder voltooide items ({completedCount})</span>
+              <Trash2 className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+              <span className="font-medium text-sm sm:text-base">Verwijder voltooide items ({completedCount})</span>
             </button>
           </div>
         )}
 
         {currentList.items.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-[rgb(var(--text-color))]/60">
+          <div className="text-center py-8 sm:py-12">
+            <p className="text-[rgb(var(--text-color))]/60 text-sm sm:text-base px-4">
               Je boodschappenlijst is leeg. Voeg items toe om te beginnen!
             </p>
           </div>

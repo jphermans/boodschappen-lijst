@@ -231,42 +231,42 @@ function App() {
   return (
     <div className="min-h-screen bg-[rgb(var(--bg-color))] transition-colors duration-300">
       <header className="bg-[rgb(var(--card-bg))] shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-3 sm:py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <List className="w-8 h-8 text-primary" />
-            <h1 className="text-xl sm:text-2xl font-bold text-[rgb(var(--card-text))]">
+            <List className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
+            <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-[rgb(var(--card-text))]">
               Boodschappenlijst
             </h1>
           </div>
-          <div className="flex items-center space-x-2 sm:space-x-3">
+          <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-3">
             <button
               onClick={() => setShowScanner(true)}
-              className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-r from-secondary to-accent hover:opacity-90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+              className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-gradient-to-r from-secondary to-accent hover:opacity-90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
               aria-label="QR-code scannen"
             >
-              <QrCode className="w-5 h-5" />
+              <QrCode className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
             <button
               onClick={toggleTheme}
-              className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+              className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
               aria-label="Thema wisselen"
             >
-              <span className="text-lg">
+              <span className="text-base sm:text-lg">
                 {theme === 'light' ? '🌙' : '☀️'}
               </span>
             </button>
             <button
               onClick={() => setShowSettings(true)}
-              className="flex items-center justify-center w-12 h-12 rounded-xl bg-[rgb(var(--border-color))]/60 hover:bg-[rgb(var(--border-color))]/80 text-[rgb(var(--card-text))] shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+              className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-[rgb(var(--border-color))]/60 hover:bg-[rgb(var(--border-color))]/80 text-[rgb(var(--card-text))] shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
               aria-label="Instellingen"
             >
-              <Settings className="w-5 h-5" />
+              <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+      <main className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-3 sm:py-4 lg:py-8">
         {!selectedList ? (
           <div>
             <motion.div 
@@ -274,10 +274,10 @@ function App() {
               animate={{ opacity: 1, y: 0 }}
               className="bg-[rgb(var(--card-bg))] rounded-lg shadow-lg p-6 mb-6"
             >
-              <h2 className="text-xl font-semibold text-[rgb(var(--card-text))] mb-4">
+              <h2 className="text-lg sm:text-xl font-semibold text-[rgb(var(--card-text))] mb-3 sm:mb-4">
                 Nieuwe lijst maken
               </h2>
-              <div className="flex flex-col lg:flex-row space-y-3 lg:space-y-0 lg:space-x-2">
+              <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
                 <div className="flex-1 relative">
                   <input
                     type="text"
@@ -285,16 +285,16 @@ function App() {
                     onChange={(e) => setNewListName(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && createList()}
                     placeholder="Naam van je boodschappenlijst..."
-                    className="w-full px-4 py-3 border border-[rgb(var(--border-color))] rounded-xl focus:outline-none focus:ring-2 focus:ring-primary bg-[rgb(var(--card-bg))] text-[rgb(var(--card-text))] text-lg"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-[rgb(var(--border-color))] rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 focus:ring-primary bg-[rgb(var(--card-bg))] text-[rgb(var(--card-text))] text-base sm:text-lg"
                   />
                 </div>
                 <button
                   onClick={createList}
                   disabled={!newListName.trim()}
-                  className="flex items-center justify-center px-6 py-3 bg-primary hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200"
+                  className="flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 bg-primary hover:opacity-90 text-white rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200"
                 >
-                  <Plus className="w-5 h-5 mr-2" />
-                  <span className="font-medium">Aanmaken</span>
+                  <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                  <span className="font-medium text-sm sm:text-base">Aanmaken</span>
                 </button>
               </div>
             </motion.div>
@@ -308,10 +308,10 @@ function App() {
                   className="bg-[rgb(var(--card-bg))] rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow"
                 >
                   <div className="flex items-start justify-between mb-2">
-                    <h3 className="text-lg font-semibold text-[rgb(var(--card-text))] flex-1">
+                    <h3 className="text-base sm:text-lg font-semibold text-[rgb(var(--card-text))] flex-1 pr-2">
                       {list.name}
                     </h3>
-                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                    <span className={`px-1.5 sm:px-2 py-0.5 sm:py-1 text-xs font-medium rounded-full flex-shrink-0 ${
                       list.isCreator
                         ? 'bg-primary/20 text-primary'
                         : 'bg-secondary/20 text-secondary'
@@ -319,34 +319,34 @@ function App() {
                       {list.isCreator ? 'Eigenaar' : 'Gedeeld'}
                     </span>
                   </div>
-                  <p className="text-[rgb(var(--text-color))]/60 mb-4">
+                  <p className="text-[rgb(var(--text-color))]/60 mb-3 sm:mb-4 text-sm">
                     {list.items.length} item{list.items.length !== 1 ? 's' : ''}
                   </p>
                   <div className="flex flex-col space-y-2">
                     <button
                       onClick={() => setSelectedList(list)}
-                      className="w-full flex items-center justify-center px-4 py-3 bg-primary hover:opacity-90 text-white rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+                      className="w-full flex items-center justify-center px-3 sm:px-4 py-2 sm:py-3 bg-primary hover:opacity-90 text-white rounded-lg sm:rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
                     >
-                      <Check className="w-4 h-4 mr-2" />
-                      <span className="font-medium">Openen</span>
+                      <Check className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
+                      <span className="font-medium text-sm sm:text-base">Openen</span>
                     </button>
                     <div className="flex space-x-2">
                       <button
                         onClick={() => handleShare(list.id)}
-                        className="flex-1 flex items-center justify-center px-4 py-3 bg-secondary hover:opacity-90 text-white rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+                        className="flex-1 flex items-center justify-center px-2 sm:px-4 py-2 sm:py-3 bg-secondary hover:opacity-90 text-white rounded-lg sm:rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
                         title="Delen"
                       >
-                        <Share2 className="w-4 h-4 mr-2" />
-                        <span className="font-medium">Delen</span>
+                        <Share2 className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                        <span className="font-medium text-xs sm:text-sm">Delen</span>
                       </button>
                       {canDeleteList(list) && (
                         <button
                           onClick={() => deleteList(list.id)}
-                          className="flex-1 flex items-center justify-center px-4 py-3 bg-accent hover:opacity-90 text-white rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+                          className="flex-1 flex items-center justify-center px-2 sm:px-4 py-2 sm:py-3 bg-accent hover:opacity-90 text-white rounded-lg sm:rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
                           title="Verwijderen"
                         >
-                          <Trash2 className="w-4 h-4 mr-2" />
-                          <span className="font-medium">Verwijderen</span>
+                          <Trash2 className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                          <span className="font-medium text-xs sm:text-sm">Verwijderen</span>
                         </button>
                       )}
                     </div>
@@ -361,20 +361,20 @@ function App() {
                 animate={{ opacity: 1 }}
                 className="text-center py-12"
               >
-                <List className="w-16 h-16 text-[rgb(var(--text-color))]/40 mx-auto mb-4" />
-                <p className="text-[rgb(var(--text-color))]/60 mb-6">
+                <List className="w-12 h-12 sm:w-16 sm:h-16 text-[rgb(var(--text-color))]/40 mx-auto mb-3 sm:mb-4" />
+                <p className="text-[rgb(var(--text-color))]/60 mb-4 sm:mb-6 text-sm sm:text-base px-4 text-center">
                   Je hebt nog geen boodschappenlijsten. Maak er een aan om te beginnen!
                 </p>
-                <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 justify-center items-center px-4">
                   <button
                     onClick={() => setShowScanner(true)}
-                    className="flex items-center justify-center px-6 py-3 bg-gradient-to-r from-secondary to-accent hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                    className="flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-secondary to-accent hover:opacity-90 text-white rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
                   >
-                    <QrCode className="w-5 h-5 mr-2" />
-                    <span className="font-medium">Scan gedeelde lijst</span>
+                    <QrCode className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                    <span className="font-medium text-sm sm:text-base">Scan gedeelde lijst</span>
                   </button>
-                  <span className="text-[rgb(var(--text-color))]/40 text-sm">of</span>
-                  <span className="text-[rgb(var(--text-color))]/60 text-sm">Maak hierboven een nieuwe lijst aan</span>
+                  <span className="text-[rgb(var(--text-color))]/40 text-xs sm:text-sm">of</span>
+                  <span className="text-[rgb(var(--text-color))]/60 text-xs sm:text-sm text-center">Maak hierboven een nieuwe lijst aan</span>
                 </div>
               </motion.div>
             )}
@@ -401,13 +401,13 @@ function App() {
 
       {/* Floating QR Scanner Button for Mobile */}
       {!selectedList && lists.length > 0 && (
-        <div className="fixed bottom-6 right-6 lg:hidden">
+        <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 lg:hidden">
           <button
             onClick={() => setShowScanner(true)}
-            className="flex items-center justify-center w-16 h-16 bg-gradient-to-r from-secondary to-accent hover:opacity-90 text-white rounded-full shadow-xl hover:shadow-2xl transform hover:scale-110 transition-all duration-200"
+            className="flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-secondary to-accent hover:opacity-90 text-white rounded-full shadow-xl hover:shadow-2xl transform hover:scale-110 transition-all duration-200"
             aria-label="QR-code scannen"
           >
-            <QrCode className="w-6 h-6" />
+            <QrCode className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
         </div>
       )}
