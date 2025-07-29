@@ -58,6 +58,7 @@ const SettingsModal = ({ lists = [], onClose }) => {
         exit={{ scale: 0.9, opacity: 0 }}
         className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
+        style={{ overflow: 'hidden' }} // Prevent scroll bleed
       >
         {/* Fixed Header */}
         <div className="flex items-center justify-between p-4 lg:p-6 border-b border-[rgb(var(--border-color))]/50 flex-shrink-0">
@@ -73,7 +74,7 @@ const SettingsModal = ({ lists = [], onClose }) => {
         </div>
 
         {/* Scrollable Content */}
-        <div className="p-4 lg:p-6 space-y-6 overflow-y-auto flex-1 overscroll-contain">
+        <div className="p-4 lg:p-6 space-y-6 overflow-y-auto flex-1 overscroll-contain" style={{ minHeight: 0 }}>
           <div>
             <h3 className="text-lg font-medium text-[rgb(var(--card-text))] mb-3">
               Thema
