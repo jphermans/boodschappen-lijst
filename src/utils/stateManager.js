@@ -279,7 +279,9 @@ class StateManager {
       ...list,
       id: list.id || `list_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       createdAt: Date.now(),
-      updatedAt: Date.now()
+      updatedAt: Date.now(),
+      isCreator: list.isCreator !== undefined ? list.isCreator : true, // Default to true for locally created lists
+      sharedWith: list.sharedWith || [] // Ensure sharedWith array exists
     };
 
     const updatedLists = [...lists, newList];
