@@ -95,7 +95,18 @@ VITE_FIREBASE_APP_ID=1:123456789:web:abc123
 npm run dev
 ```
 
-🌐 **App is beschikbaar op**: `http://localhost:5173`
+🌐 **App is beschikbaar op**: `http://localhost:5174`
+
+### GitHub Pages Deployment
+
+Voor automatische deployment naar GitHub Pages met Firebase secrets:
+
+> 📖 **GitHub Pages Setup**: Zie [GITHUB_PAGES_SETUP.md](GITHUB_PAGES_SETUP.md) voor complete deployment instructies.
+
+**Snelle setup:**
+1. Configureer GitHub Secrets met je Firebase credentials
+2. Push naar main branch voor automatische deployment
+3. App is live op: `https://jouwusername.github.io/repository-naam/`
 
 ## 📖 Gebruikshandleiding
 
