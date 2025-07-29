@@ -80,22 +80,33 @@ const QRScannerModal = ({ onClose, onScanSuccess }) => {
 
   const processQRCode = (code) => {
     console.log('📱 QRScannerModal - Processing QR code:', code);
+    console.log('📱 QRScannerModal - Original hash before processing:', window.location.hash);
+    
     try {
-      // Prevent the URL from changing the browser hash when processing QR codes
-      // This prevents triggering the hash change listener
+      // Store original hash to restore later
       const originalHash = window.location.hash;
       
-      // Pass the code directly to the main handler - let it do all validation
-      onScanSuccess(code);
-      
-      // Restore the original hash if it was changed during processing
-      if (window.location.hash !== originalHash) {
-        console.log('📱 QRScannerModal - Restoring original hash:', originalHash);
-        window.location.hash = originalHash;
-      }
-      
-      success('QR-code succesvol gescand! 🎉');
+      // Close the modal first to prevent any UI interference
       onClose();
+      
+      // Small delay to ensure modal is closed before processing
+      setTimeout(() => {
+        console.log('📱 QRScannerModal - Calling onScanSuccess with code:', code);
+        
+        // Pass the code directly to the main handler - let it do all validation
+        onScanSuccess(code);
+        
+        // Restore the original hash if it was changed during processing
+        setTimeout(() => {
+          if (window.location.hash !== originalHash) {
+            console.log('📱 QRScannerModal - Restoring original hash:', originalHash);
+            window.location.hash = originalHash;
+          }
+        }, 100);
+        
+        success('QR-code succesvol gescand! 🎉');
+      }, 100);
+      
     } catch (err) {
       console.error('📱 QRScannerModal - Error processing QR code:', err);
       showError('Fout bij verwerken van QR-code');

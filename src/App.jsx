@@ -34,6 +34,13 @@ function App() {
   const handleSharedListFromURL = async (currentLists = lists) => {
     const hash = window.location.hash;
     console.log('🌐 URL Hash Handler - Current hash:', hash);
+    console.log('🌐 URL Hash Handler - isProcessingQRScan flag:', isProcessingQRScan);
+    
+    // Double-check the QR scan flag
+    if (isProcessingQRScan) {
+      console.log('🌐 URL Hash Handler - BLOCKED: QR scan in progress, ignoring hash change');
+      return;
+    }
     
     const sharedMatch = hash.match(/^#\/shared\/(.+)$/);
     
@@ -42,6 +49,7 @@ function App() {
       console.log('🌐 URL Hash Handler - Found shared list ID in URL:', listId);
       console.log('🌐 URL Hash Handler - Current lists count:', currentLists.length);
       console.log('🌐 URL Hash Handler - Current user ID:', getCurrentUserID());
+      console.log('🌐 URL Hash Handler - This was triggered by URL navigation, NOT QR scanning');
       
       try {
         console.log('🌐 Step 1: Fetching list from Firebase...');
@@ -89,8 +97,11 @@ function App() {
           code: err.code,
           stack: err.stack,
           listId: listId,
-          hash: hash
+          hash: hash,
+          isQRScan: isProcessingQRScan
         });
+        
+        console.log('❌ URL Hash Handler - This error came from URL navigation, not QR scanning');
         
         // Provide more specific error messages based on error type
         if (err.code === 'permission-denied') {
