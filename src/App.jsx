@@ -1002,18 +1002,6 @@ function App() {
         </div>
       )}
 
-      {/* Floating QR Scanner Button for Mobile */}
-      {!selectedList && lists.length > 0 && (
-        <div className="fixed lg:hidden fab-safe">
-          <button
-            onClick={() => setShowScanner(true)}
-            className="flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-secondary to-accent hover:opacity-90 text-white rounded-full shadow-xl hover:shadow-2xl transform hover:scale-110 transition-all duration-200"
-            aria-label="QR-code scannen"
-          >
-            <QrCode className="w-5 h-5 sm:w-6 sm:h-6" />
-          </button>
-        </div>
-      )}
 
       {showSettings && (
         <SettingsModal
