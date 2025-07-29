@@ -301,11 +301,8 @@ function App() {
         creatorId: userID
       };
 
-      // Create in Firebase
+      // Create in Firebase (the real-time subscription will automatically add it to local state)
       await createShoppingList(newListData);
-      
-      // Also add to local persistent state
-      await addList(newListData);
       
       setNewListName('');
       success(`Lijst "${validation.value}" is aangemaakt! 🎉`);
@@ -330,11 +327,8 @@ function App() {
         return;
       }
       
-      // Delete from Firebase
+      // Delete from Firebase (the real-time subscription will automatically remove it from local state)
       await deleteShoppingList(listId);
-      
-      // Delete from local persistent state
-      await removeList(listId);
       
       if (selectedList?.id === listId) {
         setSelectedList(null);
@@ -353,9 +347,8 @@ function App() {
             // Remove the id field to allow Firebase to create a new one
             const { id, createdAt, updatedAt, isCreator, ...listDataToRestore } = listToDelete;
             
-            // Restore to both Firebase and local state
+            // Restore to Firebase (the real-time subscription will automatically add it to local state)
             await createShoppingList(listDataToRestore);
-            await addList(listDataToRestore);
             
             success(`Lijst "${listToDelete?.name}" hersteld! 🎉`, 2000);
           } catch (err) {
