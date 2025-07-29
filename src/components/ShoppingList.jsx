@@ -6,6 +6,7 @@ import { db } from '../firebase';
 import { useToast } from '../context/ToastContext';
 import { useUndo } from '../context/UndoContext';
 import { getSuggestions, getPopularItems } from '../utils/groceryItems';
+import VoiceInput from './VoiceInput';
 
 const ShoppingList = ({ list, onBack, onShare }) => {
   const { success, error, deleteToast, removeToastByMessage } = useToast();
@@ -247,14 +248,25 @@ const ShoppingList = ({ list, onBack, onShare }) => {
                 </div>
               )}
             </div>
-            <button
-              onClick={() => addItem()}
-              disabled={!newItem.trim()}
-              className="flex items-center justify-center px-6 py-3 bg-primary hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200"
-            >
-              <Plus className="w-5 h-5 mr-2" />
-              <span className="font-medium">Toevoegen</span>
-            </button>
+            <div className="flex space-x-2">
+              <VoiceInput 
+                onTranscript={(text) => {
+                  setNewItem(text);
+                  handleInputChange({ target: { value: text } });
+                }}
+                placeholder="Spreek item uit..."
+                autoSubmit={false}
+                className="flex-shrink-0"
+              />
+              <button
+                onClick={() => addItem()}
+                disabled={!newItem.trim()}
+                className="flex items-center justify-center px-6 py-3 bg-primary hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200"
+              >
+                <Plus className="w-5 h-5 mr-2" />
+                <span className="font-medium">Toevoegen</span>
+              </button>
+            </div>
           </div>
           
           {currentList.items.length === 0 && newItem.length === 0 && (

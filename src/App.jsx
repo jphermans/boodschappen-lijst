@@ -13,6 +13,7 @@ import QRScannerModal from './components/QRScannerModal';
 import ConnectionError from './components/ConnectionError';
 import ToastContainer from './components/Toast';
 import UndoBar from './components/UndoBar';
+import VoiceInput from './components/VoiceInput';
 
 function App() {
   const { theme, toggleTheme } = useTheme();
@@ -235,22 +236,31 @@ function App() {
                 Nieuwe lijst maken
               </h2>
               <div className="flex flex-col lg:flex-row space-y-3 lg:space-y-0 lg:space-x-2">
-                <input
-                  type="text"
-                  value={newListName}
-                  onChange={(e) => setNewListName(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && createList()}
-                  placeholder="Naam van je boodschappenlijst..."
-                  className="flex-1 px-4 py-3 border border-[rgb(var(--border-color))] rounded-xl focus:outline-none focus:ring-2 focus:ring-primary bg-[rgb(var(--card-bg))] text-[rgb(var(--card-text))] text-lg"
-                />
-                <button
-                  onClick={createList}
-                  disabled={!newListName.trim()}
-                  className="w-full lg:w-auto flex items-center justify-center px-6 py-3 bg-primary hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200"
-                >
-                  <Plus className="w-5 h-5 mr-2" />
-                  <span className="font-medium">Aanmaken</span>
-                </button>
+                <div className="flex-1 relative">
+                  <input
+                    type="text"
+                    value={newListName}
+                    onChange={(e) => setNewListName(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && createList()}
+                    placeholder="Naam van je boodschappenlijst..."
+                    className="w-full px-4 py-3 border border-[rgb(var(--border-color))] rounded-xl focus:outline-none focus:ring-2 focus:ring-primary bg-[rgb(var(--card-bg))] text-[rgb(var(--card-text))] text-lg"
+                  />
+                </div>
+                <div className="flex space-x-2">
+                  <VoiceInput 
+                    onTranscript={(text) => setNewListName(text)}
+                    placeholder="Spreek lijstnaam uit..."
+                    className="flex-shrink-0"
+                  />
+                  <button
+                    onClick={createList}
+                    disabled={!newListName.trim()}
+                    className="flex items-center justify-center px-6 py-3 bg-primary hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200"
+                  >
+                    <Plus className="w-5 h-5 mr-2" />
+                    <span className="font-medium">Aanmaken</span>
+                  </button>
+                </div>
               </div>
             </motion.div>
 
