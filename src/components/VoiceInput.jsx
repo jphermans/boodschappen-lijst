@@ -14,37 +14,55 @@ const VoiceInput = ({
   const { isListening, transcript, isSupported, error, isTimingOut, remainingTime, startListening, stopListening, resetTranscript } = useSpeechRecognition(language);
   const { error: showError, success } = useToast();
   const [hasPermission, setHasPermission] = useState(null);
+  const [permissionChecked, setPermissionChecked] = useState(false);
 
   // Check microphone permission
   useEffect(() => {
     const checkPermission = async () => {
-      if (navigator.permissions) {
-        try {
-          const result = await navigator.permissions.query({ name: 'microphone' });
-          setHasPermission(result.state === 'granted');
-          
-          result.onchange = () => {
-            setHasPermission(result.state === 'granted');
-          };
-        } catch (err) {
-          // Fallback: try to access media to check permission
+      try {
+        // First, try to get user media to test actual access (without asking for permission)
+        // This is a non-intrusive way to check if permission is already granted
+        if (navigator.permissions) {
           try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            stream.getTracks().forEach(track => track.stop());
-            setHasPermission(true);
-          } catch (mediaErr) {
-            setHasPermission(false);
+            const result = await navigator.permissions.query({ name: 'microphone' });
+            const isGranted = result.state === 'granted';
+            setHasPermission(isGranted);
+            setPermissionChecked(true);
+            
+            // Set up permission change listener
+            result.onchange = () => {
+              const newState = result.state === 'granted';
+              setHasPermission(newState);
+              console.log('Permission changed:', result.state);
+            };
+            
+            return; // Exit early if permissions API worked
+          } catch (permErr) {
+            console.log('Permission API query failed, trying getUserMedia test');
           }
         }
-      } else {
-        // Fallback for browsers without permissions API
+        
+        // Fallback: try getUserMedia with very short timeout to test access
         try {
-          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          const stream = await navigator.mediaDevices.getUserMedia({
+            audio: {
+              echoCancellation: false,
+              noiseSuppression: false,
+              autoGainControl: false
+            }
+          });
           stream.getTracks().forEach(track => track.stop());
           setHasPermission(true);
-        } catch (err) {
+          setPermissionChecked(true);
+        } catch (mediaErr) {
+          // If getUserMedia fails, permission is likely not granted
           setHasPermission(false);
+          setPermissionChecked(true);
         }
+      } catch (err) {
+        console.error('Permission check failed:', err);
+        setHasPermission(false);
+        setPermissionChecked(true);
       }
     };
     
@@ -70,6 +88,12 @@ const VoiceInput = ({
   // Handle errors with debouncing
   useEffect(() => {
     if (error) {
+      // Handle permission-related errors by updating permission state
+      if (error === 'Microfoon toegang geweigerd.' || error === 'Microfoon niet beschikbaar.') {
+        setHasPermission(false);
+        setPermissionChecked(true);
+      }
+      
       // Clear any existing speech recognition error toasts before showing new one
       const speechErrorMessages = [
         'Geen spraak gedetecteerd. Probeer opnieuw.',
@@ -88,9 +112,12 @@ const VoiceInput = ({
         });
       }
       
-      showError(error, 3000);
+      // Only show error if permission is not granted or if it's not a permission-related error
+      if (hasPermission !== true || !error.includes('toegang')) {
+        showError(error, 3000);
+      }
     }
-  }, [error, showError]);
+  }, [error, showError, hasPermission]);
 
   const handleVoiceInput = async () => {
     if (!isSupported) {
@@ -103,25 +130,34 @@ const VoiceInput = ({
       return;
     }
 
-    // Request microphone permission if not already granted
-    if (hasPermission !== true) {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        // Stop the stream immediately as we only needed it for permission
-        stream.getTracks().forEach(track => track.stop());
-        setHasPermission(true);
-        success('Microfoon toegang verleend! 🎤', 2000);
-        // Auto-start listening after permission granted
-        setTimeout(() => {
-          startListening();
-        }, 500);
-      } catch (err) {
-        setHasPermission(false);
-        showError('Microfoon toegang geweigerd. Klik op het slot-icoon in de adresbalk om toegang te verlenen.', 6000);
-        return;
-      }
-    } else {
+    // If permission is already granted, start listening immediately
+    if (hasPermission === true) {
       startListening();
+      return;
+    }
+
+    // If permission is unknown or denied, try to get permission
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      // Stop the stream immediately as we only needed it for permission
+      stream.getTracks().forEach(track => track.stop());
+      setHasPermission(true);
+      setPermissionChecked(true);
+      
+      // Only show success message if permission was previously denied or unknown
+      if (hasPermission !== true) {
+        success('Microfoon toegang verleend! 🎤', 2000);
+      }
+      
+      // Start listening immediately after permission granted
+      setTimeout(() => {
+        startListening();
+      }, 100);
+    } catch (err) {
+      setHasPermission(false);
+      setPermissionChecked(true);
+      showError('Microfoon toegang geweigerd. Klik op het slot-icoon in de adresbalk om toegang te verlenen.', 6000);
+      return;
     }
   };
 
@@ -271,7 +307,7 @@ const VoiceInput = ({
 
       {/* Help text for users - only show when not listening and permission issues exist */}
       <AnimatePresence>
-        {!isListening && hasPermission === null && (
+        {!isListening && permissionChecked && hasPermission === null && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -286,7 +322,7 @@ const VoiceInput = ({
             </div>
           </motion.div>
         )}
-        {!isListening && hasPermission === false && (
+        {!isListening && permissionChecked && hasPermission === false && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
