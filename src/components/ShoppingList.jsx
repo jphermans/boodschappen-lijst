@@ -7,6 +7,7 @@ import { useToast } from '../context/ToastContext';
 import { useUndo } from '../context/UndoContext';
 import { getSuggestions, getPopularItems } from '../utils/groceryItems';
 import { validateItemName } from '../utils/validation';
+import { userManager } from '../utils/userManager';
 
 const ShoppingList = ({ list, onBack, onShare }) => {
   const { success, error, deleteToast, removeToastByMessage } = useToast();
@@ -52,11 +53,18 @@ const ShoppingList = ({ list, onBack, onShare }) => {
         return;
       }
 
+      const userName = userManager.getUserName();
+      if (!userName) {
+        error('Je naam is niet ingesteld. Vernieuw de pagina om je naam in te stellen.');
+        return;
+      }
+
       const newItemObj = {
         id: crypto.randomUUID(),
         name: validation.value,
         completed: false,
         addedAt: new Date(),
+        addedBy: userName,
       };
       
       const updatedItems = [...currentList.items, newItemObj];
@@ -215,13 +223,20 @@ const ShoppingList = ({ list, onBack, onShare }) => {
               <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-[rgb(var(--card-text))] truncate">
                 {currentList.name}
               </h2>
-              <span className={`text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full self-start mt-1 ${
-                currentList.isCreator
-                  ? 'bg-primary/20 text-primary'
-                  : 'bg-secondary/20 text-secondary'
-              }`}>
-                {currentList.isCreator ? 'Jouw lijst' : 'Gedeelde lijst'}
-              </span>
+              <div className="flex flex-col space-y-1 mt-1">
+                <span className={`text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full self-start ${
+                  currentList.isCreator
+                    ? 'bg-primary/20 text-primary'
+                    : 'bg-secondary/20 text-secondary'
+                }`}>
+                  {currentList.isCreator ? 'Jouw lijst' : 'Gedeelde lijst'}
+                </span>
+                {currentList.creatorName && (
+                  <span className="text-xs text-[rgb(var(--text-color))]/60 self-start">
+                    Gemaakt door {currentList.creatorName}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
           <button
@@ -339,15 +354,22 @@ const ShoppingList = ({ list, onBack, onShare }) => {
               >
                 {item.completed && <Check className="w-3 h-3 sm:w-4 sm:h-4 text-white" />}
               </button>
-              <span
-                className={`flex-1 min-w-0 break-words text-sm sm:text-base ${
-                  item.completed
-                    ? 'line-through text-[rgb(var(--text-color))]/60'
-                    : 'text-[rgb(var(--card-text))]'
-                }`}
-              >
-                {item.name}
-              </span>
+              <div className="flex-1 min-w-0">
+                <span
+                  className={`block break-words text-sm sm:text-base ${
+                    item.completed
+                      ? 'line-through text-[rgb(var(--text-color))]/60'
+                      : 'text-[rgb(var(--card-text))]'
+                  }`}
+                >
+                  {item.name}
+                </span>
+                {item.addedBy && (
+                  <span className="text-xs text-[rgb(var(--text-color))]/50 block mt-0.5">
+                    Toegevoegd door {item.addedBy}
+                  </span>
+                )}
+              </div>
               <button
                 onClick={() => deleteItem(item.id)}
                 className="flex items-center justify-center p-1.5 sm:p-2 rounded-lg bg-accent/20 hover:bg-accent/30 text-accent hover:text-accent transform hover:scale-110 transition-all duration-200 flex-shrink-0"

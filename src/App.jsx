@@ -10,11 +10,13 @@ import SettingsModal from './components/SettingsModal';
 import QRShareModal from './components/QRShareModal';
 import QRScannerModal from './components/QRScannerModal';
 import UserManagementModal from './components/UserManagementModal';
+import UserNameModal from './components/UserNameModal';
 import ConnectionError from './components/ConnectionError';
 import ToastContainer from './components/Toast';
 import UndoBar from './components/UndoBar';
 import { validateListName } from './utils/validation';
 import { validateQRData } from './utils/qrSecurity';
+import { userManager } from './utils/userManager';
 
 function App() {
   const { theme, toggleTheme } = useTheme();
@@ -32,6 +34,8 @@ function App() {
   const [firebaseError, setFirebaseError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isProcessingQRScan, setIsProcessingQRScan] = useState(false);
+  const [showUserNameModal, setShowUserNameModal] = useState(false);
+  const [currentUserName, setCurrentUserName] = useState(null);
 
   // Handle shared list URLs
   const handleSharedListFromURL = async (currentLists = lists) => {
@@ -128,6 +132,10 @@ function App() {
   useEffect(() => {
     const initAuth = async () => {
       try {
+        // Check if user has set their name
+        const userInfo = userManager.getUserInfo();
+        setCurrentUserName(userInfo.name);
+        
         const { error } = await initializeFirebase();
         if (error) {
           setFirebaseError(error);
@@ -140,6 +148,13 @@ function App() {
           try {
             const userID = getCurrentUserID();
             if (userID) {
+              // Check if user needs to set their name
+              if (!userInfo.hasName) {
+                setShowUserNameModal(true);
+                setIsLoading(false);
+                return;
+              }
+
               // Load initial shopping lists
               const initialLists = await getShoppingLists();
               setLists(initialLists);
@@ -200,6 +215,32 @@ function App() {
     });
   };
 
+  const handleUserNameSet = async (name) => {
+    setCurrentUserName(name);
+    setShowUserNameModal(false);
+    setIsLoading(true);
+    
+    try {
+      // Now load the shopping lists
+      const initialLists = await getShoppingLists();
+      setLists(initialLists);
+      
+      // Subscribe to real-time updates
+      const unsubscribe = subscribeToShoppingLists((firebaseLists) => {
+        setLists(firebaseLists);
+      });
+      
+      success(`Welkom ${name}! Je kunt nu lijsten maken en delen. 🎉`);
+      
+      return () => unsubscribe();
+    } catch (error) {
+      console.error('Error loading shopping lists after name set:', error);
+      setFirebaseError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const createList = async () => {
     const validation = validateListName(newListName);
     if (!validation.valid) {
@@ -213,10 +254,17 @@ function App() {
         error('Gebruiker niet ingelogd. Probeer de pagina te vernieuwen.');
         return;
       }
+
+      const userName = userManager.getUserName();
+      if (!userName) {
+        error('Je naam is niet ingesteld. Vernieuw de pagina om je naam in te stellen.');
+        return;
+      }
       
       const newList = {
         name: validation.value,
-        items: []
+        items: [],
+        creatorName: userName
       };
       await createShoppingList(newList);
       setNewListName('');
@@ -605,6 +653,11 @@ function App() {
                             </span>
                           )}
                         </div>
+                        {list.creatorName && (
+                          <div className="text-xs text-[rgb(var(--text-color))]/50 mt-1">
+                            Gemaakt door {list.creatorName}
+                          </div>
+                        )}
                       </div>
                       <div className="flex flex-col items-end space-y-2">
                         <span className={`px-3 py-1.5 text-xs font-semibold rounded-full ${
@@ -945,6 +998,12 @@ function App() {
           onListUpdate={(updatedList) => {
             setLists(lists.map(l => l.id === updatedList.id ? updatedList : l));
           }}
+        />
+      )}
+
+      {showUserNameModal && (
+        <UserNameModal
+          onNameSet={handleUserNameSet}
         />
       )}
 
