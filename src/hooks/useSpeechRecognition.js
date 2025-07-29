@@ -5,7 +5,14 @@ export const useSpeechRecognition = (language = 'nl-NL') => {
   const [transcript, setTranscript] = useState('');
   const [isSupported, setIsSupported] = useState(false);
   const [error, setError] = useState('');
+  const [silenceTimer, setSilenceTimer] = useState(null);
+  const [timeoutDuration] = useState(3000); // 3 seconds
+  const [lastErrorTime, setLastErrorTime] = useState(0);
+  const [errorDebounceTime] = useState(1000); // 1 second debounce
+  const [isTimingOut, setIsTimingOut] = useState(false);
+  const [remainingTime, setRemainingTime] = useState(0);
   const recognitionRef = useRef(null);
+  const countdownIntervalRef = useRef(null);
 
   // Auto-detect Dutch language variant based on user locale
   const detectLanguage = useCallback(() => {
@@ -13,6 +20,93 @@ export const useSpeechRecognition = (language = 'nl-NL') => {
     if (locale.startsWith('nl-BE')) return 'nl-BE';
     return 'nl-NL'; // Default to Netherlands Dutch
   }, []);
+
+  // Clear silence timer and countdown
+  const clearSilenceTimer = useCallback(() => {
+    if (silenceTimer) {
+      clearTimeout(silenceTimer);
+      setSilenceTimer(null);
+    }
+    if (countdownIntervalRef.current) {
+      clearInterval(countdownIntervalRef.current);
+      countdownIntervalRef.current = null;
+    }
+    setIsTimingOut(false);
+    setRemainingTime(0);
+  }, [silenceTimer]);
+
+  // Check if we should show this error (debouncing logic)
+  const shouldShowError = useCallback((errorType) => {
+    const now = Date.now();
+    const timeSinceLastError = now - lastErrorTime;
+    
+    // Don't show no-speech errors during timeout countdown
+    if (errorType === 'no-speech' && isTimingOut) {
+      return false;
+    }
+    
+    // Debounce all errors
+    if (timeSinceLastError < errorDebounceTime) {
+      return false;
+    }
+    
+    return true;
+  }, [lastErrorTime, errorDebounceTime, isTimingOut]);
+
+  // Start silence timer with visual countdown
+  const startSilenceTimer = useCallback(() => {
+    clearSilenceTimer();
+    
+    setIsTimingOut(true);
+    setRemainingTime(timeoutDuration);
+    
+    // Visual countdown updates every 100ms
+    countdownIntervalRef.current = setInterval(() => {
+      setRemainingTime(prev => {
+        if (prev <= 100) {
+          return 0;
+        }
+        return prev - 100;
+      });
+    }, 100);
+    
+    // Actual timeout
+    const timer = setTimeout(() => {
+      if (countdownIntervalRef.current) {
+        clearInterval(countdownIntervalRef.current);
+        countdownIntervalRef.current = null;
+      }
+      stopListeningGracefully();
+    }, timeoutDuration);
+    
+    setSilenceTimer(timer);
+  }, [timeoutDuration, clearSilenceTimer]);
+
+  // Reset silence timer (called when speech is detected)
+  const resetSilenceTimer = useCallback(() => {
+    if (isListening) {
+      startSilenceTimer();
+    }
+  }, [isListening, startSilenceTimer]);
+
+  // Graceful stop function (no error on timeout)
+  const stopListeningGracefully = useCallback(() => {
+    if (recognitionRef.current && isListening) {
+      clearSilenceTimer();
+      
+      // Override onend to prevent error handling during graceful stop
+      const originalOnEnd = recognitionRef.current.onend;
+      recognitionRef.current.onend = () => {
+        setIsListening(false);
+        // Restore original onend handler
+        if (recognitionRef.current) {
+          recognitionRef.current.onend = originalOnEnd;
+        }
+      };
+      
+      recognitionRef.current.stop();
+    }
+  }, [isListening, clearSilenceTimer]);
 
   useEffect(() => {
     // Check for speech recognition support
@@ -30,10 +124,13 @@ export const useSpeechRecognition = (language = 'nl-NL') => {
       recognition.onstart = () => {
         setIsListening(true);
         setError('');
+        // Start silence timer when recognition begins
+        startSilenceTimer();
       };
       
       recognition.onend = () => {
         setIsListening(false);
+        clearSilenceTimer();
       };
       
       recognition.onresult = (event) => {
@@ -49,6 +146,11 @@ export const useSpeechRecognition = (language = 'nl-NL') => {
           }
         }
         
+        // Reset silence timer on any speech activity (including interim results)
+        if (finalTranscript || interimTranscript) {
+          resetSilenceTimer();
+        }
+        
         if (finalTranscript) {
           const processedText = processVoiceCommand(finalTranscript.trim());
           setTranscript(processedText);
@@ -56,11 +158,25 @@ export const useSpeechRecognition = (language = 'nl-NL') => {
       };
       
       recognition.onerror = (event) => {
+        const now = Date.now();
+        
+        // Clear any existing timers
+        clearSilenceTimer();
         setIsListening(false);
+        
+        // Check if we should show this error
+        if (!shouldShowError(event.error)) {
+          return;
+        }
+        
+        setLastErrorTime(now);
         
         switch (event.error) {
           case 'no-speech':
-            setError('Geen spraak gedetecteerd. Probeer opnieuw.');
+            // Only show if not during a graceful timeout
+            if (!isTimingOut) {
+              setError('Geen spraak gedetecteerd. Probeer opnieuw.');
+            }
             break;
           case 'audio-capture':
             setError('Microfoon niet beschikbaar.');
@@ -78,7 +194,15 @@ export const useSpeechRecognition = (language = 'nl-NL') => {
     } else {
       setIsSupported(false);
     }
-  }, [language, detectLanguage]);
+
+    // Cleanup on unmount
+    return () => {
+      clearSilenceTimer();
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+    };
+  }, [language, detectLanguage, startSilenceTimer, resetSilenceTimer, clearSilenceTimer, shouldShowError, isTimingOut]);
 
   // Process Dutch voice commands
   const processVoiceCommand = (transcript) => {
@@ -107,19 +231,15 @@ export const useSpeechRecognition = (language = 'nl-NL') => {
     if (recognitionRef.current && !isListening && isSupported) {
       setTranscript('');
       setError('');
+      clearSilenceTimer(); // Clear any existing timers
       try {
         recognitionRef.current.start();
       } catch (err) {
         setError('Kan spraakherkenning niet starten.');
+        clearSilenceTimer();
       }
     }
-  }, [isListening, isSupported]);
-
-  const stopListening = useCallback(() => {
-    if (recognitionRef.current && isListening) {
-      recognitionRef.current.stop();
-    }
-  }, [isListening]);
+  }, [isListening, isSupported, clearSilenceTimer]);
 
   const resetTranscript = useCallback(() => {
     setTranscript('');
@@ -131,8 +251,10 @@ export const useSpeechRecognition = (language = 'nl-NL') => {
     transcript,
     isSupported,
     error,
+    isTimingOut,
+    remainingTime,
     startListening,
-    stopListening,
+    stopListening: stopListeningGracefully,
     resetTranscript
   };
 }; 

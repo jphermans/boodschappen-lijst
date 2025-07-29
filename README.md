@@ -1,4 +1,4 @@
-# 🛒 Boodschappenlijst App
+# 🛒 Boodschappenlijst Applicatie
 
 Een geavanceerde React web applicatie voor het maken en delen van boodschappenlijsten met realtime synchronisatie, spraakherkenning en een moderne Liquid Glass interface.
 

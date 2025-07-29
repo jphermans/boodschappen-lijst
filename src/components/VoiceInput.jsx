@@ -11,7 +11,7 @@ const VoiceInput = ({
   className = "",
   autoSubmit = false
 }) => {
-  const { isListening, transcript, isSupported, error, startListening, stopListening, resetTranscript } = useSpeechRecognition(language);
+  const { isListening, transcript, isSupported, error, isTimingOut, remainingTime, startListening, stopListening, resetTranscript } = useSpeechRecognition(language);
   const { error: showError, success } = useToast();
   const [hasPermission, setHasPermission] = useState(null);
 
@@ -44,9 +44,27 @@ const VoiceInput = ({
     }
   }, [transcript, onTranscript, autoSubmit, success, resetTranscript]);
 
-  // Handle errors
+  // Handle errors with debouncing
   useEffect(() => {
     if (error) {
+      // Clear any existing speech recognition error toasts before showing new one
+      const speechErrorMessages = [
+        'Geen spraak gedetecteerd. Probeer opnieuw.',
+        'Er ging iets mis met de spraakherkenning.',
+        'Microfoon niet beschikbaar.',
+        'Microfoon toegang geweigerd.',
+        'Netwerkfout. Controleer je internetverbinding.',
+        'Kan spraakherkenning niet starten.'
+      ];
+      
+      if (speechErrorMessages.includes(error)) {
+        // Remove any existing speech recognition errors first
+        speechErrorMessages.forEach(msg => {
+          // This would ideally use a method to remove toasts by message pattern
+          // For now, we rely on the debouncing in the hook
+        });
+      }
+      
       showError(error, 3000);
     }
   }, [error, showError]);
@@ -82,6 +100,19 @@ const VoiceInput = ({
     }
   };
 
+  // Enhanced error recovery
+  useEffect(() => {
+    // If there's an error and we're still marked as listening, clean up the state
+    if (error && isListening) {
+      setTimeout(() => {
+        // This helps recover from stuck listening states
+        if (isListening && error) {
+          stopListening();
+        }
+      }, 100);
+    }
+  }, [error, isListening, stopListening]);
+
   if (!isSupported) {
     return null; // Hide component if not supported
   }
@@ -93,21 +124,25 @@ const VoiceInput = ({
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         className={`
-          relative flex items-center justify-center rounded-xl shadow-lg hover:shadow-xl 
+          relative flex items-center justify-center rounded-xl shadow-lg hover:shadow-xl
           transform transition-all duration-200 overflow-hidden
-          ${hasPermission === false 
-            ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-3 animate-pulse' 
-            : isListening 
-              ? 'bg-gradient-to-r from-accent to-accent/80 text-white p-3' 
-              : 'bg-gradient-to-r from-secondary to-secondary/80 hover:opacity-90 text-white p-3'
+          ${hasPermission === false
+            ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-3 animate-pulse'
+            : isTimingOut
+              ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white p-3'
+              : isListening
+                ? 'bg-gradient-to-r from-accent to-accent/80 text-white p-3'
+                : 'bg-gradient-to-r from-secondary to-secondary/80 hover:opacity-90 text-white p-3'
           }
         `}
         title={
-          hasPermission === false 
+          hasPermission === false
             ? 'Klik om microfoon toegang te verlenen'
-            : isListening 
-              ? 'Stop opname' 
-              : `${placeholder}`
+            : isTimingOut
+              ? `Stopt over ${Math.ceil(remainingTime / 1000)}s`
+              : isListening
+                ? 'Stop opname'
+                : `${placeholder}`
         }
       >
         {/* Background pulse animation when listening */}
@@ -171,6 +206,38 @@ const VoiceInput = ({
                   ))}
                 </div>
                 <span className="text-sm font-medium">Luisteren...</span>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Timeout indicator */}
+      <AnimatePresence>
+        {isTimingOut && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 z-20"
+          >
+            <div className="bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300 px-3 py-2 rounded-lg shadow-lg border border-yellow-200 dark:border-yellow-800">
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 rounded-full border-2 border-current relative overflow-hidden">
+                  <motion.div
+                    className="absolute inset-0 bg-current origin-center"
+                    style={{
+                      clipPath: `polygon(50% 50%, 50% 0%, ${
+                        50 + 50 * Math.cos(2 * Math.PI * (1 - remainingTime / 3000) - Math.PI/2)
+                      }% ${
+                        50 + 50 * Math.sin(2 * Math.PI * (1 - remainingTime / 3000) - Math.PI/2)
+                      }%, 50% 50%)`
+                    }}
+                  />
+                </div>
+                <span className="text-sm font-medium">
+                  Stopt over {Math.ceil(remainingTime / 1000)}s
+                </span>
               </div>
             </div>
           </motion.div>
