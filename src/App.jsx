@@ -4,8 +4,7 @@ import { Settings, Plus, List, Share2, Trash2, Check, Wifi, QrCode } from 'lucid
 import { useTheme } from './context/ThemeContext';
 import { useToast } from './context/ToastContext';
 import { useUndo } from './context/UndoContext';
-import { getDeviceUID } from './utils/deviceUID';
-import { initializeFirebase, isConnected, createShoppingList, getShoppingLists, deleteShoppingList, subscribeToShoppingLists } from './firebase';
+import { initializeFirebase, isConnected, getCurrentUserID, createShoppingList, getShoppingLists, deleteShoppingList, subscribeToShoppingLists } from './firebase';
 import ShoppingList from './components/ShoppingList';
 import SettingsModal from './components/SettingsModal';
 import QRShareModal from './components/QRShareModal';
@@ -26,36 +25,51 @@ function App() {
   const [showShare, setShowShare] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
   const [shareListId, setShareListId] = useState(null);
-  const [deviceUID] = useState(getDeviceUID());
   const [firebaseError, setFirebaseError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    initializeFirebase().then(async ({ error }) => {
-      if (error) {
+    const initAuth = async () => {
+      try {
+        const { error } = await initializeFirebase();
+        if (error) {
+          setFirebaseError(error);
+          setIsLoading(false);
+          return;
+        }
+
+        // Wait a moment for authentication to complete
+        setTimeout(async () => {
+          try {
+            const userID = getCurrentUserID();
+            if (userID) {
+              // Load initial shopping lists
+              const initialLists = await getShoppingLists();
+              setLists(initialLists);
+              
+              // Subscribe to real-time updates
+              const unsubscribe = subscribeToShoppingLists((firebaseLists) => {
+                setLists(firebaseLists);
+              });
+              
+              return () => unsubscribe();
+            }
+          } catch (error) {
+            console.error('Error loading shopping lists:', error);
+            setFirebaseError(error);
+          } finally {
+            setIsLoading(false);
+          }
+        }, 1000); // Wait for auth to complete
+      } catch (error) {
+        console.error('Firebase initialization error:', error);
         setFirebaseError(error);
         setIsLoading(false);
-      } else {
-        try {
-          // Load initial shopping lists
-          const initialLists = await getShoppingLists(deviceUID);
-          setLists(initialLists);
-          
-          // Subscribe to real-time updates
-          const unsubscribe = subscribeToShoppingLists(deviceUID, (firebaseLists) => {
-            setLists(firebaseLists);
-          });
-          
-          return () => unsubscribe();
-        } catch (error) {
-          console.error('Error loading shopping lists:', error);
-          setFirebaseError(error);
-        } finally {
-          setIsLoading(false);
-        }
       }
-    });
-  }, [deviceUID]);
+    };
+
+    initAuth();
+  }, []);
 
   const retryConnection = () => {
     setIsLoading(true);
@@ -68,17 +82,19 @@ function App() {
     });
   };
 
-  useEffect(() => {
-    console.log('Device UID:', deviceUID);
-  }, [deviceUID]);
-
   const createList = async () => {
     if (newListName.trim()) {
       try {
+        const userID = getCurrentUserID();
+        if (!userID) {
+          error('Gebruiker niet ingelogd. Probeer de pagina te vernieuwen.');
+          return;
+        }
+        
         const newList = {
           name: newListName.trim(),
           items: [],
-          deviceUID: deviceUID
+          deviceUID: userID
         };
         await createShoppingList(newList);
         setNewListName('');

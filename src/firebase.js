@@ -1,5 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, onSnapshot, query, where } from 'firebase/firestore';
+import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 
 // Firebase configuratie via environment variables
 const firebaseConfig = {
@@ -15,7 +16,9 @@ const firebaseConfig = {
 // Initialiseer Firebase met error handling
 let app;
 let db = null;
+let auth = null;
 let isConnected = false;
+let currentUser = null;
 
 const initializeFirebase = async () => {
   try {
@@ -31,17 +34,37 @@ const initializeFirebase = async () => {
     
     app = initializeApp(firebaseConfig);
     db = getFirestore(app);
+    auth = getAuth(app);
     
-    // Test verbinding
-    isConnected = true;
+    // Anonymous authentication
+    await signInAnonymously(auth);
+    
+    // Listen for auth state changes
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentUser = user;
+        isConnected = true;
+        console.log('User signed in anonymously:', user.uid);
+      } else {
+        currentUser = null;
+        isConnected = false;
+        console.log('User signed out');
+      }
+    });
+    
     console.log('Firebase succesvol geïnitialiseerd');
     
-    return { app, db, isConnected };
+    return { app, db, auth, isConnected };
   } catch (error) {
     console.error('Firebase initialisatie fout:', error);
     isConnected = false;
-    return { app: null, db: null, isConnected, error };
+    return { app: null, db: null, auth: null, isConnected, error };
   }
+};
+
+// Get current user ID (replaces deviceUID)
+const getCurrentUserID = () => {
+  return currentUser?.uid || null;
 };
 
 // Shopping list operations
@@ -60,13 +83,13 @@ const createShoppingList = async (listData) => {
   }
 };
 
-const getShoppingLists = async (deviceUID) => {
+const getShoppingLists = async () => {
   try {
-    if (!db) {
-      console.warn('Firebase not initialized, returning empty array');
+    if (!db || !currentUser) {
+      console.warn('Firebase not initialized or user not authenticated, returning empty array');
       return [];
     }
-    const q = query(collection(db, 'shoppingLists'), where('deviceUID', '==', deviceUID));
+    const q = query(collection(db, 'shoppingLists'), where('deviceUID', '==', currentUser.uid));
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({
       id: doc.id,
@@ -102,14 +125,14 @@ const deleteShoppingList = async (listId) => {
   }
 };
 
-const subscribeToShoppingLists = (deviceUID, callback) => {
+const subscribeToShoppingLists = (callback) => {
   try {
-    if (!db) {
-      console.warn('Firebase not initialized, returning empty array');
+    if (!db || !currentUser) {
+      console.warn('Firebase not initialized or user not authenticated, returning empty array');
       callback([]);
       return () => {};
     }
-    const q = query(collection(db, 'shoppingLists'), where('deviceUID', '==', deviceUID));
+    const q = query(collection(db, 'shoppingLists'), where('deviceUID', '==', currentUser.uid));
     return onSnapshot(q, (snapshot) => {
       const lists = snapshot.docs.map(doc => ({
         id: doc.id,
@@ -127,8 +150,10 @@ const subscribeToShoppingLists = (deviceUID, callback) => {
 export { 
   app, 
   db, 
+  auth,
   isConnected, 
   initializeFirebase,
+  getCurrentUserID,
   createShoppingList,
   getShoppingLists,
   updateShoppingList,
