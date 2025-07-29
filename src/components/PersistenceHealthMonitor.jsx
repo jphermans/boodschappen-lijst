@@ -81,15 +81,16 @@ const PersistenceHealthMonitor = ({ onClose }) => {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
-        className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden"
+        className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col"
+        onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-[rgb(var(--border-color))]/20">
+        {/* Fixed Header */}
+        <div className="flex items-center justify-between p-6 border-b border-[rgb(var(--border-color))]/20 flex-shrink-0">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center">
               <Database className="w-5 h-5 text-white" />
@@ -105,13 +106,14 @@ const PersistenceHealthMonitor = ({ onClose }) => {
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-lg bg-[rgb(var(--border-color))]/20 hover:bg-[rgb(var(--border-color))]/30 flex items-center justify-center transition-colors"
+            className="w-8 h-8 rounded-lg bg-[rgb(var(--border-color))]/20 hover:bg-[rgb(var(--border-color))]/30 flex items-center justify-center transition-colors z-10"
           >
             <XCircle className="w-4 h-4 text-[rgb(var(--text-color))]/60" />
           </button>
         </div>
 
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+        {/* Scrollable Content */}
+        <div className="p-6 overflow-y-auto flex-1">
           {/* Storage Health Overview */}
           <div className="mb-6">
             <h3 className="text-lg font-semibold text-[rgb(var(--card-text))] mb-4 flex items-center">
@@ -325,10 +327,10 @@ const PersistenceHealthMonitor = ({ onClose }) => {
           </AnimatePresence>
         </div>
 
-        {/* Footer */}
-        <div className="flex items-center justify-between p-6 border-t border-[rgb(var(--border-color))]/20">
+        {/* Fixed Footer */}
+        <div className="flex items-center justify-between p-6 border-t border-[rgb(var(--border-color))]/20 flex-shrink-0">
           <div className="text-sm text-[rgb(var(--text-color))]/60">
-            Laatste sync: {healthInfo?.lastSyncTime 
+            Laatste sync: {healthInfo?.lastSyncTime
               ? new Date(healthInfo.lastSyncTime).toLocaleTimeString('nl-NL')
               : 'Nooit'
             }
