@@ -116,10 +116,15 @@ const QRShareModal = ({ listId, onClose }) => {
             </div>
           </div>
 
-          <div className="text-xs text-[rgb(var(--text-color))]/60 text-center">
+          <div className="text-xs text-[rgb(var(--text-color))]/60 text-center space-y-2">
             <p>
-              Iedereen met deze link kan de lijst bekijken en bewerken.
+              <strong>Delen met anderen:</strong>
             </p>
+            <div className="bg-[rgb(var(--border-color))]/10 p-3 rounded-lg text-left">
+              <p className="mb-1">✅ Anderen kunnen items toevoegen en bewerken</p>
+              <p className="mb-1">✅ Anderen kunnen items als voltooid markeren</p>
+              <p className="text-accent">🔒 Alleen jij kunt de lijst verwijderen</p>
+            </div>
           </div>
         </div>
       </motion.div>

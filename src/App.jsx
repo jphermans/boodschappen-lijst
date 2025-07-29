@@ -4,7 +4,7 @@ import { Settings, Plus, List, Share2, Trash2, Check, Wifi, QrCode } from 'lucid
 import { useTheme } from './context/ThemeContext';
 import { useToast } from './context/ToastContext';
 import { useUndo } from './context/UndoContext';
-import { initializeFirebase, isConnected, getCurrentUserID, createShoppingList, getShoppingLists, deleteShoppingList, subscribeToShoppingLists } from './firebase';
+import { initializeFirebase, isConnected, getCurrentUserID, createShoppingList, getShoppingLists, deleteShoppingList, subscribeToShoppingLists, canDeleteList, getListById, shareListWithUser } from './firebase';
 import ShoppingList from './components/ShoppingList';
 import SettingsModal from './components/SettingsModal';
 import QRShareModal from './components/QRShareModal';
@@ -101,7 +101,7 @@ function App() {
       const newList = {
         name: validation.value,
         items: [],
-        userId: userID
+        userId: userID // Keep for backward compatibility
       };
       await createShoppingList(newList);
       setNewListName('');
@@ -118,6 +118,12 @@ function App() {
       
       if (!listToDelete) {
         error('Lijst niet gevonden');
+        return;
+      }
+      
+      // Check if user can delete this list (only creator can delete)
+      if (!canDeleteList(listToDelete)) {
+        error('Alleen de maker van de lijst kan deze verwijderen');
         return;
       }
       
@@ -141,7 +147,7 @@ function App() {
             removeToastByMessage(deleteMessage);
             
             // Remove the id field to allow Firebase to create a new one
-            const { id, createdAt, updatedAt, ...listDataToRestore } = listToDelete;
+            const { id, createdAt, updatedAt, isCreator, ...listDataToRestore } = listToDelete;
             
             await createShoppingList(listDataToRestore);
             success(`Lijst "${listToDelete?.name}" hersteld! 🎉`, 2000);
@@ -176,10 +182,45 @@ function App() {
 
       const { listId } = validation;
       
-      // For now, just show success message
-      // In a real implementation, you'd fetch the shared list from Firebase
-      success(`Gedeelde lijst gevonden: ${listId}`, 3000);
-      info('Functionaliteit om gedeelde lijsten te importeren komt binnenkort! 🚧', 4000);
+      // Try to access the shared list
+      try {
+        const sharedList = await getListById(listId);
+        
+        if (!sharedList) {
+          error('Gedeelde lijst niet gevonden of niet toegankelijk');
+          return;
+        }
+        
+        // If user is not the creator and not already in sharedWith, add them
+        if (!sharedList.isCreator) {
+          const currentUserId = getCurrentUserID();
+          if (currentUserId && !sharedList.sharedWith?.includes(currentUserId)) {
+            await shareListWithUser(listId, currentUserId);
+            success('Je hebt nu toegang tot de gedeelde lijst! 🎉', 3000);
+          } else {
+            success('Gedeelde lijst geladen! 📋', 2000);
+          }
+        } else {
+          success('Dit is je eigen lijst! 📋', 2000);
+        }
+        
+        // Close scanner and refresh lists
+        setShowScanner(false);
+        
+        // Refresh the lists to show the newly shared list
+        setTimeout(async () => {
+          try {
+            const updatedLists = await getShoppingLists();
+            setLists(updatedLists);
+          } catch (err) {
+            console.error('Error refreshing lists:', err);
+          }
+        }, 1000);
+        
+      } catch (err) {
+        console.error('Error accessing shared list:', err);
+        error('Kon gedeelde lijst niet laden. Controleer of je toegang hebt.');
+      }
       
     } catch (err) {
       error('Fout bij verwerken van gescande code');
@@ -291,11 +332,21 @@ function App() {
                   animate={{ opacity: 1, scale: 1 }}
                   className="bg-[rgb(var(--card-bg))] rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow"
                 >
-                  <h3 className="text-lg font-semibold text-[rgb(var(--card-text))] mb-2">
-                    {list.name}
-                  </h3>
+                  <div className="flex items-start justify-between mb-2">
+                    <h3 className="text-lg font-semibold text-[rgb(var(--card-text))]">
+                      {list.name}
+                    </h3>
+                    {!list.isCreator && (
+                      <span className="text-xs bg-secondary/20 text-secondary px-2 py-1 rounded-full">
+                        Gedeeld
+                      </span>
+                    )}
+                  </div>
                   <p className="text-[rgb(var(--text-color))]/60 mb-4">
                     {list.items.length} item{list.items.length !== 1 ? 's' : ''}
+                    {list.isCreator && (
+                      <span className="text-xs ml-2 text-primary">• Eigenaar</span>
+                    )}
                   </p>
                   <div className="flex flex-col space-y-2">
                     <button
@@ -314,14 +365,21 @@ function App() {
                         <Share2 className="w-4 h-4 mr-2" />
                         <span className="font-medium">Delen</span>
                       </button>
-                      <button
-                        onClick={() => deleteList(list.id)}
-                        className="flex-1 flex items-center justify-center px-4 py-3 bg-accent hover:opacity-90 text-white rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
-                        title="Verwijderen"
-                      >
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        <span className="font-medium">Verwijderen</span>
-                      </button>
+                      {list.isCreator ? (
+                        <button
+                          onClick={() => deleteList(list.id)}
+                          className="flex-1 flex items-center justify-center px-4 py-3 bg-accent hover:opacity-90 text-white rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+                          title="Verwijderen (alleen eigenaar)"
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          <span className="font-medium">Verwijderen</span>
+                        </button>
+                      ) : (
+                        <div className="flex-1 flex items-center justify-center px-4 py-3 bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 rounded-xl cursor-not-allowed">
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          <span className="font-medium text-sm">Alleen eigenaar</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </motion.div>

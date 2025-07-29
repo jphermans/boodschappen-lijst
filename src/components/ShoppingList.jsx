@@ -24,12 +24,16 @@ const ShoppingList = ({ list, onBack, onShare }) => {
     // Subscribe to real-time updates for this list
     const unsubscribe = onSnapshot(doc(db, 'shoppingLists', list.id), (doc) => {
       if (doc.exists()) {
-        setCurrentList({ id: doc.id, ...doc.data() });
+        setCurrentList({
+          id: doc.id,
+          ...doc.data(),
+          isCreator: list.isCreator // Preserve the isCreator property from the original list
+        });
       }
     });
 
     return () => unsubscribe();
-  }, [list.id]);
+  }, [list.id, list.isCreator]);
 
   const addItem = async (itemName = newItem.trim()) => {
     const validation = validateItemName(itemName);
@@ -208,9 +212,22 @@ const ShoppingList = ({ list, onBack, onShare }) => {
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
-            <h2 className="text-2xl font-bold text-[rgb(var(--card-text))]">
-              {currentList.name}
-            </h2>
+            <div>
+              <h2 className="text-2xl font-bold text-[rgb(var(--card-text))]">
+                {currentList.name}
+              </h2>
+              <div className="flex items-center space-x-2 mt-1">
+                {currentList.isCreator ? (
+                  <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded-full">
+                    Eigenaar
+                  </span>
+                ) : (
+                  <span className="text-xs bg-secondary/20 text-secondary px-2 py-1 rounded-full">
+                    Gedeelde lijst
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
           <button
             onClick={() => {
