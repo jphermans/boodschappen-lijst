@@ -308,6 +308,13 @@ const SettingsModal = ({ lists = [], onClose }) => {
           onClose={() => setShowAnalytics(false)}
         />
       )}
+
+      {showColorPicker && (
+        <ColorPicker
+          isOpen={showColorPicker}
+          onClose={() => setShowColorPicker(false)}
+        />
+      )}
     </motion.div>
   );
 };
