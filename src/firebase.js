@@ -22,8 +22,12 @@ let currentUser = null;
 
 const initializeFirebase = async () => {
   try {
-    if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
-      throw new Error('Firebase configuratie ontbreekt');
+    // Check if Firebase config has placeholder values
+    if (!firebaseConfig.apiKey ||
+        !firebaseConfig.projectId ||
+        firebaseConfig.apiKey === 'your_api_key_here' ||
+        firebaseConfig.projectId === 'your_project_id') {
+      throw new Error('Firebase configuratie niet ingesteld. Kopieer .env naar .env.local en vul je Firebase credentials in.');
     }
     
     console.log('Firebase config:', {

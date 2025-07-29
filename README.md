@@ -24,11 +24,14 @@ Een geavanceerde React web applicatie voor het maken en delen van boodschappenli
 - ✅ **Automatische tekstverwerking** met slimme filtering
 
 ### 📱 **Delen & Synchronisatie**
-- ✅ **QR-codes voor delen** van lijsten tussen apparaten
+- ✅ **QR-codes voor delen** van lijsten tussen gebruikers
 - ✅ **QR-code scannen** via camera of bestand upload
-- ✅ **Apparaten koppelen** voor gedeelde toegang
+- ✅ **Gebruikers koppelen** voor gedeelde toegang
+- ✅ **Creator permissies** - alleen makers kunnen lijsten verwijderen
+- ✅ **Gedeelde toegang** - anderen kunnen items toevoegen/bewerken
 - ✅ **Realtime updates** via Firebase Firestore
 - ✅ **Offline ondersteuning** met automatische sync
+- ✅ **Visuele indicatoren** voor eigenaarschap (Eigenaar/Gedeeld badges)
 
 ### 🎨 **Interface & Thema's**
 - ✅ **Liquid Glass design** met geavanceerde visuele effecten
@@ -60,21 +63,31 @@ npm install
 ```
 
 3. **Firebase configuratie**
+
+> 📖 **Gedetailleerde setup instructies:** Zie [FIREBASE_SETUP.md](FIREBASE_SETUP.md) voor een complete stap-voor-stap gids.
+
+**Snelle setup:**
 - Maak een Firebase project aan op [console.firebase.google.com](https://console.firebase.google.com)
 - Voeg een web app toe en kopieer de configuratie
-- Maak een `.env` bestand in de project root:
+- Kopieer `.env` naar `.env.local` en vul je echte Firebase credentials in:
 
+```bash
+cp .env .env.local
+```
+
+Bewerk `.env.local` met je echte Firebase configuratie:
 ```env
-VITE_FIREBASE_API_KEY=your_api_key
-VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-VITE_FIREBASE_PROJECT_ID=your_project_id
-VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
-VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-VITE_FIREBASE_APP_ID=your_app_id
+VITE_FIREBASE_API_KEY=AIzaSyC...
+VITE_FIREBASE_AUTH_DOMAIN=jouw-project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=jouw-project-id
+VITE_FIREBASE_STORAGE_BUCKET=jouw-project.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=123456789
+VITE_FIREBASE_APP_ID=1:123456789:web:abc123
 ```
 
 4. **Firestore setup**
 - Maak een Firestore database aan in test mode
+- Schakel Authentication in en kies "Anonymous" als provider
 - Importeer de security rules (zie sectie hieronder)
 
 5. **Start de development server**
@@ -142,12 +155,30 @@ Plaats deze rules in je Firestore console:
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Shopping lists - accessible by device UID
+    // Shopping lists with creator permissions and sharing support
     match /shoppingLists/{listId} {
-      allow read, write: if resource.data.deviceUID == request.auth.uid
-        || (resource.data.sharedWith != null 
-            && request.auth.uid in resource.data.sharedWith);
-      allow create: if request.resource.data.deviceUID == request.auth.uid;
+      // Users can read lists they created or are shared with
+      allow read: if request.auth != null
+        && (resource.data.creatorId == request.auth.uid
+            || request.auth.uid in resource.data.sharedWith);
+      
+      // Only authenticated users can create lists
+      allow create: if request.auth != null
+        && request.resource.data.creatorId == request.auth.uid
+        && request.resource.data.name is string
+        && request.resource.data.name.size() <= 100
+        && request.resource.data.items is list
+        && request.resource.data.sharedWith is list;
+      
+      // Users can update lists they created or are shared with
+      allow update: if request.auth != null
+        && (resource.data.creatorId == request.auth.uid
+            || request.auth.uid in resource.data.sharedWith)
+        && request.resource.data.creatorId == resource.data.creatorId; // Prevent changing creator
+      
+      // Only the creator can delete lists
+      allow delete: if request.auth != null
+        && resource.data.creatorId == request.auth.uid;
     }
   }
 }
