@@ -230,81 +230,93 @@ function PalettePreview({ palette, isActive, onClick, disabled = false }) {
 
 // Main color picker component
 export default function ColorPicker({ isOpen, onClose }) {
-  const { 
-    theme, 
-    currentMode, 
-    currentPalette, 
-    availablePalettes,
-    setColorPalette,
-    toggleMode,
-    resetTheme,
-    isLoading,
-    error 
-  } = useUnifiedTheme();
-  
-  const { 
-    customColors, 
-    updateCustomColor, 
-    removeCustomColor, 
-    hasCustomColor,
-    getColorSource,
-    isUpdating 
-  } = useCustomColors();
-
   const [activeTab, setActiveTab] = useState('palettes');
-  const [validationResults, setValidationResults] = useState({});
   const [isChangingPalette, setIsChangingPalette] = useState(false);
-  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [currentMode, setCurrentMode] = useState('light');
+  const [currentPalette, setCurrentPalette] = useState('Gruvbox');
 
-  // Handle palette change
-  const handlePaletteChange = useCallback(async (paletteKey) => {
-    try {
-      setIsChangingPalette(true);
-      await setColorPalette(paletteKey);
-    } catch (error) {
-      console.error('Failed to change palette:', error);
-    } finally {
-      setIsChangingPalette(false);
-    }
-  }, [setColorPalette]);
-
-  // Handle custom color change
-  const handleCustomColorChange = useCallback(async (colorKey, hexColor) => {
-    try {
-      await updateCustomColor(colorKey, hexColor);
-    } catch (error) {
-      console.error('Failed to update custom color:', error);
-    }
-  }, [updateCustomColor]);
-
-  // Handle color validation
-  const handleColorValidation = useCallback((colorKey, validation) => {
-    setValidationResults(prev => ({
-      ...prev,
-      [colorKey]: validation
-    }));
-  }, []);
-
-  // Handle reset theme
-  const handleResetTheme = useCallback(async () => {
-    if (window.confirm('Weet je zeker dat je het thema wilt resetten? Alle aangepaste kleuren gaan verloren.')) {
-      try {
-        await resetTheme();
-      } catch (error) {
-        console.error('Failed to reset theme:', error);
+  // Simple palette data
+  const availablePalettes = [
+    {
+      key: 'gruvbox',
+      name: 'Gruvbox',
+      colors: {
+        primary: '#fe8019',
+        secondary: '#b8bb26',
+        accent: '#fb4934',
+        background: '#fbf1c7',
+        surface: '#f2e5bc'
+      }
+    },
+    {
+      key: 'ocean',
+      name: 'Ocean',
+      colors: {
+        primary: '#0ea5e9',
+        secondary: '#06b6d4',
+        accent: '#8b5cf6',
+        background: '#f0f9ff',
+        surface: '#e0f2fe'
+      }
+    },
+    {
+      key: 'sunset',
+      name: 'Sunset',
+      colors: {
+        primary: '#f97316',
+        secondary: '#ef4444',
+        accent: '#ec4899',
+        background: '#fff7ed',
+        surface: '#fed7aa'
       }
     }
-  }, [resetTheme]);
+  ];
 
-  // Get color keys for customization
-  const getCustomizableColors = () => {
-    if (!theme?.palette?.colors) return [];
-    
-    return Object.keys(theme.palette.colors).filter(key => 
-      !key.startsWith('_') && // Skip internal colors
-      key !== 'mode' // Skip mode indicator
-    );
+  // Handle palette change with direct CSS variable updates
+  const handlePaletteChange = useCallback((paletteKey) => {
+    const palette = availablePalettes.find(p => p.key === paletteKey);
+    if (!palette) return;
+
+    setIsChangingPalette(true);
+    setCurrentPalette(palette.name);
+
+    // Apply colors directly to CSS variables
+    const root = document.documentElement;
+    Object.entries(palette.colors).forEach(([colorKey, hexColor]) => {
+      const rgb = hexToRgb(hexColor);
+      if (rgb) {
+        root.style.setProperty(`--color-${colorKey}`, `${rgb.r} ${rgb.g} ${rgb.b}`);
+      }
+    });
+
+    setTimeout(() => setIsChangingPalette(false), 500);
+  }, [availablePalettes]);
+
+  // Handle mode toggle
+  const toggleMode = useCallback(() => {
+    const newMode = currentMode === 'light' ? 'dark' : 'light';
+    setCurrentMode(newMode);
+    document.documentElement.setAttribute('data-theme', newMode);
+  }, [currentMode]);
+
+  // Simple hex to RGB converter
+  const hexToRgb = (hex) => {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+    } : null;
   };
+
+  // Handle reset theme
+  const handleResetTheme = useCallback(() => {
+    if (window.confirm('Weet je zeker dat je het thema wilt resetten?')) {
+      handlePaletteChange('gruvbox');
+      setCurrentMode('light');
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+  }, [handlePaletteChange]);
 
   if (!isOpen) return null;
 
@@ -314,7 +326,7 @@ export default function ColorPicker({ isOpen, onClose }) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center p-4"
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-start justify-center p-4 overflow-y-auto"
         onClick={onClose}
       >
         <motion.div
@@ -322,10 +334,10 @@ export default function ColorPicker({ isOpen, onClose }) {
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
           onClick={(e) => e.stopPropagation()}
-          className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col"
+          className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-4xl w-full my-8 flex flex-col max-h-[calc(100vh-4rem)]"
         >
           {/* Fixed Header */}
-          <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+          <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
             <div>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                 Thema Aanpassen
@@ -349,9 +361,9 @@ export default function ColorPicker({ isOpen, onClose }) {
               {/* Close button */}
               <button
                 onClick={onClose}
-                className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors z-10"
+                className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors z-10 touch-manipulation"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
@@ -361,229 +373,58 @@ export default function ColorPicker({ isOpen, onClose }) {
           {/* Scrollable Content */}
           <div className="flex flex-1 overflow-hidden">
             {/* Sidebar */}
-            <div className="w-64 border-r border-gray-200 dark:border-gray-700 p-4 flex-shrink-0">
-              <nav className="space-y-2">
-                {[
-                  { key: 'palettes', label: 'Kleurpaletten', icon: '🎨' },
-                  { key: 'custom', label: 'Aangepaste Kleuren', icon: '✏️' },
-                  { key: 'accessibility', label: 'Toegankelijkheid', icon: '♿' },
-                  { key: 'advanced', label: 'Geavanceerd', icon: '⚙️' }
-                ].map(tab => (
+            {/* Simplified single content area */}
+            <div className="flex-1 p-4 overflow-y-auto overscroll-contain">
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                    🎨 Kleurpaletten
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {availablePalettes.map(palette => (
+                      <PalettePreview
+                        key={palette.key}
+                        palette={palette}
+                        isActive={currentPalette === palette.name}
+                        onClick={handlePaletteChange}
+                        disabled={isChangingPalette}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Reset theme section */}
+                <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                  <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2">
+                    ⚙️ Thema Resetten
+                  </h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                    Reset terug naar het standaard Gruvbox thema.
+                  </p>
                   <button
-                    key={tab.key}
-                    onClick={() => setActiveTab(tab.key)}
-                    className={`
-                      w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors
-                      ${activeTab === tab.key
-                        ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
-                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                      }
-                    `}
+                    onClick={handleResetTheme}
+                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
                   >
-                    <span>{tab.icon}</span>
-                    <span className="text-sm font-medium">{tab.label}</span>
+                    Thema Resetten
                   </button>
-                ))}
-              </nav>
-            </div>
-
-            {/* Main content */}
-            <div className="flex-1 p-6 overflow-y-auto">
-              {/* Loading state */}
-              {isLoading && (
-                <div className="flex items-center justify-center h-64">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
                 </div>
-              )}
 
-              {/* Error state */}
-              {error && (
-                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6">
-                  <div className="flex items-center">
-                    <svg className="w-5 h-5 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-red-700 dark:text-red-300 text-sm">
-                      {error.message || 'Er is een fout opgetreden'}
-                    </span>
+                {/* Theme info */}
+                <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                  <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2">
+                    ℹ️ Thema Informatie
+                  </h4>
+                  <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                    <p>Huidige modus: {currentMode === 'light' ? 'Licht' : 'Donker'}</p>
+                    <p>Actief palet: {currentPalette}</p>
                   </div>
                 </div>
-              )}
-
-              {/* Palettes tab */}
-              {activeTab === 'palettes' && !isLoading && (
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                      Beschikbare Kleurpaletten
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {availablePalettes.map(palette => (
-                        <PalettePreview
-                          key={palette.key}
-                          palette={palette}
-                          isActive={currentPalette === palette.name}
-                          onClick={handlePaletteChange}
-                          disabled={isChangingPalette}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Custom colors tab */}
-              {activeTab === 'custom' && !isLoading && (
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                      Aangepaste Kleuren
-                    </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-                      Pas individuele kleuren aan. Deze overschrijven de kleuren van het geselecteerde palet.
-                    </p>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {getCustomizableColors().map(colorKey => {
-                        const colorSource = getColorSource(colorKey);
-                        return (
-                          <div key={colorKey} className="space-y-2">
-                            <ColorInput
-                              label={colorKey.charAt(0).toUpperCase() + colorKey.slice(1)}
-                              colorKey={colorKey}
-                              value={colorSource.color}
-                              onChange={handleCustomColorChange}
-                              onValidation={handleColorValidation}
-                              disabled={isUpdating}
-                            />
-                            
-                            {hasCustomColor(colorKey) && (
-                              <button
-                                onClick={() => removeCustomColor(colorKey)}
-                                disabled={isUpdating}
-                                className="text-xs text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 disabled:opacity-50"
-                              >
-                                Reset naar palet kleur
-                              </button>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Accessibility tab */}
-              {activeTab === 'accessibility' && !isLoading && (
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                      Toegankelijkheid
-                    </h3>
-                    
-                    <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
-                      <div className="flex items-start">
-                        <svg className="w-5 h-5 text-blue-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                        </svg>
-                        <div className="text-sm text-blue-700 dark:text-blue-300">
-                          <p className="font-medium mb-1">WCAG Richtlijnen</p>
-                          <p>AA: Minimaal 4.5:1 contrast voor normale tekst</p>
-                          <p>AAA: Minimaal 7:1 contrast voor normale tekst</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Validation results */}
-                    <div className="space-y-4">
-                      {Object.entries(validationResults).map(([colorKey, validation]) => (
-                        <div key={colorKey} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="font-medium text-gray-900 dark:text-gray-100">
-                              {colorKey.charAt(0).toUpperCase() + colorKey.slice(1)}
-                            </span>
-                            <div className="flex items-center space-x-2">
-                              {validation.valid ? (
-                                <span className="text-green-600 dark:text-green-400 text-sm">✓ Geldig</span>
-                              ) : (
-                                <span className="text-red-600 dark:text-red-400 text-sm">✗ Ongeldig</span>
-                              )}
-                            </div>
-                          </div>
-                          
-                          {validation.contrastRatio && (
-                            <div className="text-sm text-gray-600 dark:text-gray-400">
-                              Contrast: {validation.contrastRatio.toFixed(2)}:1
-                              <div className="flex space-x-4 mt-1">
-                                <span className={validation.meetsAA ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
-                                  AA: {validation.meetsAA ? '✓' : '✗'}
-                                </span>
-                                <span className={validation.meetsAAA ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
-                                  AAA: {validation.meetsAAA ? '✓' : '✗'}
-                                </span>
-                              </div>
-                            </div>
-                          )}
-                          
-                          {!validation.valid && validation.reason && (
-                            <p className="text-sm text-red-600 dark:text-red-400 mt-2">
-                              {validation.reason}
-                            </p>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Advanced tab */}
-              {activeTab === 'advanced' && !isLoading && (
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                      Geavanceerde Instellingen
-                    </h3>
-                    
-                    <div className="space-y-4">
-                      {/* Reset theme */}
-                      <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                        <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2">
-                          Thema Resetten
-                        </h4>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                          Reset alle aangepaste kleuren en keer terug naar het standaard thema.
-                        </p>
-                        <button
-                          onClick={handleResetTheme}
-                          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-                        >
-                          Thema Resetten
-                        </button>
-                      </div>
-
-                      {/* Theme info */}
-                      <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                        <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2">
-                          Thema Informatie
-                        </h4>
-                        <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                          <p>Huidige modus: {currentMode === 'light' ? 'Licht' : 'Donker'}</p>
-                          <p>Actief palet: {currentPalette}</p>
-                          <p>Aangepaste kleuren: {Object.keys(customColors).length}</p>
-                          <p>Laatst gewijzigd: {theme?.lastModified ? new Date(theme.lastModified).toLocaleString('nl-NL') : 'Onbekend'}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
+              </div>
             </div>
           </div>
           
           {/* Footer with Apply/Save button */}
-          <div className="flex items-center justify-between p-6 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
+          <div className="flex items-center justify-between p-4 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
             <div className="text-sm text-gray-500 dark:text-gray-400">
               Wijzigingen worden automatisch opgeslagen
             </div>

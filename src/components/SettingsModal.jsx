@@ -49,31 +49,31 @@ const SettingsModal = ({ lists = [], onClose }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center p-4 z-50 overflow-y-auto"
       onClick={onClose}
     >
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-[rgb(var(--card-bg))] rounded-lg shadow-xl max-w-md w-full max-h-[90vh] flex flex-col"
+        className="bg-[rgb(var(--card-bg))] rounded-lg shadow-xl max-w-md w-full my-8 flex flex-col max-h-[calc(100vh-4rem)]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Fixed Header */}
-        <div className="flex items-center justify-between p-6 border-b border-[rgb(var(--border-color))]/50 flex-shrink-0">
+        <div className="flex items-center justify-between p-4 border-b border-[rgb(var(--border-color))]/50 flex-shrink-0">
           <h2 className="text-xl font-semibold text-[rgb(var(--card-text))]">
             Instellingen
           </h2>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-[rgb(var(--border-color))]/20 transition-colors z-10"
+            className="p-2 rounded-lg hover:bg-[rgb(var(--border-color))]/20 transition-colors z-10 touch-manipulation"
           >
-            <X className="w-5 h-5 text-[rgb(var(--text-color))]/60" />
+            <X className="w-6 h-6 text-[rgb(var(--text-color))]/60" />
           </button>
         </div>
 
         {/* Scrollable Content */}
-        <div className="p-6 space-y-6 overflow-y-auto flex-1">
+        <div className="p-4 space-y-6 overflow-y-auto flex-1 overscroll-contain">
           <div>
             <h3 className="text-lg font-medium text-[rgb(var(--card-text))] mb-3">
               Thema
