@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Settings, Plus, List, Share2, Trash2, Check, Wifi, QrCode, Users } from 'lucide-react';
+import { Settings, Plus, List, Share2, Trash2, Check, Wifi, QrCode, Users, Database } from 'lucide-react';
 import { useTheme } from './context/ThemeContext';
 import { useToast } from './context/ToastContext';
 import { useUndo } from './context/UndoContext';
@@ -11,31 +11,40 @@ import QRShareModal from './components/QRShareModal';
 import QRScannerModal from './components/QRScannerModal';
 import UserManagementModal from './components/UserManagementModal';
 import UserNameModal from './components/UserNameModal';
+import PersistenceHealthMonitor from './components/PersistenceHealthMonitor';
 import ConnectionError from './components/ConnectionError';
 import ToastContainer from './components/Toast';
 import UndoBar from './components/UndoBar';
 import { validateListName } from './utils/validation';
 import { validateQRData } from './utils/qrSecurity';
-import { userManager } from './utils/userManager';
+import { userManager } from './utils/enhancedUserManager';
+import { useUserState, useShoppingLists, useTheme as usePersistentTheme } from './hooks/usePersistentState';
 
 function App() {
-  const { theme, toggleTheme } = useTheme();
+  // Enhanced state management hooks
+  const { userInfo, setUserName, isLoading: userLoading, error: userError } = useUserState();
+  const { lists, addList, updateList, removeList, isLoading: listsLoading } = useShoppingLists();
+  const { theme, toggleTheme, isLoading: themeLoading } = usePersistentTheme();
+  
+  // Legacy theme context for backward compatibility
+  const { theme: legacyTheme, toggleTheme: legacyToggleTheme } = useTheme();
   const { toasts, removeToast, removeToastByMessage, success, error, info, deleteToast } = useToast();
   const { undoActions, addUndoAction, executeUndo, removeUndoAction } = useUndo();
-  const [lists, setLists] = useState([]);
+  
+  // UI state
   const [newListName, setNewListName] = useState('');
   const [selectedList, setSelectedList] = useState(null);
   const [showSettings, setShowSettings] = useState(false);
   const [showShare, setShowShare] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
   const [showUserManagement, setShowUserManagement] = useState(false);
+  const [showPersistenceMonitor, setShowPersistenceMonitor] = useState(false);
   const [shareListId, setShareListId] = useState(null);
   const [managementListId, setManagementListId] = useState(null);
   const [firebaseError, setFirebaseError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isProcessingQRScan, setIsProcessingQRScan] = useState(false);
   const [showUserNameModal, setShowUserNameModal] = useState(false);
-  const [currentUserName, setCurrentUserName] = useState(null);
 
   // Handle shared list URLs
   const handleSharedListFromURL = async (currentLists = lists) => {
@@ -132,9 +141,7 @@ function App() {
   useEffect(() => {
     const initAuth = async () => {
       try {
-        // Check if user has set their name
-        const userInfo = userManager.getUserInfo();
-        setCurrentUserName(userInfo.name);
+        console.log('Initializing app with enhanced persistence...');
         
         const { error } = await initializeFirebase();
         if (error) {
@@ -148,25 +155,35 @@ function App() {
           try {
             const userID = getCurrentUserID();
             if (userID) {
-              // Check if user needs to set their name
-              if (!userInfo.hasName) {
+              // Check if user needs to set their name using enhanced user manager
+              if (!userInfo?.hasName && !userLoading) {
                 setShowUserNameModal(true);
                 setIsLoading(false);
                 return;
               }
 
-              // Load initial shopping lists
+              // Load initial shopping lists from Firebase (still needed for real-time sync)
               const initialLists = await getShoppingLists();
-              setLists(initialLists);
+              
+              // Merge with persistent local lists if needed
+              // The enhanced state manager will handle persistence automatically
               
               // Subscribe to real-time updates
               const unsubscribe = subscribeToShoppingLists((firebaseLists) => {
-                setLists(firebaseLists);
+                // Update both Firebase and local state
+                firebaseLists.forEach(async (firebaseList) => {
+                  const existingList = lists.find(l => l.id === firebaseList.id);
+                  if (!existingList) {
+                    await addList(firebaseList);
+                  } else if (existingList.updatedAt < firebaseList.updatedAt) {
+                    await updateList(firebaseList.id, firebaseList);
+                  }
+                });
               });
               
               // Check for shared list in URL hash after lists are loaded
               setTimeout(() => {
-                handleSharedListFromURL(initialLists);
+                handleSharedListFromURL(lists);
               }, 500);
               
               return () => unsubscribe();
@@ -185,8 +202,11 @@ function App() {
       }
     };
 
-    initAuth();
-  }, []);
+    // Only initialize if user data is loaded
+    if (!userLoading) {
+      initAuth();
+    }
+  }, [userLoading, userInfo, lists, addList, updateList]);
 
   // Listen for hash changes (when someone navigates to a shared link)
   useEffect(() => {
@@ -216,18 +236,27 @@ function App() {
   };
 
   const handleUserNameSet = async (name) => {
-    setCurrentUserName(name);
     setShowUserNameModal(false);
     setIsLoading(true);
     
     try {
+      // Use enhanced user manager to set name
+      await setUserName(name);
+      
       // Now load the shopping lists
       const initialLists = await getShoppingLists();
-      setLists(initialLists);
       
       // Subscribe to real-time updates
       const unsubscribe = subscribeToShoppingLists((firebaseLists) => {
-        setLists(firebaseLists);
+        // Update both Firebase and local state
+        firebaseLists.forEach(async (firebaseList) => {
+          const existingList = lists.find(l => l.id === firebaseList.id);
+          if (!existingList) {
+            await addList(firebaseList);
+          } else if (existingList.updatedAt < firebaseList.updatedAt) {
+            await updateList(firebaseList.id, firebaseList);
+          }
+        });
       });
       
       success(`Welkom ${name}! Je kunt nu lijsten maken en delen. 🎉`);
@@ -236,6 +265,7 @@ function App() {
     } catch (error) {
       console.error('Error loading shopping lists after name set:', error);
       setFirebaseError(error);
+      error('Er ging iets mis bij het instellen van je naam');
     } finally {
       setIsLoading(false);
     }
@@ -255,18 +285,25 @@ function App() {
         return;
       }
 
-      const userName = userManager.getUserName();
-      if (!userName) {
+      if (!userInfo?.name) {
         error('Je naam is niet ingesteld. Vernieuw de pagina om je naam in te stellen.');
         return;
       }
       
-      const newList = {
+      const newListData = {
         name: validation.value,
         items: [],
-        creatorName: userName
+        creatorName: userInfo.name,
+        deviceUID: userID,
+        creatorId: userID
       };
-      await createShoppingList(newList);
+
+      // Create in Firebase
+      await createShoppingList(newListData);
+      
+      // Also add to local persistent state
+      await addList(newListData);
+      
       setNewListName('');
       success(`Lijst "${validation.value}" is aangemaakt! 🎉`);
     } catch (error) {
@@ -290,10 +327,11 @@ function App() {
         return;
       }
       
+      // Delete from Firebase
       await deleteShoppingList(listId);
       
-      // Manually update the lists state to ensure immediate UI update
-      setLists(prevLists => prevLists.filter(l => l.id !== listId));
+      // Delete from local persistent state
+      await removeList(listId);
       
       if (selectedList?.id === listId) {
         setSelectedList(null);
@@ -312,7 +350,10 @@ function App() {
             // Remove the id field to allow Firebase to create a new one
             const { id, createdAt, updatedAt, isCreator, ...listDataToRestore } = listToDelete;
             
+            // Restore to both Firebase and local state
             await createShoppingList(listDataToRestore);
+            await addList(listDataToRestore);
+            
             success(`Lijst "${listToDelete?.name}" hersteld! 🎉`, 2000);
           } catch (err) {
             console.error('Error restoring list:', err);
@@ -548,6 +589,16 @@ function App() {
                 <QrCode className="w-5 h-5" />
               </button>
               
+              {/* Persistence Monitor (for debugging/advanced users) */}
+              <button
+                onClick={() => setShowPersistenceMonitor(true)}
+                className="flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-gradient-to-r from-accent to-accent/90 hover:opacity-90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 group"
+                aria-label="Persistentie Monitor"
+                title="iOS Safari Persistentie Status"
+              >
+                <Database className="w-5 h-5 lg:w-6 lg:h-6 group-hover:scale-110 transition-transform duration-200" />
+              </button>
+
               {/* Theme Toggle */}
               <button
                 onClick={toggleTheme}
@@ -1009,6 +1060,12 @@ function App() {
       {showUserNameModal && (
         <UserNameModal
           onNameSet={handleUserNameSet}
+        />
+      )}
+
+      {showPersistenceMonitor && (
+        <PersistenceHealthMonitor
+          onClose={() => setShowPersistenceMonitor(false)}
         />
       )}
 

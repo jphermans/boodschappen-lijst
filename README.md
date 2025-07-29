@@ -1,13 +1,20 @@
 # 🛒 Boodschappenlijst Applicatie
 
-Een geavanceerde React web applicatie voor het maken en delen van boodschappenlijsten met realtime synchronisatie, spraakherkenning en een moderne Liquid Glass interface.
+Een geavanceerde React web applicatie voor het maken en delen van boodschappenlijsten met realtime synchronisatie, gebruikersbeheer en een moderne Gruvbox interface.
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)
 ![React](https://img.shields.io/badge/React-18+-blue.svg)
 ![Firebase](https://img.shields.io/badge/Firebase-9+-orange.svg)
 ![Dutch](https://img.shields.io/badge/Language-Dutch%2FBelgium-green.svg)
 
 ## ✨ Hoofdfuncties
+
+### 👤 **Gebruikersbeheer**
+- ✅ **Gebruikersnamen systeem** - Verplichte naam instelling bij eerste gebruik
+- ✅ **Creator tracking** - Wie heeft welke lijst gemaakt
+- ✅ **Contributor tracking** - Wie heeft welk item toegevoegd
+- ✅ **Veilige opslag** - Gebruikersnamen worden lokaal en veilig opgeslagen
+- ✅ **Validatie** - Naam moet tussen 2-50 karakters zijn
 
 ### 📝 **Lijstbeheer**
 - ✅ **Boodschappenlijsten maken en beheren** met realtime synchronisatie
@@ -16,36 +23,36 @@ Een geavanceerde React web applicatie voor het maken en delen van boodschappenli
 - ✅ **Populaire items** voor snelle toevoeging
 - ✅ **Filter functies**: Alles, Actief, Voltooid
 - ✅ **Bulk acties**: Alle voltooide items verwijderen
-
-### 🎤 **Spraakherkenning**
-- ✅ **Nederlandse spraakherkenning** (Nederland & België)
-- ✅ **Spraakcommando's**: "Voeg toe melk", "Ik heb nodig brood"
-- ✅ **Microfoon toegang** met duidelijke instructies
-- ✅ **Automatische tekstverwerking** met slimme filtering
+- ✅ **Creator namen** - Zie wie elke lijst heeft gemaakt
+- ✅ **Item attributie** - Zie wie elk item heeft toegevoegd
 
 ### 📱 **Delen & Synchronisatie**
 - ✅ **QR-codes voor delen** van lijsten tussen gebruikers
-- ✅ **QR-code scannen** via camera of bestand upload
+- ✅ **QR-code generatie** met veilige validatie
+- ✅ **Handmatige QR-code invoer** (camera scanning is placeholder)
 - ✅ **Gebruikers koppelen** voor gedeelde toegang
 - ✅ **Creator permissies** - alleen makers kunnen lijsten verwijderen
 - ✅ **Gedeelde toegang** - anderen kunnen items toevoegen/bewerken
 - ✅ **Realtime updates** via Firebase Firestore
 - ✅ **Offline ondersteuning** met automatische sync
 - ✅ **Visuele indicatoren** voor eigenaarschap (Eigenaar/Gedeeld badges)
+- ✅ **Gebruikersbeheer modal** - Beheer wie toegang heeft tot je lijsten
 
 ### 🎨 **Interface & Thema's**
-- ✅ **Liquid Glass design** met geavanceerde visuele effecten
-- ✅ **Donker/licht thema** automatisch detectie
-- ✅ **Aanpasbare kleuren**: Primair, Secundair, Accent
+- ✅ **Gruvbox thema** - Authentieke Gruvbox kleuren voor licht en donker
+- ✅ **Donker/licht thema** met naadloze overgangen
+- ✅ **Warme, oogvriendelijke kleuren** geoptimaliseerd voor comfort
 - ✅ **Responsive design** voor alle apparaten
 - ✅ **Framer Motion animaties** voor vloeiende overgangen
+- ✅ **Desktop geoptimaliseerd** - Enhanced layout voor grote schermen
 
 ### 🔄 **Gebruikerservaring**
 - ✅ **Undo functionaliteit** voor alle acties
 - ✅ **Toast notificaties** met duidelijke feedback
 - ✅ **Nederlandse interface** volledig gelokaliseerd
 - ✅ **Toegankelijkheid** met ARIA labels en keyboard navigation
-- ✅ **Device-based identificatie** (geen login vereist)
+- ✅ **Analytics dashboard** - Inzicht in je lijstgebruik
+- ✅ **Settings modal** - Centraal beheer van instellingen
 
 ## 🚀 Installatie
 
@@ -110,33 +117,31 @@ Voor automatische deployment naar GitHub Pages met Firebase secrets:
 
 ## 📖 Gebruikshandleiding
 
+### 🏠 **Eerste gebruik**
+- **Naam instellen**: Bij eerste bezoek wordt je gevraagd je naam in te stellen
+- **Validatie**: Naam moet tussen 2-50 karakters zijn
+- **Veilige opslag**: Je naam wordt lokaal opgeslagen voor toekomstig gebruik
+
 ### 🏠 **Hoofdscherm**
-- **Nieuwe lijst maken**: Type naam → klik "Aanmaken" of gebruik spraakherkenning 🎤
-- **QR-code scannen**: Klik op QR icoon → scan gedeelde lijst
-- **Thema wisselen**: Klik op zon/maan icoon
-- **Instellingen**: Klik op tandwiel voor kleuren en apparaat koppeling
+- **Nieuwe lijst maken**: Type naam → klik "Lijst Aanmaken"
+- **QR-code scannen**: Klik op QR icoon → voer code handmatig in
+- **Thema wisselen**: Klik op zon/maan icoon voor Gruvbox licht/donker
+- **Instellingen**: Klik op tandwiel voor analytics en instellingen
 
 ### 📝 **Lijstbeheer**
-- **Lijst openen**: Klik "Openen" op een lijst
-- **Lijst delen**: Klik "Delen" → QR-code verschijnt
+- **Lijst openen**: Klik "Lijst Openen" op een lijst
+- **Lijst delen**: Klik "Delen" → QR-code en link verschijnen
+- **Gebruikers beheren**: Klik "Gebruikers" (alleen voor creators)
 - **Lijst verwijderen**: Klik "Verwijderen" → optie om ongedaan te maken
+- **Creator info**: Zie "Gemaakt door [naam]" onder elke lijst
 
 ### 🛍️ **Items beheren**
-- **Item toevoegen**: Type naam of gebruik spraak 🎤 → klik "Toevoegen"
-- **Spraakcommando's**:
-  - *"Voeg toe melk"* → voegt "melk" toe
-  - *"Ik heb nodig brood"* → voegt "brood" toe
-  - *"Koop appels"* → voegt "appels" toe
+- **Item toevoegen**: Type naam → klik "Toevoegen"
 - **Item voltooien**: Klik op checkbox naast item
 - **Item verwijderen**: Klik op prullenbak icoon
 - **Filteren**: Gebruik "Alles", "Actief", "Voltooid" knoppen
 - **Populaire items**: Klik op voorgestelde items voor snelle toevoeging
-
-### 🎤 **Spraakherkenning gebruiken**
-1. **Toegang verlenen**: Klik op oranje "Microfoon toegang" knop
-2. **Toestemming geven**: Klik "Toestaan" in browser dialog
-3. **Spraak gebruiken**: Klik paarse microfoon knop → spreek duidelijk
-4. **Stop opname**: Klik rode knop of wacht op automatische stop
+- **Contributor info**: Zie "Toegevoegd door [naam]" onder elk item
 
 ### 📱 **QR-code delen**
 1. **Delen**: Klik "Delen" knop op lijst
@@ -146,16 +151,20 @@ Voor automatische deployment naar GitHub Pages met Firebase secrets:
 
 ### 📷 **QR-code scannen**
 1. **Scanner openen**: Klik QR icoon in header
-2. **Camera gebruiken**: Richt camera op QR-code
-3. **Handmatig invoeren**: Typ code in tekstveld
-4. **Bestand uploaden**: Upload QR-code afbeelding
-5. **Automatische toegang**: Lijst wordt automatisch toegevoegd aan je account
+2. **Handmatig invoeren**: Typ code in tekstveld (camera scanning is nog niet geïmplementeerd)
+3. **Automatische toegang**: Lijst wordt automatisch toegevoegd aan je account
 
 ### 🔗 **Link delen tussen apparaten**
 1. **Deel link**: Kopieer de deellink en stuur naar ander apparaat
 2. **Open link**: Open de link op het andere apparaat
 3. **Automatische toegang**: De lijst wordt automatisch gedeeld met het nieuwe apparaat
 4. **Realtime sync**: Wijzigingen zijn direct zichtbaar op alle apparaten
+
+### 👥 **Gebruikersbeheer**
+1. **Toegang beheren**: Klik "Gebruikers" op een lijst die je hebt gemaakt
+2. **Gebruikers zien**: Bekijk wie toegang heeft tot je lijst
+3. **Toegang intrekken**: Verwijder gebruikers uit gedeelde lijsten
+4. **Creator rechten**: Alleen de maker van een lijst kan gebruikers beheren
 
 ## ⚙️ Scripts
 
@@ -189,7 +198,8 @@ service cloud.firestore {
             || request.resource.data.creatorId == request.auth.uid)
         && request.resource.data.name is string
         && request.resource.data.name.size() <= 100
-        && request.resource.data.items is list;
+        && request.resource.data.items is list
+        && request.resource.data.creatorName is string;
       
       // Users can update lists they created or are shared with
       allow update: if request.auth != null
@@ -197,7 +207,8 @@ service cloud.firestore {
             || resource.data.creatorId == request.auth.uid
             || request.auth.uid in resource.data.get('sharedWith', []))
         && (request.resource.data.deviceUID == resource.data.deviceUID
-            || request.resource.data.creatorId == resource.data.creatorId); // Prevent changing creator
+            || request.resource.data.creatorId == resource.data.creatorId) // Prevent changing creator
+        && request.resource.data.creatorName == resource.data.creatorName; // Prevent changing creator name
       
       // Only the creator can delete lists
       allow delete: if request.auth != null
@@ -218,15 +229,12 @@ service cloud.firestore {
 ### **Styling & Animaties**
 - **Tailwind CSS** - Utility-first CSS framework
 - **Framer Motion** - Productie-ready animatie library
-- **Liquid Glass Design** - Custom CSS effecten voor moderne UI
+- **Gruvbox Theme** - Authentieke Gruvbox kleuren voor optimaal comfort
 
 ### **Backend & Database**
 - **Firebase Firestore** - NoSQL realtime database
+- **Firebase Authentication** - Anonymous authentication
 - **Firebase Hosting** - Geoptimaliseerde web hosting
-
-### **Spraaktechnologie**
-- **Web Speech API** - Native browser spraakherkenning
-- **Nederlandse taalmodellen** - Geoptimaliseerd voor NL/BE
 
 ### **QR & Funcionaliteit**
 - **react-qr-code** - QR-code generatie
@@ -243,10 +251,9 @@ service cloud.firestore {
 | Functie | Chrome | Firefox | Safari | Edge |
 |---------|--------|---------|--------|------|
 | **Basis functionaliteit** | ✅ | ✅ | ✅ | ✅ |
-| **Spraakherkenning** | ✅ | ✅ | ⚠️ | ✅ |
-| **Camera QR scan** | ✅ | ✅ | ✅ | ✅ |
-| **Liquid Glass effecten** | ✅ | ✅ | ✅ | ✅ |
-| **Push notificaties** | ✅ | ✅ | ⚠️ | ✅ |
+| **QR code generatie** | ✅ | ✅ | ✅ | ✅ |
+| **Gruvbox thema** | ✅ | ✅ | ✅ | ✅ |
+| **Realtime sync** | ✅ | ✅ | ✅ | ✅ |
 
 ⚠️ = Beperkte ondersteuning
 
@@ -254,8 +261,8 @@ service cloud.firestore {
 
 - **📱 Mobile**: Geoptimaliseerd voor telefoons (320px+)
 - **📱 Tablet**: Aangepaste layout voor tablets (768px+)
-- **💻 Desktop**: Volledige functionaliteit (1024px+)
-- **🖥️ Large screens**: Enhanced ervaring (1440px+)
+- **💻 Desktop**: Volledige functionaliteit met sidebar (1024px+)
+- **🖥️ Large screens**: Enhanced ervaring met analytics (1440px+)
 
 ## 🔧 Ontwikkeling
 
@@ -263,16 +270,19 @@ service cloud.firestore {
 ```
 src/
 ├── components/          # React componenten
-│   ├── VoiceInput.jsx  # Spraakherkenning component
 │   ├── QRScannerModal.jsx # QR scanner functionaliteit
+│   ├── UserNameModal.jsx # Gebruikersnaam instelling
+│   ├── UserManagementModal.jsx # Gebruikersbeheer
+│   ├── AnalyticsDashboard.jsx # Analytics weergave
+│   ├── SettingsModal.jsx # Instellingen modal
 │   └── ...
 ├── context/            # React Context providers
-│   ├── ThemeContext.jsx # Thema management
+│   ├── ThemeContext.jsx # Gruvbox thema management
 │   ├── ToastContext.jsx # Notificatie systeem
 │   └── UndoContext.jsx  # Undo functionaliteit
-├── hooks/              # Custom React hooks
-│   └── useSpeechRecognition.js # Spraak hook
 ├── utils/              # Utility functies
+│   ├── userManager.js  # Gebruikersbeheer
+│   ├── qrSecurity.js   # QR validatie
 │   ├── deviceUID.js    # Apparaat identificatie
 │   └── groceryItems.js # Item suggesties
 └── firebase.js         # Firebase configuratie
@@ -282,9 +292,15 @@ src/
 
 1. **Component maken**: Maak nieuwe component in `/components`
 2. **Context gebruiken**: Gebruik bestaande contexts voor state
-3. **Styling**: Gebruik Tailwind classes en liquid glass patterns
+3. **Styling**: Gebruik Tailwind classes en Gruvbox kleuren
 4. **Testen**: Test op verschillende apparaten en browsers
 5. **Documentatie**: Update README.md met nieuwe functionaliteit
+
+## 🚧 Bekende Beperkingen
+
+- **Camera QR Scanning**: Momenteel alleen handmatige invoer, camera scanning is nog niet geïmplementeerd
+- **Offline Mode**: Beperkte functionaliteit zonder internetverbinding
+- **Spraakherkenning**: Spraakfunctionaliteit is niet meer beschikbaar in de huidige versie
 
 ## 🤝 Bijdragen
 
@@ -300,6 +316,7 @@ src/
 - Gebruik **Tailwind CSS** voor styling
 - Voeg **JSDoc comments** toe voor complexe functies
 - Test op **mobiele apparaten**
+- Respecteer **Gruvbox kleuren** voor consistentie
 
 ## 📄 Licentie
 
@@ -307,8 +324,7 @@ MIT License - zie [LICENSE](LICENSE) voor details
 
 ## 🙏 Credits
 
-- **Spraakherkenning**: Web Speech API
-- **Design Inspiratie**: Apple iOS 26 Liquid Glass
+- **Design Inspiratie**: Gruvbox color scheme
 - **Icons**: Lucide React
 - **Nederlandse lokalisatie**: Native speaker optimized
 
