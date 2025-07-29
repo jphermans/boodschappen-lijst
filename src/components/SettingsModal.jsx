@@ -56,22 +56,24 @@ const SettingsModal = ({ lists = [], onClose }) => {
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-[rgb(var(--card-bg))] rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto"
+        className="bg-[rgb(var(--card-bg))] rounded-lg shadow-xl max-w-md w-full max-h-[90vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between p-6 border-b border-[rgb(var(--border-color))]/50">
+        {/* Fixed Header */}
+        <div className="flex items-center justify-between p-6 border-b border-[rgb(var(--border-color))]/50 flex-shrink-0">
           <h2 className="text-xl font-semibold text-[rgb(var(--card-text))]">
             Instellingen
           </h2>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-[rgb(var(--border-color))]/20 transition-colors"
+            className="p-2 rounded-lg hover:bg-[rgb(var(--border-color))]/20 transition-colors z-10"
           >
             <X className="w-5 h-5 text-[rgb(var(--text-color))]/60" />
           </button>
         </div>
 
-        <div className="p-6 space-y-6">
+        {/* Scrollable Content */}
+        <div className="p-6 space-y-6 overflow-y-auto flex-1">
           <div>
             <h3 className="text-lg font-medium text-[rgb(var(--card-text))] mb-3">
               Thema
