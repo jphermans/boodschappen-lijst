@@ -47,25 +47,93 @@ function RootErrorBoundary({ children }) {
   return children;
 }
 
-// Add global storage cleanup function
+// Immediate storage cleanup function
 if (typeof window !== 'undefined') {
+  // Simple, immediate storage clear
   window.clearAppStorage = () => {
-    persistentStorage.clearCorruptedData().then(() => {
-      console.log('Storage cleared successfully');
+    try {
+      console.log('Clearing storage...');
+      localStorage.clear();
+      sessionStorage.clear();
+      
+      // Clear specific problematic keys
+      const prefixes = [
+        'boodschappenlijst_v2_',
+        'boodschappenlijst_backup_',
+        'boodschappenlijst_session_'
+      ];
+      
+      prefixes.forEach(prefix => {
+        // Clear localStorage
+        Object.keys(localStorage).forEach(key => {
+          if (key.startsWith(prefix)) {
+            localStorage.removeItem(key);
+          }
+        });
+        
+        // Clear sessionStorage
+        Object.keys(sessionStorage).forEach(key => {
+          if (key.startsWith(prefix)) {
+            sessionStorage.removeItem(key);
+          }
+        });
+      });
+      
+      console.log('Storage cleared successfully!');
       window.location.reload();
-    });
+    } catch (error) {
+      console.error('Error clearing storage:', error);
+    }
   };
   
   // Auto-clear storage if URL contains clear=true parameter
   if (window.location.search.includes('clear=true')) {
     console.log('Auto-clearing storage due to clear=true parameter');
-    persistentStorage.clearCorruptedData().then(() => {
+    
+    try {
+      localStorage.clear();
+      sessionStorage.clear();
+      
+      // Clear specific problematic keys
+      const prefixes = [
+        'boodschappenlijst_v2_',
+        'boodschappenlijst_backup_',
+        'boodschappenlijst_session_'
+      ];
+      
+      prefixes.forEach(prefix => {
+        Object.keys(localStorage).forEach(key => {
+          if (key.startsWith(prefix)) localStorage.removeItem(key);
+        });
+        Object.keys(sessionStorage).forEach(key => {
+          if (key.startsWith(prefix)) sessionStorage.removeItem(key);
+        });
+      });
+      
+      console.log('Storage cleared via auto-clear');
+      
       // Remove the clear parameter from URL
       const url = new URL(window.location);
       url.searchParams.delete('clear');
       window.location.href = url.toString();
-    });
+    } catch (error) {
+      console.error('Failed to clear storage:', error);
+    }
   }
+  
+  // Add manual clear button to page for easy access
+  window.addEventListener('DOMContentLoaded', () => {
+    // Create a simple clear button if page is stuck
+    if (!document.querySelector('#root') || document.querySelector('#root').children.length === 0) {
+      const clearButton = document.createElement('button');
+      clearButton.textContent = 'Clear Storage & Reload';
+      clearButton.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);padding:20px;background:#007bff;color:white;border:none;border-radius:5px;font-size:16px;cursor:pointer;z-index:9999;';
+      clearButton.onclick = () => {
+        window.clearAppStorage();
+      };
+      document.body.appendChild(clearButton);
+    }
+  });
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(
