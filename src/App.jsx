@@ -344,7 +344,7 @@ function App() {
       
       if (localDuplicate) {
         console.log("Local duplicate detected for:", validation.value);
-        alert(`⚠️ Er bestaat al een lijst met de naam "${validation.value}"! Kies een andere naam.`);
+        error(`⚠️ Lijst "${validation.value}" bestaat al! Kies een andere naam.`, 2000);
         return;
       }
       
@@ -358,7 +358,7 @@ function App() {
         
         if (firebaseDuplicate) {
           console.log("Firebase duplicate detected for:", validation.value);
-          alert(`⚠️ Er bestaat al een lijst met de naam "${validation.value}"! Kies een andere naam.`);
+          error(`⚠️ Lijst "${validation.value}" bestaat al! Kies een andere naam.`, 2000);
           return;
         }
       } catch (firebaseError) {
