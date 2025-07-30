@@ -200,11 +200,31 @@ const SettingsPage = ({ lists = [], onBack, onNavigateToAnalytics, onNavigateToT
                 </p>
                 
                 <button
-                  onClick={() => {
+                  onClick={async () => {
                     if (window.confirm('Weet je zeker dat je alle lokale gegevens wilt wissen? Dit zal de app herstarten.')) {
-                      localStorage.clear();
-                      sessionStorage.clear();
-                      window.location.reload();
+                      try {
+                        // Clear all storage mechanisms
+                        localStorage.clear();
+                        sessionStorage.clear();
+                        
+                        // Clear indexedDB if available
+                        if ('indexedDB' in window) {
+                          indexedDB.deleteDatabase('BoodschappenlijstDB').catch(console.warn);
+                        }
+                        
+                        // Clear cookies
+                        document.cookie.split(';').forEach(cookie => {
+                          const eqPos = cookie.indexOf('=');
+                          const name = eqPos > -1 ? cookie.substring(0, eqPos).trim() : cookie.trim();
+                          document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+                        });
+                        
+                        // Force reload to clear any cached state
+                        window.location.href = window.location.origin + window.location.pathname;
+                      } catch (e) {
+                        console.warn('Error during storage cleanup:', e);
+                        window.location.reload();
+                      }
                     }
                   }}
                   className="w-full flex items-center justify-center px-6 py-4 bg-gradient-to-r from-red-500 to-red-600 hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"

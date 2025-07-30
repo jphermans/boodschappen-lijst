@@ -110,6 +110,16 @@ class PersistentStorage {
         // Continue with decryption if it's not plain JSON
       }
 
+      // Skip decryption if data doesn't look like base64
+      if (!/^[A-Za-z0-9+/=]+$/.test(encryptedData.trim())) {
+        console.warn('Data doesn\'t appear to be base64 encrypted, attempting direct JSON parse');
+        try {
+          return JSON.parse(encryptedData);
+        } catch {
+          return null;
+        }
+      }
+
       const decoded = atob(encryptedData);
       const key = 'boodschappenlijst_secure_v2_2024';
       let decrypted = '';
@@ -124,11 +134,19 @@ class PersistentStorage {
       const parts = decrypted.split(':', 2);
       if (parts.length !== 2) {
         console.warn('Invalid encrypted data format, attempting direct JSON parse');
-        return JSON.parse(decrypted);
+        try {
+          return JSON.parse(decrypted);
+        } catch {
+          return null;
+        }
       }
       
-      const [timestamp, jsonString] = parts;
-      return JSON.parse(jsonString);
+      const [, jsonString] = parts;
+      try {
+        return JSON.parse(jsonString);
+      } catch {
+        return null;
+      }
     } catch (error) {
       console.error('Decryption failed:', error);
       // Return null for corrupted data instead of throwing
@@ -564,4 +582,28 @@ if (typeof window !== 'undefined') {
   setInterval(() => {
     persistentStorage.syncStorage().catch(console.error);
   }, 30000);
+  
+  // Add global storage clear function for debugging
+  window.clearAllStorage = async () => {
+    console.log('Clearing all storage...');
+    try {
+      localStorage.clear();
+      sessionStorage.clear();
+      
+      if ('indexedDB' in window) {
+        indexedDB.deleteDatabase('BoodschappenlijstDB').catch(console.warn);
+      }
+      
+      // Clear cookies
+      document.cookie.split(';').forEach(cookie => {
+        const eqPos = cookie.indexOf('=');
+        const name = eqPos > -1 ? cookie.substring(0, eqPos).trim() : cookie.trim();
+        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+      });
+      
+      console.log('All storage cleared');
+    } catch (e) {
+      console.error('Error clearing storage:', e);
+    }
+  };
 }
