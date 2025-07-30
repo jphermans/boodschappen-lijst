@@ -1053,6 +1053,56 @@ function App() {
                   </div>
                 </motion.div>
 
+                {/* Theme Card */}
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.15 }}
+                  className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-lg border border-[rgb(var(--border-color))]/20 p-6"
+                >
+                  <h3 className="text-lg font-bold text-[rgb(var(--card-text))] mb-4 flex items-center">
+                    <div className="w-2 h-2 bg-purple-500 rounded-full mr-3"></div>
+                    Thema Instellingen
+                  </h3>
+                  
+                  <div className="space-y-3">
+                    <p className="text-sm text-[rgb(var(--text-color))]/60">
+                      Pas het uiterlijk van de app aan naar jouw voorkeur
+                    </p>
+                    <button
+                      onClick={() => setCurrentPage('theme')}
+                      className="w-full flex items-center px-4 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90 text-white rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+                    >
+                      <span className="font-medium">Thema Aanpassen</span>
+                    </button>
+                  </div>
+                </motion.div>
+
+                {/* Persistence Card */}
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-lg border border-[rgb(var(--border-color))]/20 p-6"
+                >
+                  <h3 className="text-lg font-bold text-[rgb(var(--card-text))] mb-4 flex items-center">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                    Data & Backup
+                  </h3>
+                  
+                  <div className="space-y-3">
+                    <p className="text-sm text-[rgb(var(--text-color))]/60">
+                      Beheer je data en maak back-ups
+                    </p>
+                    <button
+                      onClick={() => setCurrentPage('persistence')}
+                      className="w-full flex items-center px-4 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 hover:opacity-90 text-white rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+                    >
+                      <span className="font-medium">Data Beheren</span>
+                    </button>
+                  </div>
+                </motion.div>
+
                 {/* Recent Activity Card */}
                 {lists.length > 0 && (
                   <motion.div
