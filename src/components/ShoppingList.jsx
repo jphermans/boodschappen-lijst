@@ -4,14 +4,12 @@ import { ArrowLeft, Plus, Check, Trash2, Share2 } from 'lucide-react';
 import { doc, updateDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useToast } from '../context/ToastContext';
-import { useUndo } from '../context/UndoContext';
 import { getSuggestions, getPopularItems } from '../utils/groceryItems';
 import { validateItemName } from '../utils/validation';
 import { userManager } from '../utils/userManager';
 
 const ShoppingList = ({ list, onBack, onShare }) => {
-  const { success, error, deleteToast, removeToastByMessage } = useToast();
-  const { addUndoAction } = useUndo();
+  const { success, error } = useToast();
   const [newItem, setNewItem] = useState('');
   const [filter, setFilter] = useState('all');
   const [currentList, setCurrentList] = useState(list);
@@ -135,24 +133,7 @@ const ShoppingList = ({ list, onBack, onShare }) => {
         updatedAt: new Date()
       });
       
-      const deleteMessage = `"${itemToDelete?.name}" verwijderd`;
-      
-      // Add undo action
-      addUndoAction({
-        message: deleteMessage,
-        undoFunction: async () => {
-          // Hide the deletion toast when undoing
-          removeToastByMessage(deleteMessage);
-          const restoreItems = [...updatedItems, itemToDelete];
-          await updateDoc(doc(db, 'shoppingLists', currentList.id), {
-            items: restoreItems,
-            updatedAt: new Date()
-          });
-          success(`"${itemToDelete?.name}" hersteld! ✅`, 2000);
-        }
-      });
-      
-      success(deleteMessage, 6000);
+      success(`"${itemToDelete?.name}" verwijderd`, 2000);
     } catch (err) {
       console.error('Error deleting item:', err);
       error('Er ging iets mis bij het verwijderen van het item', 3000);
@@ -170,24 +151,7 @@ const ShoppingList = ({ list, onBack, onShare }) => {
         updatedAt: new Date()
       });
       
-      const deleteMessage = `${completedCount} voltooide item${completedCount !== 1 ? 's' : ''} verwijderd! 🗑️`;
-      
-      // Add undo action
-      addUndoAction({
-        message: `${completedCount} voltooide item${completedCount !== 1 ? 's' : ''} verwijderd`,
-        undoFunction: async () => {
-          // Hide the deletion toast when undoing
-          removeToastByMessage(deleteMessage);
-          const restoreItems = [...updatedItems, ...completedItems];
-          await updateDoc(doc(db, 'shoppingLists', currentList.id), {
-            items: restoreItems,
-            updatedAt: new Date()
-          });
-          success(`${completedCount} item${completedCount !== 1 ? 's' : ''} hersteld! ✅`, 2000);
-        }
-      });
-      
-      success(deleteMessage, 8000);
+      success(`${completedCount} voltooide item${completedCount !== 1 ? 's' : ''} verwijderd! 🗑️`, 3000);
     } catch (err) {
       console.error('Error clearing completed items:', err);
       error('Er ging iets mis bij het verwijderen van voltooide items', 3000);

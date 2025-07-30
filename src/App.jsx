@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import { Settings, Plus, List, Share2, Trash2, Check, Wifi, QrCode, Users, Database, BarChart3, Palette } from 'lucide-react';
 import { useTheme } from './context/ThemeContext';
 import { useToast } from './context/ToastContext';
-import { useUndo } from './context/UndoContext';
 import { initializeFirebase, isConnected, getCurrentUserID, createShoppingList, getShoppingLists, deleteShoppingList, subscribeToShoppingLists, canDeleteList, shareListWithUser, getListById } from './firebase';
 import ShoppingList from './components/ShoppingList';
 import SettingsPage from './pages/Settings';
@@ -17,7 +16,6 @@ import UserManagementModal from './components/UserManagementModal';
 import UserNameModal from './components/UserNameModal';
 import ConnectionError from './components/ConnectionError';
 import ToastContainer from './components/Toast';
-import UndoBar from './components/UndoBar';
 import { validateListName } from './utils/validation';
 import { validateQRData } from './utils/qrSecurity';
 import { userManager } from './utils/enhancedUserManager';
@@ -35,7 +33,6 @@ function App() {
   // Legacy theme context for backward compatibility
   const { theme: legacyTheme, toggleTheme: legacyToggleTheme } = useTheme();
   const { toasts, removeToast, removeToastByMessage, success, error, info, deleteToast } = useToast();
-  const { undoActions, addUndoAction, executeUndo, removeUndoAction } = useUndo();
   
   // UI state
   const [newListName, setNewListName] = useState('');
@@ -1171,11 +1168,6 @@ function App() {
 
 
       <ToastContainer toasts={toasts} removeToast={removeToast} />
-      <UndoBar
-        undoActions={undoActions}
-        executeUndo={executeUndo}
-        removeUndoAction={removeUndoAction}
-      />
     </div>
   );
 }

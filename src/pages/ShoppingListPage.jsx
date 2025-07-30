@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Plus, Check, X, Edit3, Share2, Trash2, Users, Save, RotateCcw } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
-import { useUndo } from '../context/UndoContext';
 import { 
   updateShoppingList,
   getListById,
@@ -28,7 +27,6 @@ const ShoppingListPage = ({ list, onBack, onListUpdate }) => {
   const [tempListName, setTempListName] = useState(list?.name || '');
   
   const { success, error, info } = useToast();
-  const { addUndoAction } = useUndo();
 
   const userID = getCurrentUserID();
   const canEdit = canEditList(list, userID);
@@ -85,17 +83,6 @@ const ShoppingListPage = ({ list, onBack, onListUpdate }) => {
       setItems(updatedItems);
       setNewItemName('');
       success(`"${newItem.name}" toegevoegd!`, 2000);
-      
-      // Add undo action
-      addUndoAction({
-        id: `add_${newItem.id}`,
-        message: `Item "${newItem.name}" toevoegen ongedaan maken`,
-        action: async () => {
-          const removeItems = updatedItems.filter(item => item.id !== newItem.id);
-          await updateShoppingList(list.id, { items: removeItems });
-          setItems(removeItems);
-        }
-      });
     } catch (err) {
       error('Kon item niet toevoegen');
     } finally {
@@ -139,18 +126,6 @@ const ShoppingListPage = ({ list, onBack, onListUpdate }) => {
       await updateShoppingList(list.id, { items: updatedItems });
       setItems(updatedItems);
       success(`"${itemToDelete.name}" verwijderd`, 2000);
-      
-      // Add undo action
-      addUndoAction({
-        id: `delete_${itemId}`,
-        message: `Item "${itemToDelete.name}" herstellen`,
-        action: async () => {
-          const newItems = [...updatedItems];
-          newItems.splice(newItems.findIndex(i => i.id === itemId), 0, itemToDelete);
-          await updateShoppingList(list.id, { items: newItems });
-          setItems(newItems);
-        }
-      });
     } catch (err) {
       error('Kon item niet verwijderen');
     } finally {

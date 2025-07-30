@@ -100,6 +100,9 @@ const UserNameModal = ({ onNameSet }) => {
           <p className="text-xs text-[rgb(var(--text-color))]/60 text-center">
             💡 <strong>Tip:</strong> Je naam wordt lokaal opgeslagen en alleen gedeeld met mensen die toegang hebben tot jouw lijsten.
           </p>
+          <p className="text-xs text-[rgb(var(--text-color))]/60 text-center mt-2">
+            ⚠️ <strong>Let op:</strong> Bij het wisselen van browser (bijv. van Firefox naar Chrome) moet je je naam opnieuw instellen.
+          </p>
         </div>
       </motion.div>
     </motion.div>

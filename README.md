@@ -14,6 +14,7 @@ Een geavanceerde React web applicatie voor het maken en delen van boodschappenli
 - ✅ **Creator tracking** - Wie heeft welke lijst gemaakt
 - ✅ **Contributor tracking** - Wie heeft welk item toegevoegd
 - ✅ **Veilige opslag** - Gebruikersnamen worden lokaal en veilig opgeslagen
+- ✅ **Browser waarschuwing** - Melding bij wisselen van browser (Firefox → Chrome → Safari)
 - ✅ **Validatie** - Naam moet tussen 2-50 karakters zijn
 
 ### 📝 **Lijstbeheer**
@@ -47,12 +48,12 @@ Een geavanceerde React web applicatie voor het maken en delen van boodschappenli
 - ✅ **Desktop geoptimaliseerd** - Enhanced layout voor grote schermen
 
 ### 🔄 **Gebruikerservaring**
-- ✅ **Undo functionaliteit** voor alle acties
 - ✅ **Toast notificaties** met duidelijke feedback
 - ✅ **Nederlandse interface** volledig gelokaliseerd
 - ✅ **Toegankelijkheid** met ARIA labels en keyboard navigation
 - ✅ **Analytics dashboard** - Inzicht in je lijstgebruik
 - ✅ **Settings modal** - Centraal beheer van instellingen
+- ✅ **Browser waarschuwing** - Melding bij browserwissel voor naam instelling
 
 ## 🚀 Installatie
 
@@ -132,7 +133,7 @@ Voor automatische deployment naar GitHub Pages met Firebase secrets:
 - **Lijst openen**: Klik "Lijst Openen" op een lijst
 - **Lijst delen**: Klik "Delen" → QR-code en link verschijnen
 - **Gebruikers beheren**: Klik "Gebruikers" (alleen voor creators)
-- **Lijst verwijderen**: Klik "Verwijderen" → optie om ongedaan te maken
+- **Lijst verwijderen**: Klik "Verwijderen"
 - **Creator info**: Zie "Gemaakt door [naam]" onder elke lijst
 
 ### 🛍️ **Items beheren**
@@ -278,8 +279,7 @@ src/
 │   └── ...
 ├── context/            # React Context providers
 │   ├── ThemeContext.jsx # Gruvbox thema management
-│   ├── ToastContext.jsx # Notificatie systeem
-│   └── UndoContext.jsx  # Undo functionaliteit
+│   └── ToastContext.jsx # Notificatie systeem
 ├── utils/              # Utility functies
 │   ├── userManager.js  # Gebruikersbeheer
 │   ├── qrSecurity.js   # QR validatie
