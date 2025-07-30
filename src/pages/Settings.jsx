@@ -138,6 +138,63 @@ const SettingsPage = ({ lists = [], onBack, onNavigateToAnalytics }) => {
               )}
             </div>
           </motion.div>
+
+          {/* Theme Settings Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-lg border border-[rgb(var(--border-color))]/20 p-6 lg:p-8"
+          >
+            <h2 className="text-xl lg:text-2xl font-bold text-[rgb(var(--card-text))] mb-6 flex items-center">
+              <div className="w-6 h-6 mr-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg"></div>
+              Thema Instellingen
+            </h2>
+            
+            <div className="space-y-4">
+              <div className="bg-[rgb(var(--border-color))]/10 p-4 rounded-lg">
+                <p className="text-sm text-[rgb(var(--text-color))]/80 mb-4">
+                  Pas het uiterlijk van de app aan naar jouw voorkeur. Kies tussen licht en donker thema, of pas de kleuren aan.
+                </p>
+                
+                <button
+                  onClick={() => window.location.hash = '#/theme'}
+                  className="w-full flex items-center justify-center px-6 py-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                >
+                  <span className="font-medium">Thema Aanpassen</span>
+                </button>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Data & Backup Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-lg border border-[rgb(var(--border-color))]/20 p-6 lg:p-8"
+          >
+            <h2 className="text-xl lg:text-2xl font-bold text-[rgb(var(--card-text))] mb-6 flex items-center">
+              <div className="w-6 h-6 mr-3 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg"></div>
+              Data & Backup
+            </h2>
+            
+            <div className="space-y-4">
+              <div className="bg-[rgb(var(--border-color))]/10 p-4 rounded-lg">
+                <p className="text-sm text-[rgb(var(--text-color))]/80 mb-4">
+                  Beheer je data, maak back-ups en configureer geavanceerde instellingen voor data-behoud.
+                </p>
+                
+                <button
+                  onClick={() => window.location.hash = '#/persistence'}
+                  className="w-full flex items-center justify-center px-6 py-4 bg-gradient-to-r from-blue-500 to-cyan-500 hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                >
+                  <span className="font-medium">Data Beheren</span>
+                </button>
+              </div>
+            </div>
+          </motion.div>
+
         </div>
       </main>
 
