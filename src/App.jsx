@@ -756,15 +756,15 @@ function App() {
           <div className="lg:flex lg:space-x-8 xl:space-x-12">
             {/* Main Content Area */}
             <div className="flex-1">
-              {/* Create New List Section - Desktop Optimized */}
+              {/* Create New List Section - Mobile Optimized */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-lg border border-[rgb(var(--border-color))]/20 p-6 lg:p-8 xl:p-10 mb-8"
+                className="bg-[rgb(var(--card-bg))] rounded-xl sm:rounded-2xl shadow-lg border border-[rgb(var(--border-color))]/20 p-4 sm:p-6 lg:p-8 xl:p-10 mb-6 sm:mb-8"
               >
-                <div className="flex items-center justify-between mb-6 lg:mb-8">
-                  <div>
-                    <h2 className="text-xl lg:text-2xl xl:text-3xl font-bold text-[rgb(var(--card-text))] mb-2">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 lg:mb-8">
+                  <div className="mb-4 sm:mb-0">
+                    <h2 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-[rgb(var(--card-text))] mb-1 sm:mb-2">
                       Nieuwe lijst maken
                     </h2>
                     <p className="text-[rgb(var(--text-color))]/60 text-sm lg:text-base">
@@ -783,7 +783,7 @@ function App() {
                   </div>
                 </div>
                 
-                <div className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4 xl:space-x-6">
+                <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 lg:space-x-4 xl:space-x-6">
                   <div className="flex-1 relative group">
                     <input
                       type="text"
@@ -791,16 +791,16 @@ function App() {
                       onChange={(e) => setNewListName(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && createList()}
                       placeholder="Naam van je boodschappenlijst..."
-                      className="w-full px-4 lg:px-6 py-3 lg:py-4 border-2 border-[rgb(var(--border-color))]/30 rounded-xl lg:rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary/50 bg-[rgb(var(--card-bg))] text-[rgb(var(--card-text))] text-base lg:text-lg placeholder:text-[rgb(var(--text-color))]/40 transition-all duration-200 group-hover:border-[rgb(var(--border-color))]/50"
+                      className="w-full px-3 sm:px-4 lg:px-6 py-3 lg:py-4 border-2 border-[rgb(var(--border-color))]/30 rounded-lg sm:rounded-xl lg:rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary/50 bg-[rgb(var(--card-bg))] text-[rgb(var(--card-text))] text-sm sm:text-base lg:text-lg placeholder:text-[rgb(var(--text-color))]/40 transition-all duration-200 group-hover:border-[rgb(var(--border-color))]/50 touch-manipulation"
                     />
-                    <div className="absolute inset-0 rounded-xl lg:rounded-2xl bg-gradient-to-r from-primary/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"></div>
+                    <div className="absolute inset-0 rounded-lg sm:rounded-xl lg:rounded-2xl bg-gradient-to-r from-primary/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"></div>
                   </div>
                   <button
                     onClick={createList}
                     disabled={!newListName.trim() || isCreatingList}
-                    className="flex items-center justify-center px-6 lg:px-8 xl:px-10 py-3 lg:py-4 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white rounded-xl lg:rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:hover:shadow-lg transition-all duration-200 font-semibold text-base lg:text-lg whitespace-nowrap"
+                    className="flex items-center justify-center px-4 sm:px-6 lg:px-8 xl:px-10 py-3 lg:py-4 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white rounded-lg sm:rounded-xl lg:rounded-2xl shadow-lg hover:shadow-xl transform active:scale-95 sm:hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:hover:shadow-lg transition-all duration-200 font-semibold text-sm sm:text-base lg:text-lg whitespace-nowrap touch-manipulation"
                   >
-                    <Plus className="w-5 h-5 lg:w-6 lg:h-6 mr-2 lg:mr-3" />
+                    <Plus className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 mr-2 lg:mr-3" />
                     <span>{isCreatingList ? 'Bezig...' : 'Lijst Aanmaken'}</span>
                   </button>
                 </div>
@@ -890,8 +890,8 @@ function App() {
                       </div>
                     )}
 
-                    {/* Action Buttons */}
-                    <div className="space-y-3">
+                    {/* Action Buttons - Mobile Optimized */}
+                    <div className="space-y-2 sm:space-y-3">
                       {/* Primary Action */}
                       <button
                         onClick={(e) => {
@@ -899,9 +899,9 @@ function App() {
                           setSelectedList(list);
                           setCurrentPage('list');
                         }}
-                        className="w-full flex items-center justify-center px-4 py-3 lg:py-4 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 text-white rounded-xl lg:rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 font-semibold text-base lg:text-lg"
+                        className="w-full flex items-center justify-center px-3 sm:px-4 py-2.5 sm:py-3 lg:py-4 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 text-white rounded-lg sm:rounded-xl lg:rounded-2xl shadow-lg hover:shadow-xl transform active:scale-95 sm:hover:scale-105 transition-all duration-200 font-semibold text-sm sm:text-base lg:text-lg touch-manipulation"
                       >
-                        <Check className="w-5 h-5 lg:w-6 lg:h-6 mr-3" />
+                        <Check className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 mr-2 sm:mr-3" />
                         <span>Lijst Openen</span>
                       </button>
                       
@@ -911,26 +911,26 @@ function App() {
                           e.stopPropagation();
                           handleShare(list.id);
                         }}
-                        className="w-full flex items-center justify-center px-4 py-3 lg:py-4 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 text-white rounded-xl lg:rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 font-semibold text-base lg:text-lg"
+                        className="w-full flex items-center justify-center px-3 sm:px-4 py-2.5 sm:py-3 lg:py-4 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 text-white rounded-lg sm:rounded-xl lg:rounded-2xl shadow-lg hover:shadow-xl transform active:scale-95 sm:hover:scale-105 transition-all duration-200 font-semibold text-sm sm:text-base lg:text-lg touch-manipulation"
                         title="Delen"
                       >
-                        <Share2 className="w-5 h-5 lg:w-6 lg:h-6 mr-3" />
+                        <Share2 className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 mr-2 sm:mr-3" />
                         <span>Delen</span>
                       </button>
                       
                       {/* Other Actions */}
                       {(list.isCreator || canDeleteList(list)) && (
-                        <div className="flex flex-wrap gap-2 lg:gap-3">
+                        <div className="flex flex-col sm:flex-row gap-2 lg:gap-3">
                           {list.isCreator && (
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleUserManagement(list.id);
                               }}
-                              className="flex-1 min-w-[120px] flex items-center justify-center px-4 py-2.5 lg:py-3 bg-gradient-to-r from-blue-500 to-purple-500 hover:opacity-90 text-white rounded-lg lg:rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 font-medium text-sm lg:text-base"
+                              className="flex-1 flex items-center justify-center px-3 sm:px-4 py-2 sm:py-2.5 lg:py-3 bg-gradient-to-r from-blue-500 to-purple-500 hover:opacity-90 text-white rounded-lg lg:rounded-xl shadow-md hover:shadow-lg transform active:scale-95 sm:hover:scale-105 transition-all duration-200 font-medium text-sm lg:text-base touch-manipulation"
                               title="Gebruikers beheren"
                             >
-                              <Users className="w-4 h-4 lg:w-5 lg:h-5 mr-2" />
+                              <Users className="w-4 h-4 lg:w-5 lg:h-5 mr-1 sm:mr-2" />
                               <span>Gebruikers</span>
                             </button>
                           )}
@@ -941,10 +941,10 @@ function App() {
                                 e.stopPropagation();
                                 handleDeleteList(list.id);
                               }}
-                              className="flex-1 min-w-[120px] flex items-center justify-center px-4 py-2.5 lg:py-3 bg-accent hover:opacity-90 text-white rounded-lg lg:rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 font-medium text-sm lg:text-base"
+                              className="flex-1 flex items-center justify-center px-3 sm:px-4 py-2 sm:py-2.5 lg:py-3 bg-accent hover:opacity-90 text-white rounded-lg lg:rounded-xl shadow-md hover:shadow-lg transform active:scale-95 sm:hover:scale-105 transition-all duration-200 font-medium text-sm lg:text-base touch-manipulation"
                               title="Verwijderen"
                             >
-                              <Trash2 className="w-4 h-4 lg:w-5 lg:h-5 mr-2" />
+                              <Trash2 className="w-4 h-4 lg:w-5 lg:h-5 mr-1 sm:mr-2" />
                               <span>Verwijderen</span>
                             </button>
                           )}
