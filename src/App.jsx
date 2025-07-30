@@ -10,6 +10,7 @@ import SettingsPage from './pages/Settings';
 import AnalyticsPage from './pages/Analytics';
 import ThemePage from './pages/Theme';
 import PersistencePage from './pages/Persistence';
+import ShoppingListPage from './pages/ShoppingListPage';
 import QRShareModal from './components/QRShareModal';
 import QRScannerModal from './components/QRScannerModal';
 import UserManagementModal from './components/UserManagementModal';
@@ -39,7 +40,7 @@ function App() {
   // UI state
   const [newListName, setNewListName] = useState('');
   const [selectedList, setSelectedList] = useState(null);
-  const [currentPage, setCurrentPage] = useState('overview'); // 'overview', 'settings', 'analytics', 'theme', 'persistence'
+  const [currentPage, setCurrentPage] = useState('overview'); // 'overview', 'settings', 'analytics', 'theme', 'persistence', 'list'
   const [showShare, setShowShare] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
   const [showUserManagement, setShowUserManagement] = useState(false);
@@ -736,6 +737,15 @@ function App() {
           <PersistencePage
             onBack={() => setCurrentPage('overview')}
           />
+        ) : currentPage === 'list' && selectedList ? (
+          <ShoppingListPage
+            list={selectedList}
+            onBack={() => setCurrentPage('overview')}
+            onListUpdate={(updatedList) => {
+              setLists(lists.map(l => l.id === updatedList.id ? updatedList : l));
+              setSelectedList(updatedList);
+            }}
+          />
         ) : !selectedList ? (
           <div className="lg:flex lg:space-x-8 xl:space-x-12">
             {/* Main Content Area */}
@@ -876,6 +886,7 @@ function App() {
                         onClick={(e) => {
                           e.stopPropagation();
                           setSelectedList(list);
+                          setCurrentPage('list');
                         }}
                         className="w-full flex items-center justify-center px-4 py-3 lg:py-4 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 text-white rounded-xl lg:rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 font-semibold text-base lg:text-lg"
                       >
@@ -1072,7 +1083,10 @@ function App() {
                           <div
                             key={list.id}
                             className="flex items-center space-x-3 p-3 rounded-xl bg-[rgb(var(--border-color))]/10 hover:bg-[rgb(var(--border-color))]/20 transition-colors cursor-pointer"
-                            onClick={() => setSelectedList(list)}
+                            onClick={() => {
+                            setSelectedList(list);
+                            setCurrentPage('list');
+                          }}
                           >
                             <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0"></div>
                             <div className="flex-1 min-w-0">
