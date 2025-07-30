@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Settings, Plus, List, Share2, Trash2, Check, Wifi, QrCode, Users, Database, BarChart3 } from 'lucide-react';
+import { Settings, Plus, List, Share2, Trash2, Check, Wifi, QrCode, Users, Database, BarChart3, Palette } from 'lucide-react';
 import { useTheme } from './context/ThemeContext';
 import { useToast } from './context/ToastContext';
 import { useUndo } from './context/UndoContext';
@@ -8,6 +8,7 @@ import { initializeFirebase, isConnected, getCurrentUserID, createShoppingList, 
 import ShoppingList from './components/ShoppingList';
 import SettingsPage from './pages/Settings';
 import AnalyticsPage from './pages/Analytics';
+import ThemePage from './pages/Theme';
 import QRShareModal from './components/QRShareModal';
 import QRScannerModal from './components/QRScannerModal';
 import UserManagementModal from './components/UserManagementModal';
@@ -38,7 +39,7 @@ function App() {
   // UI state
   const [newListName, setNewListName] = useState('');
   const [selectedList, setSelectedList] = useState(null);
-  const [currentPage, setCurrentPage] = useState('overview'); // 'overview', 'settings', 'analytics'
+  const [currentPage, setCurrentPage] = useState('overview'); // 'overview', 'settings', 'analytics', 'theme'
   const [showShare, setShowShare] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
   const [showUserManagement, setShowUserManagement] = useState(false);
@@ -601,6 +602,17 @@ function App() {
                 Analytics
               </button>
               <button
+                onClick={() => setCurrentPage('theme')}
+                className={`px-4 xl:px-6 py-2.5 rounded-xl font-medium transition-all duration-200 ${
+                  currentPage === 'theme'
+                    ? 'bg-primary text-white shadow-lg'
+                    : 'text-[rgb(var(--text-color))]/80 hover:bg-[rgb(var(--border-color))]/20 hover:text-[rgb(var(--card-text))]'
+                }`}
+              >
+                <Palette className="w-4 h-4 inline mr-2" />
+                Thema
+              </button>
+              <button
                 onClick={() => setShowScanner(true)}
                 className="px-4 xl:px-6 py-2.5 rounded-xl font-medium text-[rgb(var(--text-color))]/80 hover:bg-[rgb(var(--border-color))]/20 hover:text-[rgb(var(--card-text))] transition-all duration-200"
               >
@@ -672,6 +684,10 @@ function App() {
         ) : currentPage === 'analytics' ? (
           <AnalyticsPage
             lists={lists}
+            onBack={() => setCurrentPage('overview')}
+          />
+        ) : currentPage === 'theme' ? (
+          <ThemePage
             onBack={() => setCurrentPage('overview')}
           />
         ) : !selectedList ? (
