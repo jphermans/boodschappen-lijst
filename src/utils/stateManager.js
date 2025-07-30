@@ -358,77 +358,54 @@ class StateManager {
     return uiState[key];
   }
 
-  // Recovery and backup methods
+  // Legacy backup methods - now use FirebaseBackupManager
   async createBackup() {
+    console.warn('⚠️ Legacy backup method called - use FirebaseBackupManager instead');
     const backup = {
       timestamp: Date.now(),
       version: '2.0',
       state: Object.fromEntries(this.state.entries()),
       userInfo: await enhancedUserManager.getUserInfo(),
-      storageHealth: await persistentStorage.getStorageHealth()
+      storageHealth: await persistentStorage.getStorageHealth(),
+      note: 'This is a legacy backup. Use Firebase export for complete shopping lists.'
     };
-
     return backup;
   }
 
   async restoreFromBackup(backup) {
+    console.warn('⚠️ Legacy restore method called - use FirebaseBackupManager instead');
+    // Delegate to Firebase backup for actual shopping lists
+    if (backup.lists && Array.isArray(backup.lists)) {
+      console.log('📊 Detected Firebase-compatible backup, delegating...');
+      try {
+        const { firebaseBackup } = await import('./firebaseBackup.js');
+        return await firebaseBackup.importFirebaseData(backup);
+      } catch (error) {
+        console.error('❌ Failed to delegate to Firebase backup:', error);
+        return false;
+      }
+    }
+    
+    // Legacy fallback for old backups
     try {
       if (!backup || !backup.state) {
         throw new Error('Invalid backup data');
       }
 
-      // Get current user ID for filtering
-      const currentUserInfo = await enhancedUserManager.getUserInfo();
-      const currentUserId = currentUserInfo.userId || 'anonymous';
-
-      // Filter lists to only include own lists (created by current user)
-      let filteredState = { ...backup.state };
-      
-      if (backup.state.lists && Array.isArray(backup.state.lists)) {
-        console.log('🔍 Backup restore debug - Original lists:', backup.state.lists.length);
-        console.log('🔍 Backup restore debug - Current user ID:', currentUserId);
-        
-        const filteredLists = backup.state.lists.filter(list => {
-          const isOwnList = list.creatorId === currentUserId || 
-                           list.deviceUID === currentUserId ||
-                           (!list.creatorId && !list.sharedWith?.length);
-          
-          console.log('🔍 List check:', {
-            name: list.name,
-            creatorId: list.creatorId,
-            deviceUID: list.deviceUID,
-            sharedWith: list.sharedWith?.length || 0,
-            isOwnList
-          });
-          
-          return isOwnList;
-        });
-        
-        filteredState.lists = filteredLists;
-        console.log(`🔍 Filtered backup: ${backup.state.lists.length} → ${filteredLists.length} lists (keeping only own lists)`);
-      } else {
-        console.log('🔍 No lists found in backup or backup.state.lists is not an array');
-      }
-
-      // Restore filtered state
-      for (const [key, value] of Object.entries(filteredState)) {
+      // Restore local state only (legacy behavior)
+      for (const [key, value] of Object.entries(backup.state)) {
         this.state.set(key, value);
         await this.persistState(key, value);
       }
 
-      // Restore user info if available
       if (backup.userInfo && backup.userInfo.name) {
         await enhancedUserManager.setUserName(backup.userInfo.name);
       }
 
-      // Notify subscribers
       this.notifySubscribers('state_restored', backup);
-
-      console.log('State restored from backup (filtered to own lists only)');
-      console.log('📊 Final restored lists:', filteredState.lists?.length || 0);
       return true;
     } catch (error) {
-      console.error('Failed to restore from backup:', error);
+      console.error('Failed to restore from legacy backup:', error);
       return false;
     }
   }

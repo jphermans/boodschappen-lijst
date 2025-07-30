@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Database, RefreshCw, Download, Upload, AlertCircle, CheckCircle, Clock } from 'lucide-react';
+import { ArrowLeft, Database, RefreshCw, Download, Upload, AlertCircle, CheckCircle, Clock, ShoppingCart } from 'lucide-react';
 import { useStateHealth, useStateBackup } from '../hooks/usePersistentState';
+import { firebaseBackup } from '../utils/firebaseBackup';
 
 const PersistencePage = ({ onBack }) => {
   const { healthInfo, refreshHealthInfo, isLoading } = useStateHealth();
@@ -32,9 +33,10 @@ const PersistencePage = ({ onBack }) => {
   const handleCreateBackup = async () => {
     try {
       setIsCreatingBackup(true);
-      await createBackup();
+      await firebaseBackup.createDownloadableBackup();
     } catch (error) {
       console.error('Backup creation failed:', error);
+      alert(`❌ Backup maken mislukt: ${error.message || 'Onbekende fout'}`);
     } finally {
       setIsCreatingBackup(false);
     }
@@ -46,19 +48,28 @@ const PersistencePage = ({ onBack }) => {
 
     try {
       setIsRestoring(true);
-      console.log('🔄 Starting restore process...');
-      const success = await restoreFromFile(file);
-      if (success) {
-        console.log('✅ Restore completed successfully');
-        alert('✅ Backup hersteld! Controleer je boodschappenlijsten om de wijzigingen te zien.');
-        // Force refresh of health info to show updated state
-        await refreshHealthInfo();
+      console.log('🔄 Starting Firebase restore process...');
+      
+      const result = await firebaseBackup.restoreFromFile(file, {
+        importOwnLists: true,
+        importSharedLists: false,
+        skipDuplicates: true
+      });
+      
+      if (result.success) {
+        console.log('✅ Firebase restore completed successfully:', result);
+        alert(`✅ Backup hersteld! ${result.imported} lijst(en) geïmporteerd, ${result.skipped} overgeslagen. Vernieuw de pagina om de wijzigingen te zien.`);
+        
+        // After a short delay, reload the page to show updated lists
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
       } else {
-        console.error('❌ Restore failed without throwing error');
+        console.error('❌ Restore failed');
         alert('❌ Herstellen mislukt. Controleer het bestand en probeer opnieuw.');
       }
     } catch (error) {
-      console.error('Restore failed:', error);
+      console.error('Firebase restore failed:', error);
       alert(`❌ Fout bij herstellen: ${error.message || 'Onbekende fout'}`);
     } finally {
       setIsRestoring(false);
@@ -214,12 +225,12 @@ const PersistencePage = ({ onBack }) => {
               className="w-full flex items-center justify-center px-4 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors disabled:opacity-50"
             >
               <Download className="w-4 h-4 mr-2" />
-              {isCreatingBackup || hookCreatingBackup ? 'Backup maken...' : 'Backup maken'}
+              {isCreatingBackup || hookCreatingBackup ? 'Backup maken...' : 'Firebase Backup'}
             </button>
 
             <label className="w-full flex items-center justify-center px-4 py-3 bg-secondary hover:bg-secondary/90 text-white rounded-lg transition-colors cursor-pointer">
               <Upload className="w-4 h-4 mr-2" />
-              {isRestoring || hookRestoring ? 'Herstellen...' : 'Herstellen'}
+              {isRestoring || hookRestoring ? 'Herstellen...' : 'Firebase Herstellen'}
               <input
                 type="file"
                 accept=".json"
@@ -231,11 +242,12 @@ const PersistencePage = ({ onBack }) => {
           </div>
 
           <div className="mt-4 p-4 bg-[rgb(var(--border-color))]/10 rounded-lg">
-            <h4 className="font-medium mb-2">💡 Tips</h4>
+            <h4 className="font-medium mb-2">💡 Wat wordt gebackupt?</h4>
             <ul className="text-sm text-[rgb(var(--text-color))]/60 space-y-1">
-              <li>• Maak regelmatig backups van je gegevens</li>
-              <li>• Herstel alleen van betrouwbare backups</li>
-              <li>• Controleer de opslagstatus bij problemen</li>
+              <li>• ✅ Alle boodschappenlijsten (inclusief items)</li>
+              <li>• ✅ Gedeelde lijsten waar jij eigenaar van bent</li>
+              <li>• ✅ Geen gedeelde lijsten van anderen</li>
+              <li>• ✅ Lokale instellingen (thema, UI)</li>
             </ul>
           </div>
         </div>
