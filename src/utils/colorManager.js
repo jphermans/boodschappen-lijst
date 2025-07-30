@@ -495,6 +495,9 @@ export const useUnifiedColors = () => ({
   exportTheme: () => unifiedColorManager.exportTheme(),
   importTheme: (data) => unifiedColorManager.importTheme(data),
   resetTheme: () => unifiedColorManager.resetTheme(),
-  getAvailablePalettes: () => unifiedColorManager.getAvailablePalettes(),
+  getAvailablePalettes: () => [{
+    key: 'gruvbox',
+    ...colorPalettes.gruvbox
+  }],
   getThemeStats: () => unifiedColorManager.getThemeStats()
 });

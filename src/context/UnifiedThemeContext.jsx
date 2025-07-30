@@ -1,5 +1,5 @@
 // Enhanced theme context that integrates unified color management
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { unifiedColorManager } from '../utils/colorManager';
 import { persistentStorage } from '../utils/persistentStorage';
 
@@ -181,27 +181,9 @@ export const UnifiedThemeProvider = ({ children }) => {
     }
   }, []);
 
-  const setColorPalette = useCallback(async (paletteKey) => {
-    try {
-      setError(null);
-      await unifiedColorManager.setColorPalette(paletteKey);
-    } catch (err) {
-      console.error('Failed to set color palette:', err);
-      setError(err);
-      throw err;
-    }
-  }, []);
+  // setColorPalette removed - only Gruvbox theme is available
 
-  const setCustomColor = useCallback(async (colorKey, hexColor) => {
-    try {
-      setError(null);
-      await unifiedColorManager.setCustomColor(colorKey, hexColor);
-    } catch (err) {
-      console.error('Failed to set custom color:', err);
-      setError(err);
-      throw err;
-    }
-  }, []);
+  // setCustomColor removed - no custom color options, only Gruvbox theme
 
   const resetTheme = useCallback(async () => {
     try {
@@ -296,11 +278,9 @@ export const UnifiedThemeProvider = ({ children }) => {
     secondaryColor: theme?.customColors?.secondary || theme?.palette?.colors?.secondary || '#a855f7',
     accentColor: theme?.customColors?.accent || theme?.palette?.colors?.accent || '#ec4899',
     
-    // Theme manipulation
+    // Theme manipulation - only light/dark mode available
     toggleMode,
     setMode,
-    setColorPalette,
-    setCustomColor,
     resetTheme,
     getEffectiveColor,
     

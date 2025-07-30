@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Palette, Moon, Sun, Sparkles } from 'lucide-react';
 import { useUnifiedThemeContext } from '../context/UnifiedThemeContext';
@@ -9,8 +8,7 @@ const ThemePage = ({ onBack }) => {
     mode: unifiedMode,
     toggleMode: unifiedToggleMode,
     isLoading: themeLoading,
-    error: themeError,
-    getThemeStats
+    error: themeError
   } = useUnifiedThemeContext();
 
   return (
