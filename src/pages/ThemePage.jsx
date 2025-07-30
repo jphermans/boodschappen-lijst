@@ -24,53 +24,8 @@ const ThemePage = ({ onBack }) => {
 
   const availableThemes = getAvailablePalettes() || [];
   
-  // Static fallback to ensure themes show up
-  const staticThemes = [
-    {
-      key: 'gruvbox',
-      name: 'Gruvbox',
-      description: 'Retro groove color scheme',
-      colors: { primary: '254 128 25', secondary: '184 187 38', accent: '251 73 52' }
-    },
-    {
-      key: 'solarized',
-      name: 'Solarized',
-      description: 'Precision colors for machines and people',
-      colors: { primary: '38 139 210', secondary: '133 153 0', accent: '220 50 47' }
-    },
-    {
-      key: 'dracula',
-      name: 'Dracula',
-      description: 'Dark theme for the cool kids',
-      colors: { primary: '189 147 249', secondary: '80 250 123', accent: '255 85 85' }
-    },
-    {
-      key: 'nord',
-      name: 'Nord',
-      description: 'Arctic, north-bluish color palette',
-      colors: { primary: '129 161 193', secondary: '163 190 140', accent: '191 97 106' }
-    },
-    {
-      key: 'monokai',
-      name: 'Monokai Pro',
-      description: 'Professional dark theme with vibrant colors',
-      colors: { primary: '120 220 232', secondary: '169 220 118', accent: '255 97 136' }
-    },
-    {
-      key: 'onedark',
-      name: 'One Dark',
-      description: 'Atom One Dark theme for everyone',
-      colors: { primary: '97 175 239', secondary: '152 195 121', accent: '224 108 117' }
-    },
-    {
-      key: 'tokyonight',
-      name: 'Tokyo Night',
-      description: 'Dark theme inspired by Tokyo at night',
-      colors: { primary: '122 162 247', secondary: '158 206 106', accent: '247 118 142' }
-    }
-  ];
-  
-  const displayThemes = availableThemes.length > 0 ? availableThemes : staticThemes;
+  // Use the themes from the unified color manager (now includes fallback handling)
+  const displayThemes = availableThemes;
 
   const handleThemeChange = async (themeKey) => {
     setSelectedTheme(themeKey);
@@ -208,7 +163,7 @@ const ThemePage = ({ onBack }) => {
                   Huidige modus: <span className="font-semibold capitalize">{mode}</span>
                 </p>
                 <p className="text-xs text-[rgb(var(--text-color))]/60">
-                  {mode === 'light' ? 'Licht thema voor overdag' : 'Donker thema voor 's avonds'}
+                  {mode === 'light' ? 'Licht thema voor overdag' : 'Donker thema voor \'s avonds'}
                 </p>
               </div>
               

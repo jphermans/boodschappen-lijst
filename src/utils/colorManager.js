@@ -212,9 +212,10 @@ class UnifiedColorManager {
         this.currentTheme = savedTheme;
       } else {
         // Set default Gruvbox theme but allow switching
+        const defaultPalette = this.getDefaultPalette();
         this.currentTheme = {
           name: 'Gruvbox',
-          palette: themePalettes[0],
+          palette: defaultPalette,
           mode: defaultMode,
           customColors: {},
           accessibility: {
@@ -235,10 +236,21 @@ class UnifiedColorManager {
     }
   }
 
+  getDefaultPalette() {
+    // Try to get from imported themePalettes first
+    if (themePalettes && Array.isArray(themePalettes) && themePalettes.length > 0) {
+      return themePalettes[0]; // Gruvbox is the first theme
+    }
+    
+    // Fallback to hardcoded Gruvbox theme
+    return this.getFallbackThemes()[0];
+  }
+
   setDefaultTheme() {
+    const defaultPalette = this.getDefaultPalette();
     this.currentTheme = {
       name: 'Gruvbox',
-      palette: themePalettes[0], // Gruvbox is the first theme
+      palette: defaultPalette,
       mode: 'light',
       customColors: {},
       accessibility: {
@@ -275,9 +287,21 @@ class UnifiedColorManager {
 
   // Set color palette (maintains colors across light/dark mode)
   async setColorPalette(paletteKey) {
-    const selectedTheme = themePalettes.find(theme => theme.key === paletteKey);
+    // Try to find theme in imported themePalettes first
+    let selectedTheme = null;
+    
+    if (themePalettes && Array.isArray(themePalettes)) {
+      selectedTheme = themePalettes.find(theme => theme.key === paletteKey);
+    }
+    
+    // If not found, try fallback themes
     if (!selectedTheme) {
-      console.warn(`Theme palette '${paletteKey}' not found`);
+      const fallbackThemes = this.getFallbackThemes();
+      selectedTheme = fallbackThemes.find(theme => theme.key === paletteKey);
+    }
+    
+    if (!selectedTheme) {
+      console.warn(`Theme palette '${paletteKey}' not found in available themes`);
       return;
     }
 
@@ -469,18 +493,215 @@ class UnifiedColorManager {
 
   // Get available palettes
   getAvailablePalettes() {
-    if (!themePalettes || !Array.isArray(themePalettes)) {
-      console.error('themePalettes is not loaded correctly:', themePalettes);
-      return [];
+    // First try to use the imported themePalettes
+    if (themePalettes && Array.isArray(themePalettes) && themePalettes.length > 0) {
+      return themePalettes.map(theme => ({
+        key: theme.key,
+        name: theme.name,
+        description: theme.description,
+        colors: theme.colors,
+        lightMode: theme.lightMode
+      }));
     }
     
-    return themePalettes.map(theme => ({
-      key: theme.key,
-      name: theme.name,
-      description: theme.description,
-      colors: theme.colors,
-      lightMode: theme.lightMode
-    }));
+    // Fallback: return the themes directly if import failed
+    console.warn('themePalettes import failed, using fallback themes');
+    return this.getFallbackThemes();
+  }
+
+  // Fallback themes in case import fails
+  getFallbackThemes() {
+    return [
+      {
+        key: 'gruvbox',
+        name: 'Gruvbox',
+        description: 'Retro groove color scheme',
+        colors: {
+          primary: '254 128 25',
+          secondary: '184 187 38',
+          accent: '251 73 52',
+          background: '40 40 40',
+          surface: '60 56 54',
+          text: '235 219 178',
+          textSecondary: '168 153 132',
+          success: '184 187 38',
+          warning: '250 189 47',
+          error: '251 73 52',
+          info: '131 165 152'
+        },
+        lightMode: {
+          primary: '175 58 3',
+          secondary: '121 116 14',
+          accent: '157 0 6',
+          background: '251 241 199',
+          surface: '242 229 188',
+          text: '60 56 54',
+          textSecondary: '102 92 84'
+        }
+      },
+      {
+        key: 'solarized',
+        name: 'Solarized',
+        description: 'Precision colors for machines and people',
+        colors: {
+          primary: '38 139 210',
+          secondary: '133 153 0',
+          accent: '220 50 47',
+          background: '0 43 54',
+          surface: '7 54 66',
+          text: '131 148 150',
+          textSecondary: '101 123 131',
+          success: '133 153 0',
+          warning: '181 137 0',
+          error: '220 50 47',
+          info: '38 139 210'
+        },
+        lightMode: {
+          primary: '38 139 210',
+          secondary: '133 153 0',
+          accent: '220 50 47',
+          background: '253 246 227',
+          surface: '238 232 213',
+          text: '101 123 131',
+          textSecondary: '131 148 150'
+        }
+      },
+      {
+        key: 'dracula',
+        name: 'Dracula',
+        description: 'Dark theme for the cool kids',
+        colors: {
+          primary: '189 147 249',
+          secondary: '80 250 123',
+          accent: '255 85 85',
+          background: '40 42 54',
+          surface: '68 71 90',
+          text: '248 248 242',
+          textSecondary: '139 233 253',
+          success: '80 250 123',
+          warning: '241 250 140',
+          error: '255 85 85',
+          info: '139 233 253'
+        },
+        lightMode: {
+          primary: '189 147 249',
+          secondary: '80 250 123',
+          accent: '255 85 85',
+          background: '248 248 242',
+          surface: '255 255 255',
+          text: '40 42 54',
+          textSecondary: '68 71 90'
+        }
+      },
+      {
+        key: 'nord',
+        name: 'Nord',
+        description: 'Arctic, north-bluish color palette',
+        colors: {
+          primary: '129 161 193',
+          secondary: '163 190 140',
+          accent: '191 97 106',
+          background: '46 52 64',
+          surface: '59 66 82',
+          text: '216 222 233',
+          textSecondary: '129 161 193',
+          success: '163 190 140',
+          warning: '235 203 139',
+          error: '191 97 106',
+          info: '136 192 208'
+        },
+        lightMode: {
+          primary: '94 129 172',
+          secondary: '136 192 208',
+          accent: '191 97 106',
+          background: '229 233 240',
+          surface: '236 239 244',
+          text: '46 52 64',
+          textSecondary: '76 86 106'
+        }
+      },
+      {
+        key: 'monokai',
+        name: 'Monokai Pro',
+        description: 'Professional dark theme with vibrant colors',
+        colors: {
+          primary: '120 220 232',
+          secondary: '169 220 118',
+          accent: '255 97 136',
+          background: '45 42 46',
+          surface: '60 56 61',
+          text: '252 252 250',
+          textSecondary: '120 220 232',
+          success: '169 220 118',
+          warning: '255 214 102',
+          error: '255 97 136',
+          info: '171 157 242'
+        },
+        lightMode: {
+          primary: '120 220 232',
+          secondary: '169 220 118',
+          accent: '255 97 136',
+          background: '252 252 250',
+          surface: '255 255 255',
+          text: '45 42 46',
+          textSecondary: '60 56 61'
+        }
+      },
+      {
+        key: 'onedark',
+        name: 'One Dark',
+        description: 'Atom One Dark theme for everyone',
+        colors: {
+          primary: '97 175 239',
+          secondary: '152 195 121',
+          accent: '224 108 117',
+          background: '40 44 52',
+          surface: '53 59 69',
+          text: '171 178 191',
+          textSecondary: '171 178 191',
+          success: '152 195 121',
+          warning: '229 192 123',
+          error: '224 108 117',
+          info: '97 175 239'
+        },
+        lightMode: {
+          primary: '97 175 239',
+          secondary: '152 195 121',
+          accent: '224 108 117',
+          background: '250 251 252',
+          surface: '255 255 255',
+          text: '40 44 52',
+          textSecondary: '92 99 112'
+        }
+      },
+      {
+        key: 'tokyonight',
+        name: 'Tokyo Night',
+        description: 'Dark theme inspired by Tokyo at night',
+        colors: {
+          primary: '122 162 247',
+          secondary: '158 206 106',
+          accent: '247 118 142',
+          background: '26 27 38',
+          surface: '36 40 59',
+          text: '192 202 245',
+          textSecondary: '169 177 214',
+          success: '158 206 106',
+          warning: '255 203 107',
+          error: '247 118 142',
+          info: '122 162 247'
+        },
+        lightMode: {
+          primary: '122 162 247',
+          secondary: '158 206 106',
+          accent: '247 118 142',
+          background: '223 225 239',
+          surface: '241 243 255',
+          text: '26 27 38',
+          textSecondary: '76 79 105'
+        }
+      }
+    ];
   }
 
   // Get theme statistics

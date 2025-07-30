@@ -6,7 +6,7 @@ import { useToast } from './context/ToastContext';
 import { initializeFirebase, isConnected, getCurrentUserID, createShoppingList, getShoppingLists, deleteShoppingList, subscribeToShoppingLists, canDeleteList, shareListWithUser, getListById } from './firebase';
 import SettingsPage from './pages/Settings';
 import AnalyticsPage from './pages/Analytics';
-import ThemePage from './pages/Theme';
+import ThemePage from './pages/ThemePage';
 import PersistencePage from './pages/Persistence';
 import ShoppingListPage from './pages/ShoppingListPage';
 import QRShareModal from './components/QRShareModal';
