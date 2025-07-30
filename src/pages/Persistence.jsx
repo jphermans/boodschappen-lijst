@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Database, RefreshCw, Download, Upload, AlertCircle, CheckCircle, Clock } from 'lucide-react';
-import { useStateHealth } from '../hooks/usePersistentState';
+import { useStateHealth, useStateBackup } from '../hooks/usePersistentState';
 
 const PersistencePage = ({ onBack }) => {
   const { healthInfo, refreshHealthInfo, isLoading } = useStateHealth();
+  const { createBackup, restoreFromFile, isCreatingBackup: hookCreatingBackup, isRestoring: hookRestoring, error } = useStateBackup();
   const [isCreatingBackup, setIsCreatingBackup] = useState(false);
   const [isRestoring, setIsRestoring] = useState(false);
   const [fileInputRef, setFileInputRef] = useState(null);
@@ -28,10 +29,9 @@ const PersistencePage = ({ onBack }) => {
     });
   };
 
-  const createBackup = async () => {
+  const handleCreateBackup = async () => {
     try {
       setIsCreatingBackup(true);
-      const { createBackup } = await import('../utils/stateManager');
       await createBackup();
     } catch (error) {
       console.error('Backup creation failed:', error);
@@ -46,7 +46,6 @@ const PersistencePage = ({ onBack }) => {
 
     try {
       setIsRestoring(true);
-      const { restoreFromFile } = await import('../utils/stateManager');
       await restoreFromFile(file);
     } catch (error) {
       console.error('Restore failed:', error);
@@ -199,23 +198,23 @@ const PersistencePage = ({ onBack }) => {
             </button>
 
             <button
-              onClick={createBackup}
-              disabled={isCreatingBackup}
+              onClick={handleCreateBackup}
+              disabled={isCreatingBackup || hookCreatingBackup}
               className="w-full flex items-center justify-center px-4 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors disabled:opacity-50"
             >
               <Download className="w-4 h-4 mr-2" />
-              {isCreatingBackup ? 'Backup maken...' : 'Backup maken'}
+              {isCreatingBackup || hookCreatingBackup ? 'Backup maken...' : 'Backup maken'}
             </button>
 
             <label className="w-full flex items-center justify-center px-4 py-3 bg-secondary hover:bg-secondary/90 text-white rounded-lg transition-colors cursor-pointer">
               <Upload className="w-4 h-4 mr-2" />
-              {isRestoring ? 'Herstellen...' : 'Herstellen'}
+              {isRestoring || hookRestoring ? 'Herstellen...' : 'Herstellen'}
               <input
                 type="file"
                 accept=".json"
                 onChange={handleFileSelect}
                 className="hidden"
-                disabled={isRestoring}
+                disabled={isRestoring || hookRestoring}
               />
             </label>
           </div>
@@ -230,6 +229,14 @@ const PersistencePage = ({ onBack }) => {
           </div>
         </div>
       </div>
+
+      {/* Error Display */}
+      {error && (
+        <div className="mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg" role="alert">
+          <strong className="font-bold">Fout: </strong>
+          <span className="block sm:inline">{error.message || 'Er is een fout opgetreden'}</span>
+        </div>
+      )}
 
       {/* User Info */}
       {healthInfo?.userInfo && (
