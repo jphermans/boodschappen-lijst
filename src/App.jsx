@@ -18,14 +18,17 @@ import ToastContainer from './components/Toast';
 import { validateListName } from './utils/validation';
 import { validateQRData } from './utils/qrSecurity';
 import { userManager } from './utils/enhancedUserManager';
-import { useUserState, useShoppingLists } from './hooks/usePersistentState';
+import { useUserState } from './hooks/usePersistentState';
 import { useUnifiedThemeContext } from './context/UnifiedThemeContext';
 import { debugThemes } from './utils/debugThemes';
 
 function App() {
   // Enhanced state management hooks
   const { userInfo, setUserName, isLoading: userLoading, error: userError } = useUserState();
-  const { lists, addList, updateList, removeList, isLoading: listsLoading } = useShoppingLists();
+  
+  // Firebase-only state management - no local storage
+  const [lists, setLists] = useState([]);
+  const [listsLoading, setListsLoading] = useState(false);
   
   // Unified theme context
   const { mode: theme, toggleMode: toggleTheme, isLoading: themeLoading } = useUnifiedThemeContext();
@@ -151,7 +154,7 @@ function App() {
   useEffect(() => {
     const initAuth = async () => {
       try {
-        console.log('Initializing app with enhanced persistence...');
+        console.log('Initializing app with Firebase-only synchronization...');
         
         const { error } = await initializeFirebase();
         if (error) {
@@ -172,47 +175,22 @@ function App() {
                 return;
               }
 
-              // Load initial shopping lists from Firebase (still needed for real-time sync)
+              // Load initial shopping lists from Firebase only
+              console.log('Loading lists from Firebase...');
               const initialLists = await getShoppingLists();
+              setLists(initialLists);
+              console.log('Loaded', initialLists.length, 'lists from Firebase');
               
-              // Merge with persistent local lists if needed
-              // The enhanced state manager will handle persistence automatically
-              
-              // Subscribe to real-time updates with deduplication
+              // Subscribe to real-time updates - Firebase only, no local caching
               const unsubscribe = subscribeToShoppingLists((firebaseLists) => {
-                // Use a Set to track processed list IDs and prevent duplicates
-                const processedIds = new Set();
-                
-                firebaseLists.forEach(async (firebaseList) => {
-                  if (processedIds.has(firebaseList.id)) {
-                    return; // Skip if already processed
-                  }
-                  processedIds.add(firebaseList.id);
-                  
-                  const existingList = lists.find(l => l.id === firebaseList.id);
-                  if (!existingList) {
-                    // Only add if it doesn't exist locally
-                    await addList(firebaseList);
-                  } else if (existingList.updatedAt < firebaseList.updatedAt) {
-                    // Update if Firebase has newer data
-                    await updateList(firebaseList.id, firebaseList);
-                  }
-                });
-                
-                // Remove local lists that no longer exist in Firebase
-                const firebaseIds = new Set(firebaseLists.map(l => l.id));
-                lists.forEach(async (localList) => {
-                  if (!firebaseIds.has(localList.id) && localList.creatorId === getCurrentUserID()) {
-                    // Only remove if it was created by current user and missing from Firebase
-                    console.log("Removing orphaned local list:", localList.name);
-                    await removeList(localList.id);
-                  }
-                });
+                console.log('Real-time update received:', firebaseLists.length, 'lists');
+                // Directly set the Firebase lists - no local merging or caching
+                setLists(firebaseLists);
               });
               
               // Check for shared list in URL hash after lists are loaded
               setTimeout(() => {
-                handleSharedListFromURL(lists);
+                handleSharedListFromURL(initialLists);
               }, 500);
               
               return () => unsubscribe();
@@ -235,7 +213,7 @@ function App() {
     if (!userLoading) {
       initAuth();
     }
-  }, [userLoading, userInfo, lists, addList, updateList]);
+  }, [userLoading, userInfo]);
 
   // Listen for hash changes (when someone navigates to a shared link)
   useEffect(() => {
@@ -272,38 +250,17 @@ function App() {
       // Use enhanced user manager to set name
       await setUserName(name);
       
-      // Now load the shopping lists
+      // Now load the shopping lists from Firebase only
+      console.log('Loading lists from Firebase after name set...');
       const initialLists = await getShoppingLists();
+      setLists(initialLists);
+      console.log('Loaded', initialLists.length, 'lists from Firebase');
       
-      // Subscribe to real-time updates with deduplication
+      // Subscribe to real-time updates - Firebase only
       const unsubscribe = subscribeToShoppingLists((firebaseLists) => {
-        // Use a Set to track processed list IDs and prevent duplicates
-        const processedIds = new Set();
-        
-        firebaseLists.forEach(async (firebaseList) => {
-          if (processedIds.has(firebaseList.id)) {
-            return; // Skip if already processed
-          }
-          processedIds.add(firebaseList.id);
-          
-          const existingList = lists.find(l => l.id === firebaseList.id);
-          if (!existingList) {
-            // Only add if it doesn't exist locally
-            await addList(firebaseList);
-          } else if (existingList.updatedAt < firebaseList.updatedAt) {
-            // Update if Firebase has newer data
-            await updateList(firebaseList.id, firebaseList);
-          }
-        });
-        
-        // Remove local lists that no longer exist in Firebase
-        const firebaseIds = new Set(firebaseLists.map(l => l.id));
-        lists.forEach(async (localList) => {
-          if (!firebaseIds.has(localList.id) && localList.creatorId === getCurrentUserID()) {
-            console.log("Removing orphaned local list:", localList.name);
-            await removeList(localList.id);
-          }
-        });
+        console.log('Real-time update received after name set:', firebaseLists.length, 'lists');
+        // Directly set the Firebase lists - no local merging or caching
+        setLists(firebaseLists);
       });
       
       success(`Welkom ${name}! Je kunt nu lijsten maken en delen. 🎉`);
@@ -377,11 +334,11 @@ function App() {
         creatorId: userID
       };
 
-      // Create in Firebase only (prevent local creation to avoid duplicates)
+      // Create in Firebase only - real-time subscription will update the UI
       console.log("Creating new list in Firebase:", newListData.name);
       await createShoppingList(newListData);
       
-      // Don't add to local state manually - let the subscription handle it
+      // No local state updates needed - Firebase subscription handles it
       setNewListName('');
       success(`Lijst "${validation.value}" is aangemaakt! 🎉`);
     } catch (error) {
@@ -407,11 +364,11 @@ function App() {
       
       const listName = listToDelete.name;
 
-      // Delete from Firebase
+      // Delete from Firebase only - real-time subscription will update the UI
       console.log("Deleting list:", listName);
       await deleteShoppingList(listId);
 
-      // No need to manually remove from local state, the subscription will handle it.
+      // No local state updates needed - Firebase subscription handles it
       
       // Clear selected list if it's the one being deleted
       if (selectedList?.id === listId) {
@@ -599,7 +556,7 @@ function App() {
                 <List className="w-5 h-5 lg:w-6 lg:h-6 text-white" />
               </div>
               <div className="min-w-0 flex-1">
-                <h1 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-[rgb(var(--card-text))] tracking-tight truncate">
+                <h1 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-[rgb(var(--card-text))] tracking-tight break-words">
                   Boodschappenlijst
                 </h1>
                 <p className="hidden lg:block text-sm text-[rgb(var(--text-color))]/60 font-medium">
@@ -748,7 +705,7 @@ function App() {
             list={selectedList}
             onBack={() => setCurrentPage('overview')}
             onListUpdate={(updatedList) => {
-              setLists(lists.map(l => l.id === updatedList.id ? updatedList : l));
+              // Firebase subscription will handle the list update automatically
               setSelectedList(updatedList);
             }}
           />
@@ -1146,7 +1103,7 @@ function App() {
                           >
                             <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0"></div>
                             <div className="flex-1 min-w-0">
-                              <p className="font-medium text-[rgb(var(--card-text))] truncate text-sm">
+                              <p className="font-medium text-[rgb(var(--card-text))] break-words text-sm">
                                 {list.name}
                               </p>
                               <p className="text-xs text-[rgb(var(--text-color))]/60">
@@ -1204,7 +1161,8 @@ function App() {
             setManagementListId(null);
           }}
           onListUpdate={(updatedList) => {
-            setLists(lists.map(l => l.id === updatedList.id ? updatedList : l));
+            // Firebase subscription will handle the list update automatically
+            // No manual local state updates needed
           }}
         />
       )}
