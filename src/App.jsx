@@ -295,6 +295,13 @@ function App() {
         return;
       }
       
+      // Check for duplicate list names
+      if (lists.some(list => list.name.toLowerCase() === validation.value.toLowerCase())) {
+        console.log("Attempted to create a list with a duplicate name:", validation.value);
+        error(`Een lijst met de naam "${validation.value}" bestaat al.`);
+        return;
+      }
+
       const newListData = {
         name: validation.value,
         items: [],
@@ -304,6 +311,7 @@ function App() {
       };
 
       // Create in Firebase (the real-time subscription will automatically add it to local state)
+      console.log("Creating new list:", newListData.name);
       await createShoppingList(newListData);
       
       setNewListName('');
@@ -329,51 +337,20 @@ function App() {
         return;
       }
       
-      // Immediately remove from local state for instant UI update
-      await removeList(listId);
+      const listName = listToDelete.name;
+
+      // Delete from Firebase
+      console.log("Deleting list:", listName);
+      await deleteShoppingList(listId);
+
+      // No need to manually remove from local state, the subscription will handle it.
       
       // Clear selected list if it's the one being deleted
       if (selectedList?.id === listId) {
         setSelectedList(null);
       }
       
-      const deleteMessage = `Lijst "${listToDelete?.name}" is verwijderd`;
-      
-      // Add undo action
-      addUndoAction({
-        message: `Lijst "${listToDelete?.name}" verwijderd`,
-        undoFunction: async () => {
-          try {
-            // Hide the deletion toast when undoing
-            removeToastByMessage(deleteMessage);
-            
-            // Remove the id field to allow Firebase to create a new one
-            const { id, createdAt, updatedAt, isCreator, ...listDataToRestore } = listToDelete;
-            
-            // Restore to local state immediately
-            await addList(listToDelete);
-            
-            // Also restore to Firebase for persistence
-            await createShoppingList(listDataToRestore);
-            
-            success(`Lijst "${listToDelete?.name}" hersteld! 🎉`, 2000);
-          } catch (err) {
-            console.error('Error restoring list:', err);
-            error('Er ging iets mis bij het herstellen van de lijst');
-          }
-        }
-      });
-      
-      // Delete from Firebase in the background (for persistence)
-      try {
-        await deleteShoppingList(listId);
-      } catch (firebaseError) {
-        console.error('Error deleting from Firebase:', firebaseError);
-        // If Firebase deletion fails, we could optionally restore the list
-        // but for now we'll just log the error since the UI is already updated
-      }
-      
-      success(deleteMessage, 3000);
+      success(`Lijst "${listName}" is verwijderd.`, 3000);
     } catch (error) {
       console.error('Error deleting shopping list:', error);
       error('Er ging iets mis bij het verwijderen van de lijst', 3000);
