@@ -13,6 +13,7 @@ import QRShareModal from './components/QRShareModal';
 import QRScannerModal from './components/QRScannerModal';
 import UserManagementModal from './components/UserManagementModal';
 import UserNameModal from './components/UserNameModal';
+import ConfirmationDialog from './components/ConfirmationDialog';
 import ConnectionError from './components/ConnectionError';
 import ToastContainer from './components/Toast';
 import { validateListName } from './utils/validation';
@@ -51,6 +52,8 @@ function App() {
   const [isProcessingQRScan, setIsProcessingQRScan] = useState(false);
   const [showUserNameModal, setShowUserNameModal] = useState(false);
   const [isCreatingList, setIsCreatingList] = useState(false);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [listToDelete, setListToDelete] = useState(null);
 
   // Make debug function available globally
   useEffect(() => {
@@ -347,22 +350,30 @@ function App() {
     }
   };
 
-  const deleteList = async (listId) => {
+  const handleDeleteList = (listId) => {
+    const list = lists.find(l => l.id === listId);
+    
+    if (!list) {
+      error('Lijst niet gevonden');
+      return;
+    }
+    
+    // Check if user can delete this list (only creator can delete)
+    if (!canDeleteList(list)) {
+      error('Alleen de maker van de lijst kan deze verwijderen');
+      return;
+    }
+    
+    setListToDelete(list);
+    setShowDeleteConfirmation(true);
+  };
+
+  const confirmDeleteList = async () => {
+    if (!listToDelete) return;
+    
     try {
-      const listToDelete = lists.find(l => l.id === listId);
-      
-      if (!listToDelete) {
-        error('Lijst niet gevonden');
-        return;
-      }
-      
-      // Check if user can delete this list (only creator can delete)
-      if (!canDeleteList(listToDelete)) {
-        error('Alleen de maker van de lijst kan deze verwijderen');
-        return;
-      }
-      
       const listName = listToDelete.name;
+      const listId = listToDelete.id;
 
       // Delete from Firebase only - real-time subscription will update the UI
       console.log("Deleting list:", listName);
@@ -536,7 +547,39 @@ function App() {
     if (!isTestMode) {
       return <ConnectionError error={firebaseError} onRetry={retryConnection} />;
     }
-    // In test mode, continue with empty lists
+    // In test mode, continue with mock lists for testing
+    if (isTestMode && lists.length === 0) {
+      const mockLists = [
+        {
+          id: 'test-1',
+          name: 'Test Lijst voor Delete',
+          items: [
+            { id: '1', text: 'Melk', completed: false },
+            { id: '2', text: 'Brood', completed: true },
+            { id: '3', text: 'Eieren', completed: false }
+          ],
+          creatorName: 'Test Gebruiker',
+          creatorId: 'test-user-id',
+          isCreator: true,
+          updatedAt: new Date(),
+          sharedWith: []
+        },
+        {
+          id: 'test-2',
+          name: 'Gedeelde Lijst',
+          items: [
+            { id: '1', text: 'Appels', completed: false },
+            { id: '2', text: 'Bananen', completed: true }
+          ],
+          creatorName: 'Andere Gebruiker',
+          creatorId: 'other-user-id',
+          isCreator: false,
+          updatedAt: new Date(),
+          sharedWith: ['test-user-id']
+        }
+      ];
+      setLists(mockLists);
+    }
   }
 
   const isOffline = !isConnected;
@@ -896,7 +939,7 @@ function App() {
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                deleteList(list.id);
+                                handleDeleteList(list.id);
                               }}
                               className="flex-1 min-w-[120px] flex items-center justify-center px-4 py-2.5 lg:py-3 bg-accent hover:opacity-90 text-white rounded-lg lg:rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 font-medium text-sm lg:text-base"
                               title="Verwijderen"
@@ -1178,6 +1221,21 @@ function App() {
         />
       )}
 
+      {showDeleteConfirmation && listToDelete && (
+        <ConfirmationDialog
+          isOpen={showDeleteConfirmation}
+          onClose={() => {
+            setShowDeleteConfirmation(false);
+            setListToDelete(null);
+          }}
+          onConfirm={confirmDeleteList}
+          title="Lijst verwijderen"
+          message={`Weet je zeker dat je de lijst "${listToDelete.name}" wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.`}
+          confirmText="Verwijderen"
+          cancelText="Annuleren"
+          type="danger"
+        />
+      )}
 
       <ToastContainer toasts={toasts} removeToast={removeToast} />
     </div>
