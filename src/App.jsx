@@ -9,11 +9,11 @@ import ShoppingList from './components/ShoppingList';
 import SettingsPage from './pages/Settings';
 import AnalyticsPage from './pages/Analytics';
 import ThemePage from './pages/Theme';
+import PersistencePage from './pages/Persistence';
 import QRShareModal from './components/QRShareModal';
 import QRScannerModal from './components/QRScannerModal';
 import UserManagementModal from './components/UserManagementModal';
 import UserNameModal from './components/UserNameModal';
-import PersistenceHealthMonitor from './components/PersistenceHealthMonitor';
 import ConnectionError from './components/ConnectionError';
 import ToastContainer from './components/Toast';
 import UndoBar from './components/UndoBar';
@@ -39,11 +39,10 @@ function App() {
   // UI state
   const [newListName, setNewListName] = useState('');
   const [selectedList, setSelectedList] = useState(null);
-  const [currentPage, setCurrentPage] = useState('overview'); // 'overview', 'settings', 'analytics', 'theme'
+  const [currentPage, setCurrentPage] = useState('overview'); // 'overview', 'settings', 'analytics', 'theme', 'persistence'
   const [showShare, setShowShare] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
   const [showUserManagement, setShowUserManagement] = useState(false);
-  const [showPersistenceMonitor, setShowPersistenceMonitor] = useState(false);
   const [shareListId, setShareListId] = useState(null);
   const [managementListId, setManagementListId] = useState(null);
   const [firebaseError, setFirebaseError] = useState(null);
@@ -654,6 +653,17 @@ function App() {
                 Thema
               </button>
               <button
+                onClick={() => setCurrentPage('persistence')}
+                className={`px-4 xl:px-6 py-2.5 rounded-xl font-medium transition-all duration-200 ${
+                  currentPage === 'persistence'
+                    ? 'bg-primary text-white shadow-lg'
+                    : 'text-[rgb(var(--text-color))]/80 hover:bg-[rgb(var(--border-color))]/20 hover:text-[rgb(var(--card-text))]'
+                }`}
+              >
+                <Database className="w-4 h-4 inline mr-2" />
+                Persistentie
+              </button>
+              <button
                 onClick={() => setShowScanner(true)}
                 className="px-4 xl:px-6 py-2.5 rounded-xl font-medium text-[rgb(var(--text-color))]/80 hover:bg-[rgb(var(--border-color))]/20 hover:text-[rgb(var(--card-text))] transition-all duration-200"
               >
@@ -680,15 +690,6 @@ function App() {
                 <QrCode className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
               
-              {/* Persistence Monitor (for debugging/advanced users) */}
-              <button
-                onClick={() => setShowPersistenceMonitor(true)}
-                className="hidden sm:flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-lg sm:rounded-xl bg-gradient-to-r from-accent to-accent/90 hover:opacity-90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 group"
-                aria-label="Persistentie Monitor"
-                title="iOS Safari Persistentie Status"
-              >
-                <Database className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 group-hover:scale-110 transition-transform duration-200" />
-              </button>
 
               {/* Theme Toggle */}
               <button
@@ -729,6 +730,10 @@ function App() {
           />
         ) : currentPage === 'theme' ? (
           <ThemePage
+            onBack={() => setCurrentPage('overview')}
+          />
+        ) : currentPage === 'persistence' ? (
+          <PersistencePage
             onBack={() => setCurrentPage('overview')}
           />
         ) : !selectedList ? (
@@ -1150,11 +1155,6 @@ function App() {
         />
       )}
 
-      {showPersistenceMonitor && (
-        <PersistenceHealthMonitor
-          onClose={() => setShowPersistenceMonitor(false)}
-        />
-      )}
 
       <ToastContainer toasts={toasts} removeToast={removeToast} />
       <UndoBar
