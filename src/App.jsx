@@ -812,7 +812,7 @@ function App() {
                           {list.name}
                         </h3>
                         <div className="flex items-center space-x-4 text-sm text-[rgb(var(--text-color))]/60">
-                          <span>{list.items.length} item{list.items.length !== 1 ? 's' : ''}</span>
+                          <span>{list.items?.length || 0} item{(list.items?.length || 0) !== 1 ? 's' : ''}</span>
                           {list.sharedWith && list.sharedWith.length > 0 && (
                             <span className="flex items-center">
                               <Users className="w-3 h-3 mr-1" />
@@ -850,19 +850,19 @@ function App() {
                     </div>
 
                     {/* Progress Bar for Items */}
-                    {list.items.length > 0 && (
+                    {(list.items?.length || 0) > 0 && (
                       <div className="mb-6">
                         <div className="flex items-center justify-between mb-2">
                           <span className="text-xs text-[rgb(var(--text-color))]/60">Voortgang</span>
                           <span className="text-xs font-medium text-[rgb(var(--card-text))]">
-                            {Math.round((list.items.filter(item => item.completed).length / list.items.length) * 100)}%
+                            {Math.round(((list.items?.filter(item => item.completed).length || 0) / (list.items?.length || 1)) * 100)}%
                           </span>
                         </div>
                         <div className="w-full bg-[rgb(var(--border-color))]/20 rounded-full h-2">
                           <div
                             className="bg-gradient-to-r from-green-500 to-green-400 h-2 rounded-full transition-all duration-500"
                             style={{
-                              width: `${(list.items.filter(item => item.completed).length / list.items.length) * 100}%`
+                              width: `${((list.items?.filter(item => item.completed).length || 0) / (list.items?.length || 1)) * 100}%`
                             }}
                           ></div>
                         </div>

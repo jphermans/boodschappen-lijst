@@ -44,7 +44,7 @@ const ShoppingList = ({ list, onBack, onShare }) => {
 
     try {
       // Check if item already exists to prevent duplicates
-      const existingItem = currentList.items.find(item => 
+      const existingItem = (currentList.items || []).find(item => 
         item.name.toLowerCase() === validation.value.toLowerCase()
       );
       
@@ -67,7 +67,7 @@ const ShoppingList = ({ list, onBack, onShare }) => {
         addedBy: userName,
       };
       
-      const updatedItems = [...currentList.items, newItemObj];
+      const updatedItems = [...(currentList.items || []), newItemObj];
       await updateDoc(doc(db, 'shoppingLists', currentList.id), {
         items: updatedItems,
         updatedAt: new Date()
@@ -115,7 +115,7 @@ const ShoppingList = ({ list, onBack, onShare }) => {
   };
 
   const toggleItem = async (itemId) => {
-    const updatedItems = currentList.items.map(item =>
+    const updatedItems = (currentList.items || []).map(item =>
       item.id === itemId ? { ...item, completed: !item.completed } : item
     );
     
@@ -127,8 +127,8 @@ const ShoppingList = ({ list, onBack, onShare }) => {
 
   const deleteItem = async (itemId) => {
     try {
-      const itemToDelete = currentList.items.find(item => item.id === itemId);
-      const updatedItems = currentList.items.filter(item => item.id !== itemId);
+      const itemToDelete = (currentList.items || []).find(item => item.id === itemId);
+      const updatedItems = (currentList.items || []).filter(item => item.id !== itemId);
       
       await updateDoc(doc(db, 'shoppingLists', currentList.id), {
         items: updatedItems,
@@ -161,9 +161,9 @@ const ShoppingList = ({ list, onBack, onShare }) => {
 
   const clearCompleted = async () => {
     try {
-      const completedItems = currentList.items.filter(item => item.completed);
+      const completedItems = (currentList.items || []).filter(item => item.completed);
       const completedCount = completedItems.length;
-      const updatedItems = currentList.items.filter(item => !item.completed);
+      const updatedItems = (currentList.items || []).filter(item => !item.completed);
       
       await updateDoc(doc(db, 'shoppingLists', currentList.id), {
         items: updatedItems,

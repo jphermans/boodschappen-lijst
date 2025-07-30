@@ -95,6 +95,7 @@ const createShoppingList = async (listData) => {
       deviceUID: currentUser.uid, // Original creator
       creatorId: currentUser.uid, // Track who created the list
       sharedWith: [], // Array of user IDs who have access
+      items: [], // Initialize empty items array
       createdAt: new Date(),
       updatedAt: new Date()
     });
