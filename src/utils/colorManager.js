@@ -199,18 +199,47 @@ class UnifiedColorManager {
   constructor() {
     this.currentTheme = null;
     this.subscribers = new Set();
-    this.initialize();
+    this.isInitialized = false;
+    this.initializationPromise = null;
+    // Don't call initialize here - let it be called explicitly
   }
 
   async initialize() {
+    // Prevent multiple initializations
+    if (this.isInitialized) {
+      return this.currentTheme;
+    }
+    
+    if (this.initializationPromise) {
+      return this.initializationPromise;
+    }
+
+    this.initializationPromise = this._doInitialize();
+    return this.initializationPromise;
+  }
+
+  async _doInitialize() {
     try {
+      console.log('Starting unified color manager initialization...');
+      console.log('Storage key being used:', COLOR_THEME_KEY);
+      
       // Load saved theme
       const savedTheme = await persistentStorage.getItem(COLOR_THEME_KEY);
       const defaultMode = await persistentStorage.getItem(DEFAULT_THEME_KEY) || 'light';
       
-      if (savedTheme) {
-        this.currentTheme = savedTheme;
+      console.log('Raw saved theme data:', savedTheme);
+      console.log('Loaded saved theme from storage:', savedTheme ? savedTheme.name : 'none');
+      console.log('Saved theme has palette:', savedTheme ? !!savedTheme.palette : 'no theme');
+      
+      if (savedTheme && savedTheme.palette) {
+        // Validate the saved theme has the required structure
+        this.currentTheme = {
+          ...savedTheme,
+          mode: savedTheme.mode || defaultMode
+        };
+        console.log('Using saved theme:', this.currentTheme.name);
       } else {
+        console.log('No valid saved theme found, creating default theme');
         // Set default Gruvbox theme but allow switching
         const defaultPalette = this.getDefaultPalette();
         this.currentTheme = {
@@ -226,13 +255,18 @@ class UnifiedColorManager {
           lastModified: Date.now()
         };
         await this.saveTheme();
+        console.log('Created default theme:', this.currentTheme.name);
       }
 
+      this.isInitialized = true;
       this.applyTheme();
       console.log('Unified color manager initialized with theme:', this.currentTheme.name);
+      return this.currentTheme;
     } catch (error) {
       console.error('Failed to initialize color manager:', error);
       this.setDefaultTheme();
+      this.isInitialized = true;
+      return this.currentTheme;
     }
   }
 
@@ -282,11 +316,27 @@ class UnifiedColorManager {
 
   // Get current theme
   getCurrentTheme() {
+    if (!this.isInitialized) {
+      // Return a basic theme if not initialized yet
+      return {
+        name: 'Loading...',
+        mode: 'light',
+        palette: this.getDefaultPalette(),
+        customColors: {},
+        accessibility: {
+          enforceStandards: true,
+          minimumContrast: 4.5
+        }
+      };
+    }
     return { ...this.currentTheme };
   }
 
   // Set color palette (maintains colors across light/dark mode)
   async setColorPalette(paletteKey) {
+    // Ensure initialization is complete
+    await this.initialize();
+    
     // Try to find theme in imported themePalettes first
     let selectedTheme = null;
     
@@ -305,6 +355,8 @@ class UnifiedColorManager {
       return;
     }
 
+    console.log(`Setting color palette to: ${selectedTheme.name}`);
+
     this.currentTheme = {
       ...this.currentTheme,
       name: selectedTheme.name,
@@ -315,6 +367,8 @@ class UnifiedColorManager {
     await this.saveTheme();
     this.applyTheme();
     this.notifySubscribers();
+    
+    console.log(`Color palette set to: ${this.currentTheme.name}`);
   }
 
   // Toggle between light and dark mode (preserves colors)
@@ -325,6 +379,9 @@ class UnifiedColorManager {
 
   // Set specific mode (preserves colors)
   async setMode(mode) {
+    // Ensure initialization is complete
+    await this.initialize();
+    
     if (mode !== 'light' && mode !== 'dark') {
       throw new Error('Mode must be "light" or "dark"');
     }
@@ -445,9 +502,22 @@ class UnifiedColorManager {
   // Save theme to persistent storage
   async saveTheme() {
     try {
+      console.log('Saving theme to storage:', this.currentTheme.name);
+      console.log('Theme data being saved:', {
+        name: this.currentTheme.name,
+        mode: this.currentTheme.mode,
+        paletteKey: this.currentTheme.palette?.key
+      });
+      
       await persistentStorage.setItem(COLOR_THEME_KEY, this.currentTheme, { critical: true });
+      console.log('Theme saved successfully to storage');
+      
+      // Verify the save by reading it back
+      const savedTheme = await persistentStorage.getItem(COLOR_THEME_KEY);
+      console.log('Verification - theme read back from storage:', savedTheme ? savedTheme.name : 'null');
     } catch (error) {
       console.error('Failed to save theme:', error);
+      console.error('Error details:', error.message, error.stack);
     }
   }
 

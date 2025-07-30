@@ -80,45 +80,21 @@ export const UnifiedThemeProvider = ({ children }) => {
     return unsubscribe;
   }, [subscribers]);
 
-  // Apply theme to DOM elements
+  // Apply theme to DOM elements - delegate to unified color manager
   const applyThemeToDOM = useCallback((themeData) => {
     if (!themeData) return;
 
     try {
-      const { mode, palette, customColors } = themeData;
-      
       // Apply Tailwind dark class
-      if (mode === 'dark') {
+      if (themeData.mode === 'dark') {
         document.documentElement.classList.add('dark');
       } else {
         document.documentElement.classList.remove('dark');
       }
       
-      // Set data-theme attribute
-      document.documentElement.setAttribute('data-theme', mode);
-      
-      // Apply CSS custom properties for colors
-      const effectiveColors = { ...palette.colors, ...customColors };
-      
-      Object.entries(effectiveColors).forEach(([key, value]) => {
-        if (typeof value === 'string' && value.startsWith('#')) {
-          // Convert hex to RGB for CSS custom properties
-          const rgb = hexToRgb(value);
-          document.documentElement.style.setProperty(`--color-${key}`, rgb);
-          
-          // Also set the hex value for direct use
-          document.documentElement.style.setProperty(`--color-${key}-hex`, value);
-        }
-      });
-
-      // Set legacy color properties for backward compatibility
-      const primaryColor = effectiveColors.primary || '#3b82f6';
-      const secondaryColor = effectiveColors.secondary || '#a855f7';
-      const accentColor = effectiveColors.accent || '#ec4899';
-      
-      document.documentElement.style.setProperty('--color-primary', hexToRgb(primaryColor));
-      document.documentElement.style.setProperty('--color-secondary', hexToRgb(secondaryColor));
-      document.documentElement.style.setProperty('--color-accent', hexToRgb(accentColor));
+      // Let the unified color manager handle the actual theme application
+      // This ensures consistency and avoids conflicts
+      unifiedColorManager.applyTheme();
       
     } catch (error) {
       console.error('Failed to apply theme to DOM:', error);
