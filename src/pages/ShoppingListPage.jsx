@@ -61,6 +61,14 @@ const ShoppingListPage = ({ list, onBack, onListUpdate }) => {
   const addItem = async () => {
     if (!newItemName.trim() || !canEdit) return;
 
+    // Check for duplicate items
+    const normalizedName = newItemName.trim().toLowerCase();
+    const duplicate = items.some(item => item.name.toLowerCase().trim() === normalizedName);
+    if (duplicate) {
+      error(`"${newItemName.trim()}" staat al in de lijst!`, 2000);
+      return;
+    }
+
     setIsLoading(true);
     try {
       const newItem = {
@@ -76,7 +84,7 @@ const ShoppingListPage = ({ list, onBack, onListUpdate }) => {
       
       setItems(updatedItems);
       setNewItemName('');
-      success(`"${newItem.name}" toegevoegd!`);
+      success(`"${newItem.name}" toegevoegd!`, 2000);
       
       // Add undo action
       addUndoAction({
@@ -130,7 +138,7 @@ const ShoppingListPage = ({ list, onBack, onListUpdate }) => {
       const updatedItems = items.filter(item => item.id !== itemId);
       await updateShoppingList(list.id, { items: updatedItems });
       setItems(updatedItems);
-      success(`"${itemToDelete.name}" verwijderd`);
+      success(`"${itemToDelete.name}" verwijderd`, 2000);
       
       // Add undo action
       addUndoAction({
