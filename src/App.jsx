@@ -872,14 +872,14 @@ function App() {
                       
                       {/* Other Actions */}
                       {(list.isCreator || canDeleteList(list)) && (
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-3">
+                        <div className="flex flex-wrap gap-2 lg:gap-3">
                           {list.isCreator && (
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleUserManagement(list.id);
                               }}
-                              className="w-full flex items-center justify-center px-4 py-2.5 lg:py-3 bg-gradient-to-r from-blue-500 to-purple-500 hover:opacity-90 text-white rounded-lg lg:rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 font-medium text-sm lg:text-base"
+                              className="flex-1 min-w-[120px] flex items-center justify-center px-4 py-2.5 lg:py-3 bg-gradient-to-r from-blue-500 to-purple-500 hover:opacity-90 text-white rounded-lg lg:rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 font-medium text-sm lg:text-base"
                               title="Gebruikers beheren"
                             >
                               <Users className="w-4 h-4 lg:w-5 lg:h-5 mr-2" />
@@ -893,7 +893,7 @@ function App() {
                                 e.stopPropagation();
                                 deleteList(list.id);
                               }}
-                              className="w-full flex items-center justify-center px-4 py-2.5 lg:py-3 bg-accent hover:opacity-90 text-white rounded-lg lg:rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 font-medium text-sm lg:text-base"
+                              className="flex-1 min-w-[120px] flex items-center justify-center px-4 py-2.5 lg:py-3 bg-accent hover:opacity-90 text-white rounded-lg lg:rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 font-medium text-sm lg:text-base"
                               title="Verwijderen"
                             >
                               <Trash2 className="w-4 h-4 lg:w-5 lg:h-5 mr-2" />
