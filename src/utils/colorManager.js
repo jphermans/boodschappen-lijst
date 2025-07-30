@@ -193,8 +193,6 @@ export const colorUtils = {
   }
 };
 
-// Import theme palettes from comprehensive collection
-import { themePalettes } from './themePalettes';
 
 // Unified Color Theme Manager
 class UnifiedColorManager {
@@ -216,7 +214,7 @@ class UnifiedColorManager {
         // Set default Gruvbox theme
         this.currentTheme = {
           name: 'Gruvbox',
-          palette: colorPalettes.gruvbox,
+          palette: themePalettes[0],
           mode: defaultMode,
           customColors: {},
           accessibility: {
@@ -321,7 +319,7 @@ class UnifiedColorManager {
 
   // Set custom color - allows color customization within current theme
   async setCustomColor(colorKey, hexColor) {
-    const validation = this.validateColorAccessibility(colorKey, hexColor);
+    const validation = this.validateColorAccessibility(hexColor);
     if (!validation.valid) {
       console.warn(`Color validation failed: ${validation.reason}`);
       return;
@@ -342,7 +340,7 @@ class UnifiedColorManager {
   }
 
   // Validate color accessibility
-  validateColorAccessibility(colorKey, hexColor) {
+  validateColorAccessibility(hexColor) {
     const rgb = colorUtils.hexToRgb(hexColor);
     if (!rgb) return { valid: false, reason: 'Invalid color format' };
 
@@ -507,9 +505,6 @@ export const useUnifiedColors = () => ({
   exportTheme: () => unifiedColorManager.exportTheme(),
   importTheme: (data) => unifiedColorManager.importTheme(data),
   resetTheme: () => unifiedColorManager.resetTheme(),
-  getAvailablePalettes: () => [{
-    key: 'gruvbox',
-    ...colorPalettes.gruvbox
-  }],
+  getAvailablePalettes: () => unifiedColorManager.getAvailablePalettes(),
   getThemeStats: () => unifiedColorManager.getThemeStats()
 });

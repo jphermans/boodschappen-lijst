@@ -283,8 +283,8 @@ export const UnifiedThemeProvider = ({ children }) => {
   }, []);
 
   // Validate color accessibility
-  const validateColorAccessibility = useCallback((colorKey, hexColor) => {
-    return unifiedColorManager.validateColorAccessibility(colorKey, hexColor);
+  const validateColorAccessibility = useCallback((hexColor) => {
+    return unifiedColorManager.validateColorAccessibility(hexColor);
   }, []);
 
   const value = {
