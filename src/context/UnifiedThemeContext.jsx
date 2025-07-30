@@ -181,10 +181,29 @@ export const UnifiedThemeProvider = ({ children }) => {
     }
   }, []);
 
-  // setColorPalette removed - only Gruvbox theme is available
+  // Set color palette from available themes
+  const setColorPalette = useCallback(async (paletteKey) => {
+    try {
+      setError(null);
+      await unifiedColorManager.setColorPalette(paletteKey);
+    } catch (err) {
+      console.error('Failed to set color palette:', err);
+      setError(err);
+      throw err;
+    }
+  }, []);
 
-  // No-op for legacy compatibility
-  const setCustomColor = () => Promise.resolve();
+  // Set custom color
+  const setCustomColor = useCallback(async (colorKey, color) => {
+    try {
+      setError(null);
+      await unifiedColorManager.setCustomColor(colorKey, color);
+    } catch (err) {
+      console.error('Failed to set custom color:', err);
+      setError(err);
+      throw err;
+    }
+  }, []);
 
   const resetTheme = useCallback(async () => {
     try {
@@ -258,9 +277,9 @@ export const UnifiedThemeProvider = ({ children }) => {
     return unifiedColorManager.getThemeStats();
   }, []);
 
-  // Get available palettes (now only Gruvbox)
+  // Get available palettes from all themes
   const getAvailablePalettes = useCallback(() => {
-    return [{ key: 'gruvbox', ...unifiedColorManager.getAvailablePalettes()[0] }];
+    return unifiedColorManager.getAvailablePalettes();
   }, []);
 
   // Validate color accessibility
@@ -280,9 +299,11 @@ export const UnifiedThemeProvider = ({ children }) => {
     secondaryColor: theme?.customColors?.secondary || theme?.palette?.colors?.secondary || '#a855f7',
     accentColor: theme?.customColors?.accent || theme?.palette?.colors?.accent || '#ec4899',
     
-    // Theme manipulation - only light/dark mode available
+    // Theme manipulation
     toggleMode,
     setMode,
+    setColorPalette,
+    setCustomColor,
     resetTheme,
     getEffectiveColor,
     

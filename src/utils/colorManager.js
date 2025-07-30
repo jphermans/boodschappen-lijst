@@ -1,5 +1,6 @@
 // Unified theme color management system with light/dark mode synchronization
 import { persistentStorage } from './persistentStorage';
+import { themePalettes } from './themePalettes';
 
 const COLOR_THEME_KEY = 'unified_color_theme';
 const DEFAULT_THEME_KEY = 'default_theme_preference';
@@ -192,22 +193,8 @@ export const colorUtils = {
   }
 };
 
-// Gruvbox is the only theme option
-export const colorPalettes = {
-  gruvbox: {
-    name: 'Gruvbox',
-    description: 'Warm, retro groove colors - the only theme available',
-    colors: {
-      primary: '#fe8019',    // Orange
-      secondary: '#b8bb26',  // Green
-      accent: '#fb4934',     // Red
-      info: '#83a598',       // Blue
-      warning: '#fabd2f',    // Yellow
-      success: '#8ec07c',    // Aqua
-      purple: '#d3869b'      // Purple
-    }
-  }
-};
+// Import theme palettes from comprehensive collection
+import { themePalettes } from './themePalettes';
 
 // Unified Color Theme Manager
 class UnifiedColorManager {
@@ -253,7 +240,7 @@ class UnifiedColorManager {
   setDefaultTheme() {
     this.currentTheme = {
       name: 'Gruvbox',
-      palette: colorPalettes.gruvbox,
+      palette: themePalettes[0], // Gruvbox is the first theme
       mode: 'light',
       customColors: {},
       accessibility: {
@@ -290,14 +277,22 @@ class UnifiedColorManager {
 
   // Set color palette (maintains colors across light/dark mode)
   async setColorPalette(paletteKey) {
-    // Only Gruvbox is available - ignore any other palette requests
-    if (paletteKey !== 'gruvbox') {
-      console.warn('Only Gruvbox theme is available');
+    const selectedTheme = themePalettes.find(theme => theme.key === paletteKey);
+    if (!selectedTheme) {
+      console.warn(`Theme palette '${paletteKey}' not found`);
       return;
     }
-    
-    // No-op since Gruvbox is already the default and only theme
-    return;
+
+    this.currentTheme = {
+      ...this.currentTheme,
+      name: selectedTheme.name,
+      palette: selectedTheme,
+      lastModified: Date.now()
+    };
+
+    await this.saveTheme();
+    this.applyTheme();
+    this.notifySubscribers();
   }
 
   // Toggle between light and dark mode (preserves colors)
@@ -324,11 +319,26 @@ class UnifiedColorManager {
     this.notifySubscribers();
   }
 
-  // Set custom color - disabled for Gruvbox-only theme
+  // Set custom color - allows color customization within current theme
   async setCustomColor(colorKey, hexColor) {
-    // Custom colors are disabled - Gruvbox theme only
-    console.warn('Custom colors are disabled - Gruvbox theme only');
-    return;
+    const validation = this.validateColorAccessibility(colorKey, hexColor);
+    if (!validation.valid) {
+      console.warn(`Color validation failed: ${validation.reason}`);
+      return;
+    }
+
+    this.currentTheme = {
+      ...this.currentTheme,
+      customColors: {
+        ...this.currentTheme.customColors,
+        [colorKey]: hexColor
+      },
+      lastModified: Date.now()
+    };
+
+    await this.saveTheme();
+    this.applyTheme();
+    this.notifySubscribers();
   }
 
   // Validate color accessibility
@@ -461,9 +471,11 @@ class UnifiedColorManager {
 
   // Get available palettes
   getAvailablePalettes() {
-    return Object.keys(colorPalettes).map(key => ({
-      key,
-      ...colorPalettes[key]
+    return themePalettes.map(theme => ({
+      key: theme.key,
+      name: theme.name,
+      description: theme.description,
+      colors: theme.colors
     }));
   }
 
