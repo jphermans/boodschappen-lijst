@@ -223,13 +223,69 @@ class UnifiedColorManager {
       console.log('Starting unified color manager initialization...');
       console.log('Storage key being used:', COLOR_THEME_KEY);
       
-      // Load saved theme
-      const savedTheme = await persistentStorage.getItem(COLOR_THEME_KEY);
+      // Ensure persistent storage is fully initialized before proceeding
+      console.log('Waiting for persistent storage initialization...');
+      await persistentStorage.initializeStorage();
+      console.log('Persistent storage initialization complete');
+      
+      // Load saved theme with enhanced debugging and fallback
+      console.log('Attempting to load theme with key:', COLOR_THEME_KEY);
+      let savedTheme = await persistentStorage.getItem(COLOR_THEME_KEY);
       const defaultMode = await persistentStorage.getItem(DEFAULT_THEME_KEY) || 'light';
       
       console.log('Raw saved theme data:', savedTheme);
+      console.log('Type of saved theme data:', typeof savedTheme);
       console.log('Loaded saved theme from storage:', savedTheme ? savedTheme.name : 'none');
       console.log('Saved theme has palette:', savedTheme ? !!savedTheme.palette : 'no theme');
+      
+      // Additional debugging - check what's actually in localStorage
+      try {
+        const directStorageCheck = localStorage.getItem('boodschappenlijst_v2_unified_color_theme');
+        console.log('Direct localStorage check:', directStorageCheck ? 'data found' : 'no data');
+        console.log('Direct localStorage data length:', directStorageCheck ? directStorageCheck.length : 0);
+        
+        const backupStorageCheck = localStorage.getItem('boodschappenlijst_backup_unified_color_theme');
+        console.log('Backup localStorage check:', backupStorageCheck ? 'data found' : 'no data');
+      } catch (e) {
+        console.log('Direct storage check failed:', e);
+      }
+      
+      // FALLBACK: If main storage failed, try simple backup
+      if (!savedTheme || !savedTheme.palette) {
+        try {
+          const simpleBackup = localStorage.getItem('simple_theme_backup');
+          console.log('Checking simple theme backup:', simpleBackup ? 'data found' : 'no data');
+          
+          if (simpleBackup) {
+            const backupData = JSON.parse(simpleBackup);
+            console.log('Simple backup data:', backupData);
+            
+            // Reconstruct theme from backup data
+            if (backupData.name && backupData.paletteKey) {
+              const availablePalettes = this.getAvailablePalettes();
+              const matchingPalette = availablePalettes.find(p => p.key === backupData.paletteKey);
+              
+              if (matchingPalette) {
+                savedTheme = {
+                  name: backupData.name,
+                  palette: matchingPalette,
+                  mode: backupData.mode || defaultMode,
+                  customColors: {},
+                  accessibility: {
+                    enforceStandards: true,
+                    minimumContrast: 4.5
+                  },
+                  createdAt: backupData.timestamp || Date.now(),
+                  lastModified: backupData.timestamp || Date.now()
+                };
+                console.log('Successfully restored theme from simple backup:', savedTheme.name);
+              }
+            }
+          }
+        } catch (e) {
+          console.warn('Failed to load simple backup:', e);
+        }
+      }
       
       if (savedTheme && savedTheme.palette) {
         // Validate the saved theme has the required structure
@@ -499,7 +555,7 @@ class UnifiedColorManager {
     });
   }
 
-  // Save theme to persistent storage
+  // Save theme to persistent storage with fallback to simple localStorage
   async saveTheme() {
     try {
       console.log('Saving theme to storage:', this.currentTheme.name);
@@ -509,12 +565,44 @@ class UnifiedColorManager {
         paletteKey: this.currentTheme.palette?.key
       });
       
-      await persistentStorage.setItem(COLOR_THEME_KEY, this.currentTheme, { critical: true });
-      console.log('Theme saved successfully to storage');
+      // Enhanced debugging for save process
+      console.log('About to call persistentStorage.setItem with key:', COLOR_THEME_KEY);
+      console.log('Full theme object being saved:', this.currentTheme);
       
-      // Verify the save by reading it back
+      // Try the complex persistent storage first
+      await persistentStorage.setItem(COLOR_THEME_KEY, this.currentTheme, { critical: true });
+      console.log('Theme saved successfully to persistent storage');
+      
+      // FALLBACK: Also save directly to localStorage as a simple backup
+      try {
+        const simpleThemeData = {
+          name: this.currentTheme.name,
+          mode: this.currentTheme.mode,
+          paletteKey: this.currentTheme.palette?.key,
+          timestamp: Date.now()
+        };
+        localStorage.setItem('simple_theme_backup', JSON.stringify(simpleThemeData));
+        console.log('Theme also saved to simple localStorage backup');
+      } catch (e) {
+        console.warn('Simple localStorage backup failed:', e);
+      }
+      
+      // Verify the save by reading it back immediately
       const savedTheme = await persistentStorage.getItem(COLOR_THEME_KEY);
       console.log('Verification - theme read back from storage:', savedTheme ? savedTheme.name : 'null');
+      
+      // Check localStorage directly after save
+      try {
+        const directCheck = localStorage.getItem('boodschappenlijst_v2_unified_color_theme');
+        console.log('Direct localStorage check after save:', directCheck ? 'data found' : 'no data');
+        console.log('Direct localStorage data length after save:', directCheck ? directCheck.length : 0);
+        
+        if (directCheck) {
+          console.log('Direct localStorage data preview:', directCheck.substring(0, 100) + '...');
+        }
+      } catch (e) {
+        console.log('Direct localStorage check failed after save:', e);
+      }
     } catch (error) {
       console.error('Failed to save theme:', error);
       console.error('Error details:', error.message, error.stack);

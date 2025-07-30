@@ -224,14 +224,19 @@ class PersistentStorage {
 
   // Retrieve data with fallback mechanisms
   async getItem(key) {
+    console.log('PersistentStorage.getItem called with key:', key);
+    
     // Check memory cache first
     if (this.memoryCache.has(key)) {
+      console.log('Found in memory cache:', key);
       return this.memoryCache.get(key);
     }
 
     const fullKey = STORAGE_PREFIX + key;
     const backupKey = BACKUP_PREFIX + key;
     const sessionKey = SESSION_PREFIX + key;
+    
+    console.log('Storage keys:', { fullKey, backupKey, sessionKey });
 
     let dataPackage = null;
 
@@ -239,15 +244,18 @@ class PersistentStorage {
     if (this.availableStorage.localStorage) {
       try {
         const stored = localStorage.getItem(fullKey);
+        console.log('localStorage.getItem result:', stored ? 'data found' : 'no data', 'length:', stored ? stored.length : 0);
         if (stored) {
           try {
             dataPackage = JSON.parse(stored);
+            console.log('Successfully parsed localStorage data package');
           } catch (parseError) {
             console.warn('JSON parse failed for localStorage item:', parseError);
             // Try to parse as plain text if JSON fails
             try {
               const plainValue = this.decrypt(stored);
               if (plainValue !== null) {
+                console.log('Successfully decrypted plain localStorage data');
                 this.memoryCache.set(key, plainValue);
                 return plainValue;
               }
