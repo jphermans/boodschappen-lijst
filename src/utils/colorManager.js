@@ -388,9 +388,14 @@ class UnifiedColorManager {
 
   // Get effective color (custom override or palette default)
   getEffectiveColor(colorKey) {
-    return this.currentTheme.customColors[colorKey] || 
-           this.currentTheme.palette.colors[colorKey] || 
-           '#6b7280'; // Fallback gray
+    const mode = this.currentTheme.mode;
+    const colorSet = mode === 'light' && this.currentTheme.palette.lightMode
+      ? this.currentTheme.palette.lightMode
+      : this.currentTheme.palette.colors;
+    
+    return this.currentTheme.customColors[colorKey] ||
+           colorSet[colorKey] ||
+           '107 114 128'; // Fallback gray in RGB format
   }
 
   // Apply theme to CSS variables
@@ -401,44 +406,40 @@ class UnifiedColorManager {
     // Set theme mode attribute
     root.setAttribute('data-theme', mode);
     
-    // Apply colors with mode-appropriate variations
-    Object.keys(this.currentTheme.palette.colors).forEach(colorKey => {
-      const baseColor = this.getEffectiveColor(colorKey);
-      const variations = colorUtils.generateColorVariations(baseColor, mode);
+    // Get the appropriate color set based on mode
+    const colorSet = mode === 'light' && this.currentTheme.palette.lightMode
+      ? this.currentTheme.palette.lightMode
+      : this.currentTheme.palette.colors;
+    
+    // Apply colors directly (they're already in RGB string format)
+    Object.keys(colorSet).forEach(colorKey => {
+      const colorValue = this.currentTheme.customColors[colorKey] || colorSet[colorKey];
       
-      if (variations) {
-        // Convert hex to RGB for CSS variables
-        Object.entries(variations).forEach(([variant, hex]) => {
-          const rgb = colorUtils.hexToRgb(hex);
-          if (rgb) {
-            root.style.setProperty(`--color-${colorKey}-${variant}`, `${rgb.r} ${rgb.g} ${rgb.b}`);
-          }
-        });
-      }
-      
-      // Set base color
-      const rgb = colorUtils.hexToRgb(baseColor);
-      if (rgb) {
-        root.style.setProperty(`--color-${colorKey}`, `${rgb.r} ${rgb.g} ${rgb.b}`);
+      // Colors are already in "r g b" format, just set them directly
+      if (colorValue) {
+        root.style.setProperty(`--color-${colorKey}`, colorValue);
       }
     });
 
-    // Set background and text colors based on mode
-    if (mode === 'light') {
-      root.style.setProperty('--bg-color', '251 241 199');     // Gruvbox light bg
-      root.style.setProperty('--text-color', '60 56 54');      // Gruvbox dark text
-      root.style.setProperty('--card-bg', '242 229 188');      // Gruvbox light1
-      root.style.setProperty('--card-text', '60 56 54');       // Gruvbox dark text
-      root.style.setProperty('--border-color', '213 196 161'); // Gruvbox light2
-    } else {
-      root.style.setProperty('--bg-color', '40 40 40');        // Gruvbox dark bg
-      root.style.setProperty('--text-color', '235 219 178');   // Gruvbox light text
-      root.style.setProperty('--card-bg', '60 56 54');         // Gruvbox dark1
-      root.style.setProperty('--card-text', '235 219 178');    // Gruvbox light text
-      root.style.setProperty('--border-color', '80 73 69');    // Gruvbox dark gray
-    }
+    // Set main background and text colors from the current theme
+    const bgColor = colorSet.background || '40 40 40';
+    const textColor = colorSet.text || '235 219 178';
+    const surfaceColor = colorSet.surface || '60 56 54';
+    const textSecondaryColor = colorSet.textSecondary || '168 153 132';
+    
+    root.style.setProperty('--bg-color', bgColor);
+    root.style.setProperty('--text-color', textColor);
+    root.style.setProperty('--card-bg', surfaceColor);
+    root.style.setProperty('--card-text', textColor);
+    root.style.setProperty('--border-color', textSecondaryColor);
 
     console.log(`Applied ${this.currentTheme.name} theme in ${mode} mode`);
+    console.log('Theme colors applied:', {
+      background: bgColor,
+      text: textColor,
+      surface: surfaceColor,
+      primary: colorSet.primary
+    });
   }
 
   // Save theme to persistent storage
