@@ -64,60 +64,25 @@ class FirebaseBackupManager {
         lists.push(serializedList);
       }
 
-      // Get shared lists (where user has access but isn't creator)
-      const sharedQuery = query(
-        collection(db, 'shoppingLists'),
-        where('sharedWith', 'array-contains', userId)
-      );
-      
-      const sharedSnapshot = await getDocs(sharedQuery);
-      const sharedLists = [];
-
-      for (const listDoc of sharedSnapshot.docs) {
-        const listData = listDoc.data();
-        
-        // Skip if user is creator (already included above)
-        if (listData.creatorId === userId) continue;
-
-        const serializedList = {
-          id: listDoc.id,
-          name: listData.name,
-          items: listData.items ? listData.items.map(item => ({
-            id: item.id,
-            name: item.name,
-            completed: item.completed,
-            addedAt: item.addedAt?.toDate?.()?.toISOString() || new Date(item.addedAt).toISOString(),
-            addedBy: item.addedBy
-          })) : [],
-          creatorName: listData.creatorName,
-          creatorId: listData.creatorId,
-          deviceUID: listData.deviceUID,
-          sharedWith: listData.sharedWith || [],
-          createdAt: listData.createdAt?.toDate?.()?.toISOString() || new Date(listData.createdAt).toISOString(),
-          updatedAt: listData.updatedAt?.toDate?.()?.toISOString() || new Date(listData.updatedAt).toISOString(),
-          isCreator: false
-        };
-
-        sharedLists.push(serializedList);
-      }
+      // Skip shared lists where user is not creator - only backup user's own lists
 
       const backup = {
         timestamp: Date.now(),
         version: this.backupVersion,
         userId: userId,
         lists: lists,
-        sharedLists: sharedLists,
+        // Only include lists where user is creator - no shared lists from others
         metadata: {
-          totalLists: lists.length + sharedLists.length,
+          totalLists: lists.length,
           ownLists: lists.length,
-          sharedLists: sharedLists.length,
-          totalItems: [...lists, ...sharedLists].reduce((sum, list) => sum + (list.items?.length || 0), 0)
+          sharedLists: 0,
+          totalItems: lists.reduce((sum, list) => sum + (list.items?.length || 0), 0)
         }
       };
 
       console.log('✅ Firebase export completed:', {
         ownLists: lists.length,
-        sharedLists: sharedLists.length,
+        onlyOwnLists: true,
         totalItems: backup.metadata.totalItems
       });
 
