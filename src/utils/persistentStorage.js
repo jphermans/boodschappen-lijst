@@ -103,6 +103,13 @@ class PersistentStorage {
 
   decrypt(encryptedData) {
     try {
+      // First, check if it's plain JSON (unencrypted legacy data)
+      try {
+        return JSON.parse(encryptedData);
+      } catch {
+        // Continue with decryption if it's not plain JSON
+      }
+
       const decoded = atob(encryptedData);
       const key = 'boodschappenlijst_secure_v2_2024';
       let decrypted = '';
@@ -113,15 +120,19 @@ class PersistentStorage {
         );
       }
       
-      const [timestamp, jsonString] = decrypted.split(':', 2);
+      // Handle cases where the data might not have the expected format
+      const parts = decrypted.split(':', 2);
+      if (parts.length !== 2) {
+        console.warn('Invalid encrypted data format, attempting direct JSON parse');
+        return JSON.parse(decrypted);
+      }
+      
+      const [timestamp, jsonString] = parts;
       return JSON.parse(jsonString);
     } catch (error) {
       console.error('Decryption failed:', error);
-      try {
-        return JSON.parse(encryptedData);
-      } catch (e) {
-        return null;
-      }
+      // Return null for corrupted data instead of throwing
+      return null;
     }
   }
 
@@ -211,7 +222,21 @@ class PersistentStorage {
       try {
         const stored = localStorage.getItem(fullKey);
         if (stored) {
-          dataPackage = JSON.parse(stored);
+          try {
+            dataPackage = JSON.parse(stored);
+          } catch (parseError) {
+            console.warn('JSON parse failed for localStorage item:', parseError);
+            // Try to parse as plain text if JSON fails
+            try {
+              const plainValue = this.decrypt(stored);
+              if (plainValue !== null) {
+                this.memoryCache.set(key, plainValue);
+                return plainValue;
+              }
+            } catch (decryptError) {
+              console.warn('Decryption failed for localStorage item:', decryptError);
+            }
+          }
         }
       } catch (e) {
         console.warn('localStorage read failed:', e);
@@ -223,7 +248,21 @@ class PersistentStorage {
       try {
         const stored = localStorage.getItem(backupKey);
         if (stored) {
-          dataPackage = JSON.parse(stored);
+          try {
+            dataPackage = JSON.parse(stored);
+          } catch (parseError) {
+            console.warn('JSON parse failed for backup localStorage item:', parseError);
+            // Try to parse as plain text if JSON fails
+            try {
+              const plainValue = this.decrypt(stored);
+              if (plainValue !== null) {
+                this.memoryCache.set(key, plainValue);
+                return plainValue;
+              }
+            } catch (decryptError) {
+              console.warn('Decryption failed for backup localStorage item:', decryptError);
+            }
+          }
         }
       } catch (e) {
         console.warn('localStorage backup read failed:', e);
@@ -235,7 +274,21 @@ class PersistentStorage {
       try {
         const stored = sessionStorage.getItem(sessionKey);
         if (stored) {
-          dataPackage = JSON.parse(stored);
+          try {
+            dataPackage = JSON.parse(stored);
+          } catch (parseError) {
+            console.warn('JSON parse failed for sessionStorage item:', parseError);
+            // Try to parse as plain text if JSON fails
+            try {
+              const plainValue = this.decrypt(stored);
+              if (plainValue !== null) {
+                this.memoryCache.set(key, plainValue);
+                return plainValue;
+              }
+            } catch (decryptError) {
+              console.warn('Decryption failed for sessionStorage item:', decryptError);
+            }
+          }
         }
       } catch (e) {
         console.warn('sessionStorage read failed:', e);
@@ -255,19 +308,30 @@ class PersistentStorage {
     if (!dataPackage) {
       const cookieValue = this.getCookie(key);
       if (cookieValue) {
-        dataPackage = {
-          value: cookieValue,
-          metadata: { timestamp: Date.now() }
-        };
+        try {
+          const decryptedValue = this.decrypt(cookieValue);
+          if (decryptedValue !== null) {
+            this.memoryCache.set(key, decryptedValue);
+            return decryptedValue;
+          }
+        } catch (decryptError) {
+          console.warn('Decryption failed for cookie item:', decryptError);
+        }
       }
     }
 
     if (dataPackage) {
-      const decryptedValue = this.decrypt(dataPackage.value);
-      if (decryptedValue !== null) {
-        // Update memory cache
-        this.memoryCache.set(key, decryptedValue);
-        return decryptedValue;
+      try {
+        const decryptedValue = this.decrypt(dataPackage.value);
+        if (decryptedValue !== null) {
+          // Update memory cache
+          this.memoryCache.set(key, decryptedValue);
+          return decryptedValue;
+        } else {
+          console.warn('Decryption returned null for key:', key);
+        }
+      } catch (decryptError) {
+        console.warn('Decryption process failed:', decryptError);
       }
     }
 
@@ -386,6 +450,88 @@ class PersistentStorage {
       memoryCache: this.memoryCache.size,
       timestamp: Date.now()
     };
+  }
+
+  // Clear corrupted storage data
+  async clearCorruptedData() {
+    console.log('Clearing potentially corrupted storage data...');
+    
+    // Clear all storage mechanisms
+    const keysToClear = [
+      'unified_color_theme',
+      'default_theme_preference',
+      'user_state',
+      'shopping_lists',
+      'user_name',
+      'device_uid'
+    ];
+
+    for (const key of keysToClear) {
+      try {
+        await this.removeItem(key);
+        console.log(`Cleared key: ${key}`);
+      } catch (e) {
+        console.warn(`Failed to clear key ${key}:`, e);
+      }
+    }
+
+    // Clear all storage types completely
+    if (this.availableStorage.localStorage) {
+      try {
+        const keys = Object.keys(localStorage);
+        for (const key of keys) {
+          if (key.startsWith(STORAGE_PREFIX) || key.startsWith(BACKUP_PREFIX)) {
+            localStorage.removeItem(key);
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to clear localStorage:', e);
+      }
+    }
+
+    if (this.availableStorage.sessionStorage) {
+      try {
+        const keys = Object.keys(sessionStorage);
+        for (const key of keys) {
+          if (key.startsWith(SESSION_PREFIX)) {
+            sessionStorage.removeItem(key);
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to clear sessionStorage:', e);
+      }
+    }
+
+    // Clear IndexedDB
+    if (this.availableStorage.indexedDB && this.db) {
+      try {
+        const transaction = this.db.transaction(['userData'], 'readwrite');
+        const store = transaction.objectStore('userData');
+        const clearRequest = store.clear();
+        clearRequest.onsuccess = () => console.log('IndexedDB cleared');
+        clearRequest.onerror = () => console.warn('Failed to clear IndexedDB');
+      } catch (e) {
+        console.warn('Failed to clear IndexedDB:', e);
+      }
+    }
+
+    // Clear cookies
+    try {
+      const cookies = document.cookie.split(';');
+      for (const cookie of cookies) {
+        const eqPos = cookie.indexOf('=');
+        const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
+        if (name.startsWith(STORAGE_PREFIX)) {
+          document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to clear cookies:', e);
+    }
+
+    // Clear memory cache
+    this.memoryCache.clear();
+    console.log('Storage cleanup completed');
   }
 }
 

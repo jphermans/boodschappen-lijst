@@ -47,6 +47,27 @@ function RootErrorBoundary({ children }) {
   return children;
 }
 
+// Add global storage cleanup function
+if (typeof window !== 'undefined') {
+  window.clearAppStorage = () => {
+    persistentStorage.clearCorruptedData().then(() => {
+      console.log('Storage cleared successfully');
+      window.location.reload();
+    });
+  };
+  
+  // Auto-clear storage if URL contains clear=true parameter
+  if (window.location.search.includes('clear=true')) {
+    console.log('Auto-clearing storage due to clear=true parameter');
+    persistentStorage.clearCorruptedData().then(() => {
+      // Remove the clear parameter from URL
+      const url = new URL(window.location);
+      url.searchParams.delete('clear');
+      window.location.href = url.toString();
+    });
+  }
+}
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <RootErrorBoundary>
