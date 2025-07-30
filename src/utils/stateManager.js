@@ -385,16 +385,29 @@ class StateManager {
       let filteredState = { ...backup.state };
       
       if (backup.state.lists && Array.isArray(backup.state.lists)) {
+        console.log('🔍 Backup restore debug - Original lists:', backup.state.lists.length);
+        console.log('🔍 Backup restore debug - Current user ID:', currentUserId);
+        
         const filteredLists = backup.state.lists.filter(list => {
-          // Only include lists where the current user is the creator
-          return list.creatorId === currentUserId || 
-                 list.deviceUID === currentUserId ||
-                 // Fallback: if no creatorId, check if it looks like own list
-                 (!list.creatorId && !list.sharedWith?.length);
+          const isOwnList = list.creatorId === currentUserId || 
+                           list.deviceUID === currentUserId ||
+                           (!list.creatorId && !list.sharedWith?.length);
+          
+          console.log('🔍 List check:', {
+            name: list.name,
+            creatorId: list.creatorId,
+            deviceUID: list.deviceUID,
+            sharedWith: list.sharedWith?.length || 0,
+            isOwnList
+          });
+          
+          return isOwnList;
         });
         
         filteredState.lists = filteredLists;
-        console.log(`Filtered backup: ${backup.state.lists.length} → ${filteredLists.length} lists (keeping only own lists)`);
+        console.log(`🔍 Filtered backup: ${backup.state.lists.length} → ${filteredLists.length} lists (keeping only own lists)`);
+      } else {
+        console.log('🔍 No lists found in backup or backup.state.lists is not an array');
       }
 
       // Restore filtered state
@@ -412,6 +425,7 @@ class StateManager {
       this.notifySubscribers('state_restored', backup);
 
       console.log('State restored from backup (filtered to own lists only)');
+      console.log('📊 Final restored lists:', filteredState.lists?.length || 0);
       return true;
     } catch (error) {
       console.error('Failed to restore from backup:', error);

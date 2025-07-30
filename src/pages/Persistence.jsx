@@ -46,9 +46,20 @@ const PersistencePage = ({ onBack }) => {
 
     try {
       setIsRestoring(true);
-      await restoreFromFile(file);
+      console.log('🔄 Starting restore process...');
+      const success = await restoreFromFile(file);
+      if (success) {
+        console.log('✅ Restore completed successfully');
+        alert('✅ Backup hersteld! Controleer je boodschappenlijsten om de wijzigingen te zien.');
+        // Force refresh of health info to show updated state
+        await refreshHealthInfo();
+      } else {
+        console.error('❌ Restore failed without throwing error');
+        alert('❌ Herstellen mislukt. Controleer het bestand en probeer opnieuw.');
+      }
     } catch (error) {
       console.error('Restore failed:', error);
+      alert(`❌ Fout bij herstellen: ${error.message || 'Onbekende fout'}`);
     } finally {
       setIsRestoring(false);
       event.target.value = '';
