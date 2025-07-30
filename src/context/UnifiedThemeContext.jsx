@@ -274,9 +274,9 @@ export const UnifiedThemeProvider = ({ children }) => {
     return unifiedColorManager.getThemeStats();
   }, []);
 
-  // Get available palettes
+  // Get available palettes (now only Gruvbox)
   const getAvailablePalettes = useCallback(() => {
-    return unifiedColorManager.getAvailablePalettes();
+    return [{ key: 'gruvbox', ...unifiedColorManager.getAvailablePalettes()[0] }];
   }, []);
 
   // Validate color accessibility

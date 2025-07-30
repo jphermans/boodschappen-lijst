@@ -1,43 +1,17 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Palette, Moon, Sun, Settings, Sparkles } from 'lucide-react';
-import { useTheme } from '../context/ThemeContext';
+import { ArrowLeft, Palette, Moon, Sun, Sparkles } from 'lucide-react';
 import { useUnifiedThemeContext } from '../context/UnifiedThemeContext';
-import ColorPicker from '../components/ColorPicker';
 
 const ThemePage = ({ onBack }) => {
-  const [showColorPicker, setShowColorPicker] = useState(false);
-  
-  // Legacy theme context for backward compatibility
-  const {
-    theme,
-    toggleTheme,
-    primaryColor,
-    secondaryColor,
-    accentColor,
-    updateColor,
-    resetColors,
-  } = useTheme();
-  
   // New unified theme context
   const {
     mode: unifiedMode,
-    currentPalette,
     toggleMode: unifiedToggleMode,
     isLoading: themeLoading,
-    error: themeError
+    error: themeError,
+    getThemeStats
   } = useUnifiedThemeContext();
-
-  const presetColors = [
-    { name: 'Blauw', value: '#3b82f6' },
-    { name: 'Paars', value: '#8b5cf6' },
-    { name: 'Roze', value: '#ec4899' },
-    { name: 'Groen', value: '#10b981' },
-    { name: 'Oranje', value: '#f97316' },
-    { name: 'Rood', value: '#ef4444' },
-    { name: 'Indigo', value: '#6366f1' },
-    { name: 'Cyaan', value: '#06b6d4' },
-  ];
 
   return (
     <div className="min-h-screen-safe bg-[rgb(var(--bg-color))] transition-colors duration-300">
@@ -125,24 +99,18 @@ const ThemePage = ({ onBack }) => {
                 </div>
               </div>
 
-              {/* Current palette info */}
+              {/* Current theme info */}
               <div className="bg-[rgb(var(--border-color))]/10 p-6 rounded-xl">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-lg font-semibold text-[rgb(var(--card-text))]">
-                      Huidig palet: {currentPalette}
-                    </p>
-                    <p className="text-sm text-[rgb(var(--text-color))]/60">
-                      Modus: {unifiedMode === 'light' ? 'Licht' : 'Donker'}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => setShowColorPicker(true)}
-                    className="flex items-center space-x-2 px-4 py-3 bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
-                  >
-                    <Settings className="w-4 h-4" />
-                    <span className="font-medium">Geavanceerd</span>
-                  </button>
+                <div className="space-y-2">
+                  <p className="text-lg font-semibold text-[rgb(var(--card-text))]">
+                    Huidig thema: Gruvbox
+                  </p>
+                  <p className="text-sm text-[rgb(var(--text-color))]/60">
+                    Modus: {unifiedMode === 'light' ? 'Licht' : 'Donker'}
+                  </p>
+                  <p className="text-xs text-[rgb(var(--text-color))]/50">
+                    Warme, retro kleuren voor optimaal comfort
+                  </p>
                 </div>
               </div>
 
@@ -157,7 +125,7 @@ const ThemePage = ({ onBack }) => {
             </div>
           </motion.div>
 
-          {/* Color Customization Section */}
+          {/* Gruvbox Theme Info Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -166,98 +134,39 @@ const ThemePage = ({ onBack }) => {
           >
             <h2 className="text-xl lg:text-2xl font-bold text-[rgb(var(--card-text))] mb-6 flex items-center">
               <Palette className="w-6 h-6 mr-3 text-primary" />
-              Kleuren Aanpassen
+              Gruvbox Thema
             </h2>
             
-            <div className="space-y-8">
-              <div>
-                <label className="block text-lg font-semibold text-[rgb(var(--card-text))] mb-4">
-                  Primaire Kleur
-                </label>
-                <div className="grid grid-cols-4 gap-3 mb-4">
-                  {presetColors.map((color) => (
-                    <button
-                      key={color.value}
-                      onClick={() => updateColor('primary', color.value)}
-                      className={`w-full h-14 rounded-xl border-3 transition-all duration-200 ${
-                        primaryColor === color.value
-                          ? 'border-[rgb(var(--text-color))] scale-110 shadow-lg'
-                          : 'border-transparent hover:scale-105 hover:shadow-md'
-                      }`}
-                      style={{ backgroundColor: color.value }}
-                      title={color.name}
-                    />
-                  ))}
-                </div>
-                <input
-                  type="color"
-                  value={primaryColor}
-                  onChange={(e) => updateColor('primary', e.target.value)}
-                  className="w-full h-14 rounded-xl cursor-pointer border-2 border-[rgb(var(--border-color))]/30 hover:border-[rgb(var(--border-color))]/50 transition-colors"
-                />
+            <div className="space-y-6">
+              <div className="text-center">
+                <div className="text-2xl mb-4">🎨</div>
+                <p className="text-[rgb(var(--text-color))]/80 mb-4">
+                  Het Gruvbox thema is ontworpen voor optimaal comfort met warme, retro kleuren die prettig zijn voor de ogen tijdens langdurig gebruik.
+                </p>
               </div>
 
-              <div>
-                <label className="block text-lg font-semibold text-[rgb(var(--card-text))] mb-4">
-                  Secundaire Kleur
-                </label>
-                <div className="grid grid-cols-4 gap-3 mb-4">
-                  {presetColors.map((color) => (
-                    <button
-                      key={color.value}
-                      onClick={() => updateColor('secondary', color.value)}
-                      className={`w-full h-14 rounded-xl border-3 transition-all duration-200 ${
-                        secondaryColor === color.value
-                          ? 'border-[rgb(var(--text-color))] scale-110 shadow-lg'
-                          : 'border-transparent hover:scale-105 hover:shadow-md'
-                      }`}
-                      style={{ backgroundColor: color.value }}
-                      title={color.name}
-                    />
-                  ))}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="text-center p-4 rounded-xl bg-[rgb(var(--border-color))]/10">
+                  <div className="w-8 h-8 bg-[#fe8019] rounded-full mx-auto mb-2"></div>
+                  <p className="text-sm font-medium text-[rgb(var(--card-text))]">Oranje</p>
+                  <p className="text-xs text-[rgb(var(--text-color))]/60">Primaire</p>
                 </div>
-                <input
-                  type="color"
-                  value={secondaryColor}
-                  onChange={(e) => updateColor('secondary', e.target.value)}
-                  className="w-full h-14 rounded-xl cursor-pointer border-2 border-[rgb(var(--border-color))]/30 hover:border-[rgb(var(--border-color))]/50 transition-colors"
-                />
-              </div>
-
-              <div>
-                <label className="block text-lg font-semibold text-[rgb(var(--card-text))] mb-4">
-                  Accent Kleur
-                </label>
-                <div className="grid grid-cols-4 gap-3 mb-4">
-                  {presetColors.map((color) => (
-                    <button
-                      key={color.value}
-                      onClick={() => updateColor('accent', color.value)}
-                      className={`w-full h-14 rounded-xl border-3 transition-all duration-200 ${
-                        accentColor === color.value
-                          ? 'border-[rgb(var(--text-color))] scale-110 shadow-lg'
-                          : 'border-transparent hover:scale-105 hover:shadow-md'
-                      }`}
-                      style={{ backgroundColor: color.value }}
-                      title={color.name}
-                    />
-                  ))}
+                <div className="text-center p-4 rounded-xl bg-[rgb(var(--border-color))]/10">
+                  <div className="w-8 h-8 bg-[#b8bb26] rounded-full mx-auto mb-2"></div>
+                  <p className="text-sm font-medium text-[rgb(var(--card-text))]">Groen</p>
+                  <p className="text-xs text-[rgb(var(--text-color))]/60">Secundaire</p>
                 </div>
-                <input
-                  type="color"
-                  value={accentColor}
-                  onChange={(e) => updateColor('accent', e.target.value)}
-                  className="w-full h-14 rounded-xl cursor-pointer border-2 border-[rgb(var(--border-color))]/30 hover:border-[rgb(var(--border-color))]/50 transition-colors"
-                />
+                <div className="text-center p-4 rounded-xl bg-[rgb(var(--border-color))]/10">
+                  <div className="w-8 h-8 bg-[#fb4934] rounded-full mx-auto mb-2"></div>
+                  <p className="text-sm font-medium text-[rgb(var(--card-text))]">Rood</p>
+                  <p className="text-xs text-[rgb(var(--text-color))]/60">Accent</p>
+                </div>
+                <div className="text-center p-4 rounded-xl bg-[rgb(var(--border-color))]/10">
+                  <div className="w-8 h-8 bg-[#83a598] rounded-full mx-auto mb-2"></div>
+                  <p className="text-sm font-medium text-[rgb(var(--card-text))]">Blauw</p>
+                  <p className="text-xs text-[rgb(var(--text-color))]/60">Info</p>
+                </div>
               </div>
-
-              <button
-                onClick={resetColors}
-                className="w-full flex items-center justify-center px-6 py-4 bg-[rgb(var(--border-color))]/60 hover:bg-[rgb(var(--border-color))]/80 text-[rgb(var(--card-text))] rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
-              >
-                <Palette className="w-5 h-5 mr-3" />
-                <span className="font-semibold">Kleuren Resetten naar Standaard</span>
-              </button>
             </div>
           </motion.div>
 
@@ -291,13 +200,6 @@ const ThemePage = ({ onBack }) => {
         </div>
       </main>
 
-      {/* Modals */}
-      {showColorPicker && (
-        <ColorPicker
-          isOpen={showColorPicker}
-          onClose={() => setShowColorPicker(false)}
-        />
-      )}
     </div>
   );
 };

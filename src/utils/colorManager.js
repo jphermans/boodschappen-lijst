@@ -192,11 +192,11 @@ export const colorUtils = {
   }
 };
 
-// Predefined color palettes
+// Gruvbox is the only theme option
 export const colorPalettes = {
   gruvbox: {
     name: 'Gruvbox',
-    description: 'Warm, retro groove colors',
+    description: 'Warm, retro groove colors - the only theme available',
     colors: {
       primary: '#fe8019',    // Orange
       secondary: '#b8bb26',  // Green
@@ -205,62 +205,6 @@ export const colorPalettes = {
       warning: '#fabd2f',    // Yellow
       success: '#8ec07c',    // Aqua
       purple: '#d3869b'      // Purple
-    }
-  },
-  
-  ocean: {
-    name: 'Ocean',
-    description: 'Cool ocean-inspired colors',
-    colors: {
-      primary: '#0ea5e9',    // Sky blue
-      secondary: '#06b6d4',  // Cyan
-      accent: '#8b5cf6',     // Purple
-      info: '#3b82f6',       // Blue
-      warning: '#f59e0b',    // Amber
-      success: '#10b981',    // Emerald
-      purple: '#a855f7'      // Violet
-    }
-  },
-
-  sunset: {
-    name: 'Sunset',
-    description: 'Warm sunset colors',
-    colors: {
-      primary: '#f97316',    // Orange
-      secondary: '#ef4444',  // Red
-      accent: '#ec4899',     // Pink
-      info: '#6366f1',       // Indigo
-      warning: '#eab308',    // Yellow
-      success: '#22c55e',    // Green
-      purple: '#a855f7'      // Violet
-    }
-  },
-
-  forest: {
-    name: 'Forest',
-    description: 'Natural forest colors',
-    colors: {
-      primary: '#059669',    // Emerald
-      secondary: '#16a34a',  // Green
-      accent: '#dc2626',     // Red
-      info: '#2563eb',       // Blue
-      warning: '#d97706',    // Orange
-      success: '#65a30d',    // Lime
-      purple: '#7c3aed'      // Violet
-    }
-  },
-
-  monochrome: {
-    name: 'Monochrome',
-    description: 'Elegant grayscale with accent',
-    colors: {
-      primary: '#374151',    // Gray
-      secondary: '#6b7280',  // Gray
-      accent: '#ef4444',     // Red accent
-      info: '#3b82f6',       // Blue
-      warning: '#f59e0b',    // Amber
-      success: '#10b981',    // Emerald
-      purple: '#8b5cf6'      // Violet
     }
   }
 };
@@ -346,20 +290,14 @@ class UnifiedColorManager {
 
   // Set color palette (maintains colors across light/dark mode)
   async setColorPalette(paletteKey) {
-    if (!colorPalettes[paletteKey]) {
-      throw new Error(`Unknown palette: ${paletteKey}`);
+    // Only Gruvbox is available - ignore any other palette requests
+    if (paletteKey !== 'gruvbox') {
+      console.warn('Only Gruvbox theme is available');
+      return;
     }
-
-    this.currentTheme = {
-      ...this.currentTheme,
-      name: colorPalettes[paletteKey].name,
-      palette: colorPalettes[paletteKey],
-      lastModified: Date.now()
-    };
-
-    await this.saveTheme();
-    this.applyTheme();
-    this.notifySubscribers();
+    
+    // No-op since Gruvbox is already the default and only theme
+    return;
   }
 
   // Toggle between light and dark mode (preserves colors)
@@ -386,26 +324,11 @@ class UnifiedColorManager {
     this.notifySubscribers();
   }
 
-  // Set custom color (maintains across modes)
+  // Set custom color - disabled for Gruvbox-only theme
   async setCustomColor(colorKey, hexColor) {
-    if (!hexColor.match(/^#[0-9A-F]{6}$/i)) {
-      throw new Error('Invalid hex color format');
-    }
-
-    // Validate accessibility if enforced
-    if (this.currentTheme.accessibility.enforceStandards) {
-      const isAccessible = this.validateColorAccessibility(colorKey, hexColor);
-      if (!isAccessible.valid) {
-        throw new Error(`Color fails accessibility standards: ${isAccessible.reason}`);
-      }
-    }
-
-    this.currentTheme.customColors[colorKey] = hexColor;
-    this.currentTheme.lastModified = Date.now();
-
-    await this.saveTheme();
-    this.applyTheme();
-    this.notifySubscribers();
+    // Custom colors are disabled - Gruvbox theme only
+    console.warn('Custom colors are disabled - Gruvbox theme only');
+    return;
   }
 
   // Validate color accessibility
