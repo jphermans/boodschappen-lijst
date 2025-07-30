@@ -377,8 +377,28 @@ class StateManager {
         throw new Error('Invalid backup data');
       }
 
-      // Restore state
-      for (const [key, value] of Object.entries(backup.state)) {
+      // Get current user ID for filtering
+      const currentUserInfo = await enhancedUserManager.getUserInfo();
+      const currentUserId = currentUserInfo.userId || 'anonymous';
+
+      // Filter lists to only include own lists (created by current user)
+      let filteredState = { ...backup.state };
+      
+      if (backup.state.lists && Array.isArray(backup.state.lists)) {
+        const filteredLists = backup.state.lists.filter(list => {
+          // Only include lists where the current user is the creator
+          return list.creatorId === currentUserId || 
+                 list.deviceUID === currentUserId ||
+                 // Fallback: if no creatorId, check if it looks like own list
+                 (!list.creatorId && !list.sharedWith?.length);
+        });
+        
+        filteredState.lists = filteredLists;
+        console.log(`Filtered backup: ${backup.state.lists.length} → ${filteredLists.length} lists (keeping only own lists)`);
+      }
+
+      // Restore filtered state
+      for (const [key, value] of Object.entries(filteredState)) {
         this.state.set(key, value);
         await this.persistState(key, value);
       }
@@ -391,7 +411,7 @@ class StateManager {
       // Notify subscribers
       this.notifySubscribers('state_restored', backup);
 
-      console.log('State restored from backup');
+      console.log('State restored from backup (filtered to own lists only)');
       return true;
     } catch (error) {
       console.error('Failed to restore from backup:', error);
