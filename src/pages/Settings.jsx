@@ -187,9 +187,29 @@ const SettingsPage = ({ lists = [], onBack, onNavigateToAnalytics, onNavigateToT
                 
                 <button
                   onClick={onNavigateToPersistence}
-                  className="w-full flex items-center justify-center px-6 py-4 bg-gradient-to-r from-blue-500 to-cyan-500 hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                  className="w-full flex items-center justify-center px-6 py-4 bg-gradient-to-r from-blue-500 to-cyan-500 hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 mb-3"
                 >
                   <span className="font-medium">Data Beheren</span>
+                </button>
+              </div>
+
+              <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-lg">
+                <h3 className="text-lg font-semibold text-red-600 mb-2">Problemen oplossen</h3>
+                <p className="text-sm text-[rgb(var(--text-color))]/70 mb-4">
+                  Als je een leeg scherm of laadproblemen ervaart, kun je de lokale opslag wissen om de app te resetten.
+                </p>
+                
+                <button
+                  onClick={() => {
+                    if (window.confirm('Weet je zeker dat je alle lokale gegevens wilt wissen? Dit zal de app herstarten.')) {
+                      localStorage.clear();
+                      sessionStorage.clear();
+                      window.location.reload();
+                    }
+                  }}
+                  className="w-full flex items-center justify-center px-6 py-4 bg-gradient-to-r from-red-500 to-red-600 hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                >
+                  <span className="font-medium">Opslag wissen & Herstarten</span>
                 </button>
               </div>
             </div>
