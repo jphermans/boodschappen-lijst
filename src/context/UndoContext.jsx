@@ -19,10 +19,10 @@ export const UndoProvider = ({ children }) => {
     
     setUndoActions(prev => [...prev, undoAction]);
     
-    // Auto-remove after 10 seconds
+    // Auto-remove after 3 seconds
     setTimeout(() => {
       removeUndoAction(id);
-    }, 10000);
+    }, 3000);
     
     return id;
   };
