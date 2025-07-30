@@ -275,13 +275,28 @@ class StateManager {
   // Shopping lists specific methods
   async addList(list) {
     const lists = this.getState('lists') || [];
+    
+    // Check for duplicates based on name and creator
+    if (list.name && list.creatorId) {
+      const normalizedName = list.name.toLowerCase().trim();
+      const duplicate = lists.find(existingList => 
+        existingList.name.toLowerCase().trim() === normalizedName &&
+        existingList.creatorId === list.creatorId
+      );
+      
+      if (duplicate) {
+        console.log("Duplicate list prevented:", list.name);
+        return duplicate; // Return existing list instead of creating duplicate
+      }
+    }
+    
     const newList = {
       ...list,
       id: list.id || `list_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       createdAt: Date.now(),
       updatedAt: Date.now(),
-      isCreator: list.isCreator !== undefined ? list.isCreator : true, // Default to true for locally created lists
-      sharedWith: list.sharedWith || [] // Ensure sharedWith array exists
+      isCreator: list.isCreator !== undefined ? list.isCreator : true,
+      sharedWith: list.sharedWith || []
     };
 
     const updatedLists = [...lists, newList];

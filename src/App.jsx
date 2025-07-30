@@ -50,6 +50,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [isProcessingQRScan, setIsProcessingQRScan] = useState(false);
   const [showUserNameModal, setShowUserNameModal] = useState(false);
+  const [isCreatingList, setIsCreatingList] = useState(false);
 
   // Handle shared list URLs
   const handleSharedListFromURL = async (currentLists = lists) => {
@@ -173,15 +174,34 @@ function App() {
               // Merge with persistent local lists if needed
               // The enhanced state manager will handle persistence automatically
               
-              // Subscribe to real-time updates
+              // Subscribe to real-time updates with deduplication
               const unsubscribe = subscribeToShoppingLists((firebaseLists) => {
-                // Update both Firebase and local state
+                // Use a Set to track processed list IDs and prevent duplicates
+                const processedIds = new Set();
+                
                 firebaseLists.forEach(async (firebaseList) => {
+                  if (processedIds.has(firebaseList.id)) {
+                    return; // Skip if already processed
+                  }
+                  processedIds.add(firebaseList.id);
+                  
                   const existingList = lists.find(l => l.id === firebaseList.id);
                   if (!existingList) {
+                    // Only add if it doesn't exist locally
                     await addList(firebaseList);
                   } else if (existingList.updatedAt < firebaseList.updatedAt) {
+                    // Update if Firebase has newer data
                     await updateList(firebaseList.id, firebaseList);
+                  }
+                });
+                
+                // Remove local lists that no longer exist in Firebase
+                const firebaseIds = new Set(firebaseLists.map(l => l.id));
+                lists.forEach(async (localList) => {
+                  if (!firebaseIds.has(localList.id) && localList.creatorId === getCurrentUserID()) {
+                    // Only remove if it was created by current user and missing from Firebase
+                    console.log("Removing orphaned local list:", localList.name);
+                    await removeList(localList.id);
                   }
                 });
               });
@@ -251,15 +271,33 @@ function App() {
       // Now load the shopping lists
       const initialLists = await getShoppingLists();
       
-      // Subscribe to real-time updates
+      // Subscribe to real-time updates with deduplication
       const unsubscribe = subscribeToShoppingLists((firebaseLists) => {
-        // Update both Firebase and local state
+        // Use a Set to track processed list IDs and prevent duplicates
+        const processedIds = new Set();
+        
         firebaseLists.forEach(async (firebaseList) => {
+          if (processedIds.has(firebaseList.id)) {
+            return; // Skip if already processed
+          }
+          processedIds.add(firebaseList.id);
+          
           const existingList = lists.find(l => l.id === firebaseList.id);
           if (!existingList) {
+            // Only add if it doesn't exist locally
             await addList(firebaseList);
           } else if (existingList.updatedAt < firebaseList.updatedAt) {
+            // Update if Firebase has newer data
             await updateList(firebaseList.id, firebaseList);
+          }
+        });
+        
+        // Remove local lists that no longer exist in Firebase
+        const firebaseIds = new Set(firebaseLists.map(l => l.id));
+        lists.forEach(async (localList) => {
+          if (!firebaseIds.has(localList.id) && localList.creatorId === getCurrentUserID()) {
+            console.log("Removing orphaned local list:", localList.name);
+            await removeList(localList.id);
           }
         });
       });
@@ -295,11 +333,36 @@ function App() {
         return;
       }
       
-      // Check for duplicate list names
-      if (lists.some(list => list.name.toLowerCase() === validation.value.toLowerCase())) {
-        console.log("Attempted to create a list with a duplicate name:", validation.value);
+      // Enhanced duplicate prevention - check both local and Firebase
+      const normalizedName = validation.value.toLowerCase().trim();
+      
+      // Check local lists first (immediate)
+      const localDuplicate = lists.some(list => 
+        list.name.toLowerCase().trim() === normalizedName && 
+        list.creatorId === userID
+      );
+      
+      if (localDuplicate) {
+        console.log("Local duplicate detected for:", validation.value);
         error(`Een lijst met de naam "${validation.value}" bestaat al.`);
         return;
+      }
+      
+      // Check Firebase lists (async check)
+      try {
+        const firebaseLists = await getShoppingLists();
+        const firebaseDuplicate = firebaseLists.some(list => 
+          list.name.toLowerCase().trim() === normalizedName && 
+          list.creatorId === userID
+        );
+        
+        if (firebaseDuplicate) {
+          console.log("Firebase duplicate detected for:", validation.value);
+          error(`Een lijst met de naam "${validation.value}" bestaat al.`);
+          return;
+        }
+      } catch (firebaseError) {
+        console.warn("Could not check Firebase for duplicates, proceeding with local check only:", firebaseError);
       }
 
       const newListData = {
@@ -310,10 +373,11 @@ function App() {
         creatorId: userID
       };
 
-      // Create in Firebase (the real-time subscription will automatically add it to local state)
-      console.log("Creating new list:", newListData.name);
+      // Create in Firebase only (prevent local creation to avoid duplicates)
+      console.log("Creating new list in Firebase:", newListData.name);
       await createShoppingList(newListData);
       
+      // Don't add to local state manually - let the subscription handle it
       setNewListName('');
       success(`Lijst "${validation.value}" is aangemaakt! 🎉`);
     } catch (error) {
@@ -712,11 +776,11 @@ function App() {
                   </div>
                   <button
                     onClick={createList}
-                    disabled={!newListName.trim()}
+                    disabled={!newListName.trim() || isCreatingList}
                     className="flex items-center justify-center px-6 lg:px-8 xl:px-10 py-3 lg:py-4 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white rounded-xl lg:rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:hover:shadow-lg transition-all duration-200 font-semibold text-base lg:text-lg whitespace-nowrap"
                   >
                     <Plus className="w-5 h-5 lg:w-6 lg:h-6 mr-2 lg:mr-3" />
-                    <span>Lijst Aanmaken</span>
+                    <span>{isCreatingList ? 'Bezig...' : 'Lijst Aanmaken'}</span>
                   </button>
                 </div>
               </motion.div>
