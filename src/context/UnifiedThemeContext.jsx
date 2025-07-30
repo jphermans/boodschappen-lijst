@@ -183,7 +183,8 @@ export const UnifiedThemeProvider = ({ children }) => {
 
   // setColorPalette removed - only Gruvbox theme is available
 
-  // setCustomColor removed - no custom color options, only Gruvbox theme
+  // No-op for legacy compatibility
+  const setCustomColor = () => Promise.resolve();
 
   const resetTheme = useCallback(async () => {
     try {
@@ -203,11 +204,12 @@ export const UnifiedThemeProvider = ({ children }) => {
   // Legacy compatibility methods
   const updateColor = useCallback(async (type, color) => {
     try {
-      await setCustomColor(type, color);
+      // Legacy function - no-op for Gruvbox-only theme
+      console.warn('Legacy updateColor is deprecated - Gruvbox theme only');
     } catch (error) {
       console.error('Legacy updateColor failed:', error);
     }
-  }, [setCustomColor]);
+  }, []);
 
   const resetColors = useCallback(async () => {
     try {
