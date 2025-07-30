@@ -684,25 +684,24 @@ function App() {
               </div>
             </nav>
 
-            {/* Action Buttons */}
-            <div className="flex items-center space-x-1.5 sm:space-x-2 lg:space-x-3 flex-shrink-0">
+            {/* Action Buttons - Mobile Optimized */}
+            <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-3 flex-shrink-0">
               {/* Mobile QR Scanner */}
               <button
                 onClick={() => setShowScanner(true)}
-                className="lg:hidden flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-r from-secondary to-accent hover:opacity-90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                className="lg:hidden flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-r from-secondary to-accent hover:opacity-90 text-white shadow-md hover:shadow-lg transform active:scale-95 transition-all duration-200"
                 aria-label="QR-code scannen"
               >
                 <QrCode className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
               
-
               {/* Theme Toggle */}
               <button
                 onClick={toggleTheme}
-                className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-lg sm:rounded-xl bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 group"
+                className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-lg bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white shadow-md hover:shadow-lg transform active:scale-95 sm:hover:scale-105 transition-all duration-200 group"
                 aria-label="Thema wisselen"
               >
-                <span className="text-base sm:text-lg lg:text-xl group-hover:scale-110 transition-transform duration-200">
+                <span className="text-sm sm:text-base lg:text-xl group-hover:scale-110 transition-transform duration-200">
                   {theme === 'light' ? '🌙' : '☀️'}
                 </span>
               </button>
@@ -710,7 +709,7 @@ function App() {
               {/* Settings */}
               <button
                 onClick={() => setCurrentPage('settings')}
-                className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-lg sm:rounded-xl bg-[rgb(var(--border-color))]/60 hover:bg-[rgb(var(--border-color))]/80 text-[rgb(var(--card-text))] shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 group"
+                className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-lg bg-[rgb(var(--border-color))]/60 hover:bg-[rgb(var(--border-color))]/80 text-[rgb(var(--card-text))] shadow-md hover:shadow-lg transform active:scale-95 sm:hover:scale-105 transition-all duration-200 group"
                 aria-label="Instellingen"
               >
                 <Settings className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 group-hover:rotate-90 transition-transform duration-300" />
@@ -720,8 +719,8 @@ function App() {
         </div>
       </header>
 
-      {/* Main Content Area */}
-      <main className="max-w-[1920px] mx-auto px-4 lg:px-8 xl:px-12 py-6 lg:py-8 xl:py-12 safe-area-x content-safe-area" style={{ paddingTop: 'calc(var(--header-height) + 1.5rem)' }}>
+      {/* Main Content Area - Mobile Optimized */}
+      <main className="w-full max-w-[1920px] mx-auto px-3 sm:px-4 lg:px-8 xl:px-12 py-4 sm:py-6 lg:py-8 xl:py-12 safe-area-x content-safe-area overflow-x-hidden" style={{ paddingTop: 'calc(var(--header-height) + 1rem)' }}>
         {currentPage === 'settings' ? (
           <SettingsPage
             lists={lists}
@@ -753,9 +752,9 @@ function App() {
             }}
           />
         ) : (
-          <div className="lg:flex lg:space-x-8 xl:space-x-12">
+          <div className="w-full lg:flex lg:space-x-8 xl:space-x-12">
             {/* Main Content Area */}
-            <div className="flex-1">
+            <div className="w-full flex-1 min-w-0">
               {/* Create New List Section - Mobile Optimized */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
