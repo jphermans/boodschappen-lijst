@@ -211,7 +211,7 @@ class UnifiedColorManager {
       if (savedTheme) {
         this.currentTheme = savedTheme;
       } else {
-        // Set default Gruvbox theme
+        // Set default Gruvbox theme but allow switching
         this.currentTheme = {
           name: 'Gruvbox',
           palette: themePalettes[0],
@@ -469,6 +469,11 @@ class UnifiedColorManager {
 
   // Get available palettes
   getAvailablePalettes() {
+    if (!themePalettes || !Array.isArray(themePalettes)) {
+      console.error('themePalettes is not loaded correctly:', themePalettes);
+      return [];
+    }
+    
     return themePalettes.map(theme => ({
       key: theme.key,
       name: theme.name,

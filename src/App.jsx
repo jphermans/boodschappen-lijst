@@ -20,6 +20,7 @@ import { validateQRData } from './utils/qrSecurity';
 import { userManager } from './utils/enhancedUserManager';
 import { useUserState, useShoppingLists } from './hooks/usePersistentState';
 import { useUnifiedThemeContext } from './context/UnifiedThemeContext';
+import { debugThemes } from './utils/debugThemes';
 
 function App() {
   // Enhanced state management hooks
@@ -47,6 +48,13 @@ function App() {
   const [isProcessingQRScan, setIsProcessingQRScan] = useState(false);
   const [showUserNameModal, setShowUserNameModal] = useState(false);
   const [isCreatingList, setIsCreatingList] = useState(false);
+
+  // Make debug function available globally
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.debugThemes = debugThemes;
+    }
+  }, []);
 
   // Handle shared list URLs
   const handleSharedListFromURL = async (currentLists = lists) => {

@@ -223,12 +223,12 @@ export const UnifiedThemeProvider = ({ children }) => {
   // Legacy compatibility methods
   const updateColor = useCallback(async (type, color) => {
     try {
-      // Legacy function - no-op for Gruvbox-only theme
-      console.warn('Legacy updateColor is deprecated - Gruvbox theme only');
+      // Allow legacy color updates through modern system
+      await setCustomColor(type, color);
     } catch (error) {
       console.error('Legacy updateColor failed:', error);
     }
-  }, []);
+  }, [setCustomColor]);
 
   const resetColors = useCallback(async () => {
     try {
@@ -279,7 +279,7 @@ export const UnifiedThemeProvider = ({ children }) => {
 
   // Get available palettes from all themes
   const getAvailablePalettes = useCallback(() => {
-    return unifiedColorManager.getAvailablePalettes();
+    return unifiedColorManager.getAvailablePalettes() || [];
   }, []);
 
   // Validate color accessibility
