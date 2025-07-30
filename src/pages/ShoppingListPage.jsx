@@ -4,10 +4,7 @@ import { ArrowLeft, Plus, Check, X, Edit3, Share2, Trash2, Users, Save, RotateCc
 import { useToast } from '../context/ToastContext';
 import { useUndo } from '../context/UndoContext';
 import { 
-  updateShoppingList, 
-  deleteShoppingItem, 
-  addShoppingItem, 
-  updateShoppingItem, 
+  updateShoppingList,
   getListById,
   shareListWithUser,
   removeUserFromList,
@@ -86,8 +83,9 @@ const ShoppingListPage = ({ list, onBack, onListUpdate }) => {
         id: `add_${newItem.id}`,
         message: `Item "${newItem.name}" toevoegen ongedaan maken`,
         action: async () => {
-          await deleteShoppingItem(list.id, newItem.id);
-          setItems(prev => prev.filter(item => item.id !== newItem.id));
+          const removeItems = updatedItems.filter(item => item.id !== newItem.id);
+          await updateShoppingList(list.id, { items: removeItems });
+          setItems(removeItems);
         }
       });
     } catch (err) {
