@@ -11,6 +11,7 @@ import {
   canEditList
 } from '../firebase';
 import { getCurrentUserID } from '../firebase';
+import { getPopularItems } from '../utils/groceryItems';
 import QRShareModal from '../components/QRShareModal';
 import UserManagementModal from '../components/UserManagementModal';
 
@@ -333,6 +334,26 @@ const ShoppingListPage = ({ list, onBack, onListUpdate }) => {
                 <Plus className="w-5 h-5" />
               </button>
             </div>
+            
+            {(items.length === 0 || newItemName.length === 0) && (
+              <div className="mt-4">
+                <p className="text-sm text-[rgb(var(--text-color))]/60 mb-2">Populaire items:</p>
+                <div className="flex flex-wrap gap-2">
+                  {getPopularItems().map((item, index) => (
+                    <button
+                      key={index}
+                      onClick={() => {
+                        setNewItemName(item);
+                        addItem(item);
+                      }}
+                      className="px-3 py-1.5 bg-[rgb(var(--border-color))]/20 hover:bg-[rgb(var(--border-color))]/30 text-[rgb(var(--text-color))]/80 rounded-lg text-sm transition-colors"
+                    >
+                      {item}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </motion.div>
         )}
 

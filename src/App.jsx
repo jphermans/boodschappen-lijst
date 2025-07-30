@@ -4,7 +4,6 @@ import { Settings, Plus, List, Share2, Trash2, Check, Wifi, QrCode, Users, Datab
 import { useTheme } from './context/ThemeContext';
 import { useToast } from './context/ToastContext';
 import { initializeFirebase, isConnected, getCurrentUserID, createShoppingList, getShoppingLists, deleteShoppingList, subscribeToShoppingLists, canDeleteList, shareListWithUser, getListById } from './firebase';
-import ShoppingList from './components/ShoppingList';
 import SettingsPage from './pages/Settings';
 import AnalyticsPage from './pages/Analytics';
 import ThemePage from './pages/Theme';
@@ -743,7 +742,7 @@ function App() {
               setSelectedList(updatedList);
             }}
           />
-        ) : !selectedList ? (
+        ) : (
           <div className="lg:flex lg:space-x-8 xl:space-x-12">
             {/* Main Content Area */}
             <div className="flex-1">
@@ -1108,16 +1107,6 @@ function App() {
               </div>
             </div>
           </div>
-        ) : (
-          <ShoppingList
-            list={selectedList}
-            onBack={() => setSelectedList(null)}
-            onUpdateList={(updatedList) => {
-              setLists(lists.map(l => l.id === updatedList.id ? updatedList : l));
-              setSelectedList(updatedList);
-            }}
-            onShare={handleShare}
-          />
         )}
       </main>
 
