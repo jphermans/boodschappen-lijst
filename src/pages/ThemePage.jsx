@@ -85,12 +85,14 @@ const ThemePage = ({ onBack }) => {
     }
   };
 
-  const renderColorPreview = (colors, themeMode) => {
-    const themeColors = themeMode === 'light' ? colors.lightMode || colors : colors;
+  const renderColorPreview = (themeOption, themeMode) => {
+    const colors = themeMode === 'light' && themeOption.lightMode 
+      ? themeOption.lightMode 
+      : themeOption.colors;
     
     return (
       <div className="grid grid-cols-5 gap-1">
-        {Object.entries(themeColors).slice(0, 5).map(([key, color]) => (
+        {Object.entries(colors).slice(0, 5).map(([key, color]) => (
           <div
             key={key}
             className="w-full h-4 rounded-sm"

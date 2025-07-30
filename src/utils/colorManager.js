@@ -473,7 +473,8 @@ class UnifiedColorManager {
       key: theme.key,
       name: theme.name,
       description: theme.description,
-      colors: theme.colors
+      colors: theme.colors,
+      lightMode: theme.lightMode
     }));
   }
 
