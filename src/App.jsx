@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Settings, Plus, List, Share2, Trash2, Check, Wifi, QrCode, Users, Database } from 'lucide-react';
+import { Settings, Plus, List, Share2, Trash2, Check, Wifi, QrCode, Users, Database, BarChart3 } from 'lucide-react';
 import { useTheme } from './context/ThemeContext';
 import { useToast } from './context/ToastContext';
 import { useUndo } from './context/UndoContext';
 import { initializeFirebase, isConnected, getCurrentUserID, createShoppingList, getShoppingLists, deleteShoppingList, subscribeToShoppingLists, canDeleteList, shareListWithUser, getListById } from './firebase';
 import ShoppingList from './components/ShoppingList';
-import SettingsModal from './components/SettingsModal';
+import SettingsPage from './pages/Settings';
+import AnalyticsPage from './pages/Analytics';
 import QRShareModal from './components/QRShareModal';
 import QRScannerModal from './components/QRScannerModal';
 import UserManagementModal from './components/UserManagementModal';
@@ -37,7 +38,7 @@ function App() {
   // UI state
   const [newListName, setNewListName] = useState('');
   const [selectedList, setSelectedList] = useState(null);
-  const [showSettings, setShowSettings] = useState(false);
+  const [currentPage, setCurrentPage] = useState('overview'); // 'overview', 'settings', 'analytics'
   const [showShare, setShowShare] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
   const [showUserManagement, setShowUserManagement] = useState(false);
@@ -551,15 +552,40 @@ function App() {
             {/* Desktop Navigation Menu */}
             <nav className="hidden lg:flex items-center space-x-2 xl:space-x-4">
               <button
-                onClick={() => setSelectedList(null)}
+                onClick={() => {
+                  setSelectedList(null);
+                  setCurrentPage('overview');
+                }}
                 className={`px-4 xl:px-6 py-2.5 rounded-xl font-medium transition-all duration-200 ${
-                  !selectedList
+                  !selectedList && currentPage === 'overview'
                     ? 'bg-primary text-white shadow-lg'
                     : 'text-[rgb(var(--text-color))]/80 hover:bg-[rgb(var(--border-color))]/20 hover:text-[rgb(var(--card-text))]'
                 }`}
               >
                 <List className="w-4 h-4 inline mr-2" />
                 Overzicht
+              </button>
+              <button
+                onClick={() => setCurrentPage('settings')}
+                className={`px-4 xl:px-6 py-2.5 rounded-xl font-medium transition-all duration-200 ${
+                  currentPage === 'settings'
+                    ? 'bg-primary text-white shadow-lg'
+                    : 'text-[rgb(var(--text-color))]/80 hover:bg-[rgb(var(--border-color))]/20 hover:text-[rgb(var(--card-text))]'
+                }`}
+              >
+                <Settings className="w-4 h-4 inline mr-2" />
+                Instellingen
+              </button>
+              <button
+                onClick={() => setCurrentPage('analytics')}
+                className={`px-4 xl:px-6 py-2.5 rounded-xl font-medium transition-all duration-200 ${
+                  currentPage === 'analytics'
+                    ? 'bg-primary text-white shadow-lg'
+                    : 'text-[rgb(var(--text-color))]/80 hover:bg-[rgb(var(--border-color))]/20 hover:text-[rgb(var(--card-text))]'
+                }`}
+              >
+                <BarChart3 className="w-4 h-4 inline mr-2" />
+                Analytics
               </button>
               <button
                 onClick={() => setShowScanner(true)}
@@ -611,7 +637,7 @@ function App() {
               
               {/* Settings */}
               <button
-                onClick={() => setShowSettings(true)}
+                onClick={() => setCurrentPage('settings')}
                 className="flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-[rgb(var(--border-color))]/60 hover:bg-[rgb(var(--border-color))]/80 text-[rgb(var(--card-text))] shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 group"
                 aria-label="Instellingen"
               >
@@ -624,7 +650,18 @@ function App() {
 
       {/* Main Content Area */}
       <main className="max-w-[1920px] mx-auto px-4 lg:px-8 xl:px-12 py-6 lg:py-8 xl:py-12 safe-area-x content-safe-area" style={{ paddingTop: 'calc(var(--header-height) + 1.5rem)' }}>
-        {!selectedList ? (
+        {currentPage === 'settings' ? (
+          <SettingsPage
+            lists={lists}
+            onBack={() => setCurrentPage('overview')}
+            onNavigateToAnalytics={() => setCurrentPage('analytics')}
+          />
+        ) : currentPage === 'analytics' ? (
+          <AnalyticsPage
+            lists={lists}
+            onBack={() => setCurrentPage('overview')}
+          />
+        ) : !selectedList ? (
           <div className="lg:flex lg:space-x-8 xl:space-x-12">
             {/* Main Content Area */}
             <div className="flex-1">
@@ -925,7 +962,7 @@ function App() {
                     </button>
                     
                     <button
-                      onClick={() => setShowSettings(true)}
+                      onClick={() => setCurrentPage('settings')}
                       className="w-full flex items-center px-4 py-3 bg-[rgb(var(--border-color))]/20 hover:bg-[rgb(var(--border-color))]/30 text-[rgb(var(--card-text))] rounded-xl transition-all duration-200"
                     >
                       <Settings className="w-5 h-5 mr-3" />
@@ -1005,13 +1042,6 @@ function App() {
         </div>
       )}
 
-
-      {showSettings && (
-        <SettingsModal
-          lists={lists}
-          onClose={() => setShowSettings(false)}
-        />
-      )}
 
       {showShare && (
         <QRShareModal
