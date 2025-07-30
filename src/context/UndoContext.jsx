@@ -17,25 +17,47 @@ export const UndoProvider = ({ children }) => {
     const id = crypto.randomUUID();
     const undoAction = { id, ...action, timestamp: Date.now() };
     
-    setUndoActions(prev => [...prev, undoAction]);
+    console.log('Adding undo action:', action.message);
+    
+    // Clear existing timeouts and set new action
+    setUndoActions(prev => {
+      // Clear any existing timeouts
+      prev.forEach(existingAction => {
+        if (existingAction.timeoutId) {
+          clearTimeout(existingAction.timeoutId);
+        }
+      });
+      
+      // Only keep the latest action
+      return [undoAction];
+    });
     
     // Auto-remove after 3 seconds
-    setTimeout(() => {
+    const timeoutId = setTimeout(() => {
+      console.log('Removing undo action after 3s:', action.message);
       removeUndoAction(id);
     }, 3000);
+    
+    undoAction.timeoutId = timeoutId;
     
     return id;
   };
 
   const removeUndoAction = (id) => {
-    setUndoActions(prev => prev.filter(action => action.id !== id));
+    setUndoActions(prev => {
+      const action = prev.find(a => a.id === id);
+      if (action && action.timeoutId) {
+        clearTimeout(action.timeoutId);
+      }
+      return prev.filter(action => action.id !== id);
+    });
   };
 
   const executeUndo = async (id) => {
     const action = undoActions.find(a => a.id === id);
-    if (action && action.undoFunction) {
+    if (action && action.action) {
       try {
-        await action.undoFunction();
+        await action.action();
         removeUndoAction(id);
         return true;
       } catch (error) {

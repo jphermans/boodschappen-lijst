@@ -330,7 +330,7 @@ MIT License - zie [LICENSE](LICENSE) voor details
 
 ---
 
-**Gemaakt met ❤️ voor de Nederlandse en Belgische gemeenschap**
+**Gemaakt met ❤️ voor de Belgische en Nederlandse gemeenschap**
 
 🔗 **Live Demo**: [Boodschappenlijst App](https://jphermans.github.io/boodschappen-lijst/)
 📧 **Contact**: Voor vragen of suggesties, maak een GitHub issue aan
