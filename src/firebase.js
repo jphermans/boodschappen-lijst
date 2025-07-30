@@ -288,6 +288,16 @@ const canDeleteList = (list) => {
   return list.deviceUID === currentUser?.uid;
 };
 
+// Check if current user can edit a list (creator or shared users)
+const canEditList = (list, userId) => {
+  if (!userId) userId = currentUser?.uid;
+  if (!userId || !list) return false;
+  
+  return list.deviceUID === userId || 
+         list.creatorId === userId || 
+         (list.sharedWith && list.sharedWith.includes(userId));
+};
+
 const subscribeToShoppingLists = (callback) => {
   try {
     if (!db || !currentUser) {
@@ -360,6 +370,7 @@ export {
   shareListWithUser,
   removeUserFromList,
   canDeleteList,
+  canEditList,
   getListById
 };
 
