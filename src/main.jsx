@@ -5,16 +5,13 @@ import './index.css'
 import { ThemeProvider } from './context/ThemeContext'
 import { UnifiedThemeProvider } from './context/UnifiedThemeContext'
 import { ToastProvider } from './context/ToastContext'
-import { UndoProvider } from './context/UndoContext'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <UnifiedThemeProvider>
       <ThemeProvider>
         <ToastProvider>
-          <UndoProvider>
-            <App />
-          </UndoProvider>
+          <App />
         </ToastProvider>
       </ThemeProvider>
     </UnifiedThemeProvider>
