@@ -23,7 +23,7 @@ let currentUser = null;
 const initializeFirebase = async () => {
   try {
     // Check if Firebase config has placeholder values (only for local development)
-    const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const isLocalDev = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
     const hasPlaceholderValues = firebaseConfig.apiKey === 'your_api_key_here' ||
                                 firebaseConfig.projectId === 'your_project_id';
     

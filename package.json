@@ -12,13 +12,17 @@
   "dependencies": {
     "@marcuwynu23/react-qr-reader": "^3.1.6",
     "dompurify": "^3.2.6",
+    "dotenv": "^17.2.1",
+    "esm": "^3.2.25",
     "firebase": "^10.7.1",
     "framer-motion": "^10.16.16",
     "lucide-react": "^0.303.0",
+    "playwright": "^1.54.1",
     "qr-scanner": "^1.4.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-qr-code": "^2.0.12"
+    "react-qr-code": "^2.0.12",
+    "vite-node": "^3.2.4"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",

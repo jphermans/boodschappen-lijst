@@ -212,12 +212,9 @@ export function useShoppingLists() {
       setIsLoading(true);
       setError(null);
 
-      const newList = await stateManager.addList(listData);
-      
-      // Update local state
-      setLists(current => [...current, newList]);
-      
-      return newList;
+      // No longer need to update local state directly,
+      // the real-time subscription will handle it
+      return await stateManager.addList(listData);
     } catch (err) {
       console.error('Failed to add list:', err);
       setError(err);
