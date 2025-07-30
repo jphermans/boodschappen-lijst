@@ -70,7 +70,7 @@ const Toast = ({ toast, onRemove }) => {
 
 const ToastContainer = ({ toasts, removeToast }) => {
   return (
-    <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 pointer-events-none">
+    <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[100] pointer-events-none">
       <div className="pointer-events-auto">
         <AnimatePresence>
           {toasts.map((toast) => (
