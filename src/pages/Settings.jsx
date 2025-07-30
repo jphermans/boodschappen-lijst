@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Link2, BarChart3, Settings } from 'lucide-react';
 import { getDeviceInfo } from '../utils/deviceUID';
 
-const SettingsPage = ({ lists = [], onBack, onNavigateToAnalytics }) => {
+const SettingsPage = ({ lists = [], onBack, onNavigateToAnalytics, onNavigateToTheme, onNavigateToPersistence }) => {
   const deviceInfo = getDeviceInfo();
 
   return (
@@ -158,7 +158,7 @@ const SettingsPage = ({ lists = [], onBack, onNavigateToAnalytics }) => {
                 </p>
                 
                 <button
-                  onClick={() => window.location.hash = '#/theme'}
+                  onClick={onNavigateToTheme}
                   className="w-full flex items-center justify-center px-6 py-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
                 >
                   <span className="font-medium">Thema Aanpassen</span>
@@ -186,7 +186,7 @@ const SettingsPage = ({ lists = [], onBack, onNavigateToAnalytics }) => {
                 </p>
                 
                 <button
-                  onClick={() => window.location.hash = '#/persistence'}
+                  onClick={onNavigateToPersistence}
                   className="w-full flex items-center justify-center px-6 py-4 bg-gradient-to-r from-blue-500 to-cyan-500 hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
                 >
                   <span className="font-medium">Data Beheren</span>

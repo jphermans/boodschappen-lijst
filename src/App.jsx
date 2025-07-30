@@ -719,6 +719,8 @@ function App() {
             lists={lists}
             onBack={() => setCurrentPage('overview')}
             onNavigateToAnalytics={() => setCurrentPage('analytics')}
+            onNavigateToTheme={() => setCurrentPage('theme')}
+            onNavigateToPersistence={() => setCurrentPage('persistence')}
           />
         ) : currentPage === 'analytics' ? (
           <AnalyticsPage
