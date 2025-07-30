@@ -764,13 +764,13 @@ function App() {
               </motion.div>
 
               {/* Lists Grid - Enhanced for Desktop */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 lg:gap-6 xl:gap-8">
+              <div className="flex flex-wrap gap-4 lg:gap-6 xl:gap-8">
               {lists.map((list) => (
                 <motion.div
                   key={list.id}
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="group bg-[rgb(var(--card-bg))] rounded-2xl shadow-lg border border-[rgb(var(--border-color))]/20 p-6 lg:p-8 hover:shadow-2xl hover:border-[rgb(var(--border-color))]/40 transition-all duration-300 cursor-pointer relative overflow-hidden"
+                  className="group bg-[rgb(var(--card-bg))] rounded-2xl shadow-lg border border-[rgb(var(--border-color))]/20 p-6 lg:p-8 hover:shadow-2xl hover:border-[rgb(var(--border-color))]/40 transition-all duration-300 cursor-pointer relative overflow-visible flex-1 min-w-[350px] max-w-[450px]"
                   onClick={() => setSelectedList(list)}
                 >
                   {/* Hover Gradient Overlay */}
@@ -778,29 +778,34 @@ function App() {
                   
                   {/* Content */}
                   <div className="relative z-10">
-                    {/* Header */}
-                    <div className="flex items-start justify-between mb-4 lg:mb-6">
-                      <div className="flex-1 pr-4">
-                        <h3 className="text-lg lg:text-xl xl:text-2xl font-bold text-[rgb(var(--card-text))] mb-2 group-hover:text-primary transition-colors duration-200">
-                          {list.name}
-                        </h3>
-                        <div className="flex items-center space-x-4 text-sm text-[rgb(var(--text-color))]/60">
-                          <span>{list.items?.length || 0} item{(list.items?.length || 0) !== 1 ? 's' : ''}</span>
-                          {list.sharedWith && list.sharedWith.length > 0 && (
-                            <span className="flex items-center">
-                              <Users className="w-3 h-3 mr-1" />
-                              {list.sharedWith.length} gedeeld
-                            </span>
-                          )}
-                        </div>
-                        {list.creatorName && (
-                          <div className="text-xs text-[rgb(var(--text-color))]/50 mt-1">
-                            Gemaakt door {list.creatorName}
-                          </div>
+                    {/* Header - Completely restructured for full visibility */}
+                    <div className="mb-4 lg:mb-6">
+                      {/* Title */}
+                      <h3 className="text-lg lg:text-xl xl:text-2xl font-bold text-[rgb(var(--card-text))] mb-3 group-hover:text-primary transition-colors duration-200 break-words leading-tight">
+                        {list.name}
+                      </h3>
+                      
+                      {/* Stats and info row */}
+                      <div className="flex flex-wrap items-center gap-3 text-sm text-[rgb(var(--text-color))]/60 mb-3">
+                        <span className="whitespace-nowrap">{list.items?.length || 0} item{(list.items?.length || 0) !== 1 ? 's' : ''}</span>
+                        {list.sharedWith && list.sharedWith.length > 0 && (
+                          <span className="flex items-center whitespace-nowrap">
+                            <Users className="w-3 h-3 mr-1" />
+                            {list.sharedWith.length} gedeeld
+                          </span>
                         )}
                       </div>
-                      <div className="flex flex-col items-end space-y-2">
-                        <span className={`px-3 py-1.5 text-xs font-semibold rounded-full ${
+                      
+                      {/* Creator info */}
+                      {list.creatorName && (
+                        <div className="text-xs text-[rgb(var(--text-color))]/50 mb-3 break-words">
+                          Gemaakt door {list.creatorName}
+                        </div>
+                      )}
+                      
+                      {/* Status and timestamp - full width row */}
+                      <div className="flex items-center justify-between gap-3 mb-2">
+                        <span className={`px-3 py-1.5 text-xs font-semibold rounded-full inline-block ${
                           list.isCreator
                             ? 'bg-gradient-to-r from-primary/20 to-primary/10 text-primary border border-primary/20'
                             : 'bg-gradient-to-r from-secondary/20 to-secondary/10 text-secondary border border-secondary/20'
@@ -808,7 +813,7 @@ function App() {
                           {list.isCreator ? 'Eigenaar' : 'Gedeeld'}
                         </span>
                         {list.updatedAt && (
-                          <span className="text-xs text-[rgb(var(--text-color))]/40">
+                          <span className="text-xs text-[rgb(var(--text-color))]/40 whitespace-nowrap">
                             {(() => {
                               const date = list.updatedAt.toDate ? list.updatedAt.toDate() : new Date(list.updatedAt);
                               const now = new Date();
