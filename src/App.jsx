@@ -328,9 +328,10 @@ function App() {
         return;
       }
       
-      // Delete from Firebase (the real-time subscription will automatically remove it from local state)
-      await deleteShoppingList(listId);
+      // Immediately remove from local state for instant UI update
+      await removeList(listId);
       
+      // Clear selected list if it's the one being deleted
       if (selectedList?.id === listId) {
         setSelectedList(null);
       }
@@ -348,7 +349,10 @@ function App() {
             // Remove the id field to allow Firebase to create a new one
             const { id, createdAt, updatedAt, isCreator, ...listDataToRestore } = listToDelete;
             
-            // Restore to Firebase (the real-time subscription will automatically add it to local state)
+            // Restore to local state immediately
+            await addList(listToDelete);
+            
+            // Also restore to Firebase for persistence
             await createShoppingList(listDataToRestore);
             
             success(`Lijst "${listToDelete?.name}" hersteld! 🎉`, 2000);
@@ -358,6 +362,15 @@ function App() {
           }
         }
       });
+      
+      // Delete from Firebase in the background (for persistence)
+      try {
+        await deleteShoppingList(listId);
+      } catch (firebaseError) {
+        console.error('Error deleting from Firebase:', firebaseError);
+        // If Firebase deletion fails, we could optionally restore the list
+        // but for now we'll just log the error since the UI is already updated
+      }
       
       success(deleteMessage, 3000);
     } catch (error) {
@@ -535,12 +548,12 @@ function App() {
         <div className="max-w-[1920px] mx-auto px-4 lg:px-8 xl:px-12 safe-area-x">
           <div className="flex items-center justify-between h-16 lg:h-20">
             {/* Logo and Brand */}
-            <div className="flex items-center lg:space-x-4">
+            <div className="flex items-center lg:space-x-4 flex-1 min-w-0">
               <div className="hidden lg:flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-primary to-secondary rounded-xl shadow-lg mr-3">
                 <List className="w-5 h-5 lg:w-6 lg:h-6 text-white" />
               </div>
-              <div>
-                <h1 className="text-xl lg:text-2xl xl:text-3xl font-bold text-[rgb(var(--card-text))] tracking-tight">
+              <div className="min-w-0 flex-1">
+                <h1 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-[rgb(var(--card-text))] tracking-tight truncate">
                   Boodschappenlijst
                 </h1>
                 <p className="hidden lg:block text-sm text-[rgb(var(--text-color))]/60 font-medium">
@@ -604,33 +617,33 @@ function App() {
             </nav>
 
             {/* Action Buttons */}
-            <div className="flex items-center space-x-2 lg:space-x-3">
+            <div className="flex items-center space-x-1.5 sm:space-x-2 lg:space-x-3 flex-shrink-0">
               {/* Mobile QR Scanner */}
               <button
                 onClick={() => setShowScanner(true)}
-                className="lg:hidden flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-r from-secondary to-accent hover:opacity-90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                className="lg:hidden flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-r from-secondary to-accent hover:opacity-90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
                 aria-label="QR-code scannen"
               >
-                <QrCode className="w-5 h-5" />
+                <QrCode className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
               
               {/* Persistence Monitor (for debugging/advanced users) */}
               <button
                 onClick={() => setShowPersistenceMonitor(true)}
-                className="flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-gradient-to-r from-accent to-accent/90 hover:opacity-90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 group"
+                className="hidden sm:flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-lg sm:rounded-xl bg-gradient-to-r from-accent to-accent/90 hover:opacity-90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 group"
                 aria-label="Persistentie Monitor"
                 title="iOS Safari Persistentie Status"
               >
-                <Database className="w-5 h-5 lg:w-6 lg:h-6 group-hover:scale-110 transition-transform duration-200" />
+                <Database className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 group-hover:scale-110 transition-transform duration-200" />
               </button>
 
               {/* Theme Toggle */}
               <button
                 onClick={toggleTheme}
-                className="flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 group"
+                className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-lg sm:rounded-xl bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 group"
                 aria-label="Thema wisselen"
               >
-                <span className="text-lg lg:text-xl group-hover:scale-110 transition-transform duration-200">
+                <span className="text-base sm:text-lg lg:text-xl group-hover:scale-110 transition-transform duration-200">
                   {theme === 'light' ? '🌙' : '☀️'}
                 </span>
               </button>
@@ -638,10 +651,10 @@ function App() {
               {/* Settings */}
               <button
                 onClick={() => setCurrentPage('settings')}
-                className="flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-[rgb(var(--border-color))]/60 hover:bg-[rgb(var(--border-color))]/80 text-[rgb(var(--card-text))] shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 group"
+                className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-lg sm:rounded-xl bg-[rgb(var(--border-color))]/60 hover:bg-[rgb(var(--border-color))]/80 text-[rgb(var(--card-text))] shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 group"
                 aria-label="Instellingen"
               >
-                <Settings className="w-5 h-5 lg:w-6 lg:h-6 group-hover:rotate-90 transition-transform duration-300" />
+                <Settings className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 group-hover:rotate-90 transition-transform duration-300" />
               </button>
             </div>
           </div>
