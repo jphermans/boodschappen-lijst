@@ -2,28 +2,28 @@
   "name": "Boodschappenlijst",
   "short_name": "Boodschappen",
   "description": "Maak en deel boodschappenlijsten eenvoudig met vrienden en familie",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#3b82f6",
   "orientation": "portrait-primary",
-  "scope": "/",
+  "scope": "./",
   "lang": "nl",
   "icons": [
     {
-      "src": "/icon.svg",
+      "src": "./icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"
     },
     {
-      "src": "/apple-touch-icon.png",
+      "src": "./apple-touch-icon.png",
       "sizes": "180x180",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/favicon.ico",
+      "src": "./favicon.ico",
       "sizes": "32x32",
       "type": "image/x-icon"
     }
@@ -31,7 +31,7 @@
   "categories": ["productivity", "utilities", "shopping"],
   "screenshots": [
     {
-      "src": "/icon.svg",
+      "src": "./icon.svg",
       "sizes": "512x512",
       "type": "image/svg+xml",
       "form_factor": "wide"
