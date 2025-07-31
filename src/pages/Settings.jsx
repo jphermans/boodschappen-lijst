@@ -97,6 +97,15 @@ const SettingsPage = ({ lists = [], onBack, onNavigateToAnalytics, onNavigateToT
     }, 1000);
   };
 
+  const handleForceClearAll = async () => {
+    if (window.confirm('Dit zal alle caches, service workers en lokale data wissen. De app wordt volledig herstart. Doorgaan?')) {
+      info('🧹 Alles wordt gewist en app herstart...', 3000);
+      setTimeout(() => {
+        pwaUpdateManager.forceClearAll();
+      }, 1000);
+    }
+  };
+
   return (
     <div className="min-h-screen-safe bg-[rgb(var(--bg-color))] transition-colors duration-300">
       {/* Safe area background extension */}
@@ -461,7 +470,7 @@ const SettingsPage = ({ lists = [], onBack, onNavigateToAnalytics, onNavigateToT
                   Houd je app up-to-date voor de nieuwste functies en verbeteringen. Updates worden automatisch gedetecteerd op basis van versienummers.
                 </p>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   <button
                     onClick={handleCheckForUpdates}
                     disabled={isCheckingUpdate}
@@ -493,11 +502,20 @@ const SettingsPage = ({ lists = [], onBack, onNavigateToAnalytics, onNavigateToT
                     <RefreshCw className="w-4 h-4" />
                     <span className="font-medium">Force Refresh</span>
                   </button>
+
+                  <button
+                    onClick={handleForceClearAll}
+                    className="flex items-center justify-center space-x-2 px-4 py-3 bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                  >
+                    <RotateCcw className="w-4 h-4" />
+                    <span className="font-medium">Reset All</span>
+                  </button>
                 </div>
 
                 <div className="text-xs text-[rgb(var(--text-color))]/50 bg-[rgb(var(--border-color))]/5 p-3 rounded-lg mt-4">
                   <p className="mb-1"><strong>Check Updates:</strong> Controleert op nieuwe versies via versienummer vergelijking</p>
-                  <p><strong>Force Refresh:</strong> Vernieuwt de app volledig en wist alle caches (gebruik bij problemen)</p>
+                  <p className="mb-1"><strong>Force Refresh:</strong> Vernieuwt de app volledig en wist alle caches (gebruik bij problemen)</p>
+                  <p><strong>Reset All:</strong> Wist alles (service worker, caches, data) en herstart volledig - gebruik alleen bij ernstige problemen</p>
                 </div>
               </div>
             </div>

@@ -18,8 +18,9 @@ class PWAUpdateManager {
         console.log('PWA Update Manager: Initializing...');
         
         // Register service worker
-        this.registration = await navigator.serviceWorker.register('/sw.js', {
-          scope: './'
+        this.registration = await navigator.serviceWorker.register('./sw.js', {
+          scope: './',
+          updateViaCache: 'none' // Ensure service worker updates are not cached
         });
         
         console.log('PWA Update Manager: Service Worker registered successfully');
@@ -166,36 +167,60 @@ class PWAUpdateManager {
 
   // Get current version info
   async getVersionInfo() {
-    if (!this.registration || !this.registration.active) {
-      // Fallback to manifest version
+    // First try to get version from service worker
+    if (this.registration && this.registration.active) {
       try {
-        const response = await fetch('/manifest.json');
-        const manifest = await response.json();
-        return manifest.version || '1.0.0';
+        const swVersion = await new Promise((resolve, reject) => {
+          const messageChannel = new MessageChannel();
+          messageChannel.port1.onmessage = (event) => {
+            if (event.data.type === 'VERSION_INFO') {
+              resolve(event.data.version);
+            }
+          };
+
+          // Set a timeout in case the service worker doesn't respond
+          const timeout = setTimeout(() => {
+            reject(new Error('Service worker timeout'));
+          }, 1000); // Reduced timeout
+
+          messageChannel.port1.onmessage = (event) => {
+            clearTimeout(timeout);
+            if (event.data.type === 'VERSION_INFO') {
+              resolve(event.data.version);
+            }
+          };
+
+          this.registration.active.postMessage(
+            { type: 'GET_VERSION' },
+            [messageChannel.port2]
+          );
+        });
+        
+        console.log('PWA Update Manager: Got version from service worker:', swVersion);
+        return swVersion;
       } catch (error) {
-        console.warn('Could not fetch manifest version:', error);
-        return '1.0.0';
+        console.warn('PWA Update Manager: Service worker version fetch failed:', error);
       }
     }
 
-    return new Promise((resolve) => {
-      const messageChannel = new MessageChannel();
-      messageChannel.port1.onmessage = (event) => {
-        if (event.data.type === 'VERSION_INFO') {
-          resolve(event.data.version);
+    // Fallback to manifest version
+    try {
+      const response = await fetch('/manifest.json', {
+        cache: 'no-cache',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
         }
-      };
-
-      // Set a timeout in case the service worker doesn't respond
-      setTimeout(() => {
-        resolve(this.getManifestVersion());
-      }, 2000);
-
-      this.registration.active.postMessage(
-        { type: 'GET_VERSION' },
-        [messageChannel.port2]
-      );
-    });
+      });
+      const manifest = await response.json();
+      const version = manifest.version || '1.0.0';
+      console.log('PWA Update Manager: Got version from manifest:', version);
+      return version;
+    } catch (error) {
+      console.warn('PWA Update Manager: Could not fetch manifest version:', error);
+      return '1.0.0';
+    }
   }
 
   // Get version from manifest.json
@@ -265,14 +290,45 @@ class PWAUpdateManager {
 
   // Get version information object
   async getVersionDetails() {
-    const current = await this.getVersionInfo();
-    const latest = this.latestVersion || current;
-    
-    return {
-      current,
-      latest,
-      updateAvailable: this.compareVersions(current, latest) < 0
-    };
+    try {
+      // Always get fresh version information
+      const current = await this.getVersionInfo();
+      
+      // Get latest version from server (manifest.json) with cache busting
+      const response = await fetch('/manifest.json', {
+        cache: 'no-cache',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      });
+      const manifest = await response.json();
+      const latest = manifest.version || '1.0.0';
+      
+      // Update internal state
+      this.currentVersion = current;
+      this.latestVersion = latest;
+      
+      console.log(`PWA Update Manager: getVersionDetails - Current: ${current}, Latest: ${latest}`);
+      
+      const updateAvailable = this.compareVersions(current, latest) < 0;
+      
+      return {
+        current,
+        latest,
+        updateAvailable
+      };
+    } catch (error) {
+      console.error('PWA Update Manager: getVersionDetails failed:', error);
+      // Fallback to basic version info
+      const current = await this.getVersionInfo();
+      return {
+        current,
+        latest: current,
+        updateAvailable: false
+      };
+    }
   }
 
   // Force a hard refresh (bypass cache)
@@ -282,16 +338,56 @@ class PWAUpdateManager {
     // Clear all caches first
     if ('caches' in window) {
       caches.keys().then((cacheNames) => {
+        console.log('PWA Update Manager: Clearing caches:', cacheNames);
         return Promise.all(
-          cacheNames.map(cacheName => caches.delete(cacheName))
+          cacheNames.map(cacheName => {
+            console.log('PWA Update Manager: Deleting cache:', cacheName);
+            return caches.delete(cacheName);
+          })
         );
       }).then(() => {
+        console.log('PWA Update Manager: All caches cleared, reloading...');
         // Hard reload with cache bypass
-        window.location.reload();
+        window.location.reload(true);
+      }).catch(error => {
+        console.error('PWA Update Manager: Error clearing caches:', error);
+        window.location.reload(true);
       });
     } else {
       // Fallback hard reload
-      window.location.reload();
+      console.log('PWA Update Manager: No cache API, doing hard reload...');
+      window.location.reload(true);
+    }
+  }
+
+  // Force clear all caches and unregister service worker (for debugging)
+  async forceClearAll() {
+    console.log('PWA Update Manager: Force clearing everything...');
+    
+    try {
+      // Unregister service worker
+      if (this.registration) {
+        await this.registration.unregister();
+        console.log('PWA Update Manager: Service worker unregistered');
+      }
+      
+      // Clear all caches
+      if ('caches' in window) {
+        const cacheNames = await caches.keys();
+        console.log('PWA Update Manager: Clearing all caches:', cacheNames);
+        await Promise.all(cacheNames.map(cacheName => caches.delete(cacheName)));
+        console.log('PWA Update Manager: All caches cleared');
+      }
+      
+      // Clear local storage
+      localStorage.clear();
+      sessionStorage.clear();
+      
+      console.log('PWA Update Manager: Everything cleared, reloading...');
+      window.location.reload(true);
+    } catch (error) {
+      console.error('PWA Update Manager: Error during force clear:', error);
+      window.location.reload(true);
     }
   }
   
