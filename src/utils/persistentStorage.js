@@ -470,7 +470,7 @@ class PersistentStorage {
   }
 
   // Get storage health information
-  getStorageHealth() {
+  async getStorageHealth() {
     return {
       available: this.availableStorage,
       memoryCache: this.memoryCache.size,
