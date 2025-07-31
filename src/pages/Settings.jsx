@@ -250,7 +250,7 @@ const SettingsPage = ({ lists = [], onBack, onNavigateToAnalytics, onNavigateToT
             className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-lg border border-[rgb(var(--border-color))]/20 p-6 lg:p-8"
           >
             <h2 className="text-xl lg:text-2xl font-bold text-[rgb(var(--card-text))] mb-6 flex items-center">
-              <User className="w-6 h-6 mr-3 text-primary" />
+              <User className="w-6 h-6 mr-3 text-[rgb(var(--primary-color))]" />
               Gebruiker Identiteit
             </h2>
             
@@ -374,7 +374,7 @@ const SettingsPage = ({ lists = [], onBack, onNavigateToAnalytics, onNavigateToT
             className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-lg border border-[rgb(var(--border-color))]/20 p-6 lg:p-8"
           >
             <h2 className="text-xl lg:text-2xl font-bold text-[rgb(var(--card-text))] mb-6 flex items-center">
-              <BarChart3 className="w-6 h-6 mr-3 text-accent" />
+              <BarChart3 className="w-6 h-6 mr-3 text-[rgb(var(--accent-color))]" />
               Analytics & Statistieken
             </h2>
             
@@ -585,6 +585,150 @@ const SettingsPage = ({ lists = [], onBack, onNavigateToAnalytics, onNavigateToT
                 >
                   <span className="font-medium">Opslag wissen & Herstarten</span>
                 </button>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Developer & Source Code Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-lg border border-[rgb(var(--border-color))]/20 p-6 lg:p-8"
+          >
+            <h2 className="text-xl lg:text-2xl font-bold text-[rgb(var(--card-text))] mb-6 flex items-center">
+              <Code className="w-6 h-6 mr-3 text-[rgb(var(--secondary-color))]" />
+              Ontwikkelaar & Broncode
+            </h2>
+            
+            <div className="space-y-6">
+              {/* Developer Info */}
+              <div className="bg-[rgb(var(--secondary-color))]/10 border border-[rgb(var(--secondary-color))]/20 p-4 rounded-lg">
+                <div className="flex items-center mb-3">
+                  <Heart className="w-5 h-5 mr-2 text-[rgb(var(--secondary-color))]" />
+                  <h3 className="text-lg font-semibold text-[rgb(var(--secondary-color))]">
+                    Gemaakt met ❤️ door
+                  </h3>
+                </div>
+                <div className="bg-[rgb(var(--card-bg))] p-3 rounded border">
+                  <p className="text-base font-medium text-[rgb(var(--card-text))]">
+                    Jan-Pieter Hermans
+                  </p>
+                  <p className="text-sm text-[rgb(var(--text-color))]/60 mt-1">
+                    Full-Stack Developer & PWA Specialist
+                  </p>
+                </div>
+              </div>
+
+              {/* GitHub Links */}
+              <div className="bg-[rgb(var(--primary-color))]/10 border border-[rgb(var(--primary-color))]/20 p-4 rounded-lg">
+                <div className="flex items-center mb-4">
+                  <Github className="w-5 h-5 mr-2 text-[rgb(var(--primary-color))]" />
+                  <h3 className="text-lg font-semibold text-[rgb(var(--primary-color))]">
+                    Open Source Project
+                  </h3>
+                </div>
+                
+                <div className="space-y-3">
+                  {/* Source Code Repository */}
+                  <div className="bg-[rgb(var(--card-bg))] p-3 rounded border">
+                    <div className="flex items-center justify-between mb-2">
+                      <div>
+                        <p className="text-sm font-medium text-[rgb(var(--card-text))]">Broncode Repository</p>
+                        <p className="text-xs text-[rgb(var(--text-color))]/60">Bekijk en draag bij aan de code</p>
+                      </div>
+                      <a
+                        href="https://github.com/jphermans/boodschappenlijst"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center space-x-2 px-3 py-2 bg-[rgb(var(--primary-color))]/20 hover:bg-[rgb(var(--primary-color))]/30 text-[rgb(var(--primary-color))] rounded-lg transition-colors text-sm"
+                      >
+                        <Github className="w-4 h-4" />
+                        <span>GitHub</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    </div>
+                  </div>
+
+                  {/* Live Deployment */}
+                  <div className="bg-[rgb(var(--card-bg))] p-3 rounded border">
+                    <div className="flex items-center justify-between mb-2">
+                      <div>
+                        <p className="text-sm font-medium text-[rgb(var(--card-text))]">Live Deployment</p>
+                        <p className="text-xs text-[rgb(var(--text-color))]/60">GitHub Pages hosting</p>
+                      </div>
+                      <a
+                        href="https://jphermans.github.io/boodschappenlijst/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center space-x-2 px-3 py-2 bg-[rgb(var(--success-color))]/20 hover:bg-[rgb(var(--success-color))]/30 text-[rgb(var(--success-color))] rounded-lg transition-colors text-sm"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                        <span>Live App</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Project Info */}
+              <div className="bg-[rgb(var(--info-color))]/10 border border-[rgb(var(--info-color))]/20 p-4 rounded-lg">
+                <div className="flex items-center mb-3">
+                  <Info className="w-5 h-5 mr-2 text-[rgb(var(--info-color))]" />
+                  <h3 className="text-base font-semibold text-[rgb(var(--info-color))]">
+                    Project Informatie
+                  </h3>
+                </div>
+                <div className="space-y-2 text-sm text-[rgb(var(--text-color))]/80">
+                  <div className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-[rgb(var(--info-color))] rounded-full mt-2 flex-shrink-0"></div>
+                    <div>
+                      <p className="font-medium">Progressive Web App (PWA)</p>
+                      <p className="text-xs text-[rgb(var(--text-color))]/60">Installeerbaar op alle apparaten</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-[rgb(var(--info-color))] rounded-full mt-2 flex-shrink-0"></div>
+                    <div>
+                      <p className="font-medium">React + Firebase</p>
+                      <p className="text-xs text-[rgb(var(--text-color))]/60">Moderne tech stack met real-time sync</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-[rgb(var(--info-color))] rounded-full mt-2 flex-shrink-0"></div>
+                    <div>
+                      <p className="font-medium">Open Source</p>
+                      <p className="text-xs text-[rgb(var(--text-color))]/60">MIT License - vrij te gebruiken en aan te passen</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-[rgb(var(--info-color))] rounded-full mt-2 flex-shrink-0"></div>
+                    <div>
+                      <p className="font-medium">Offline Support</p>
+                      <p className="text-xs text-[rgb(var(--text-color))]/60">Werkt ook zonder internetverbinding</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Contribution Info */}
+              <div className="bg-[rgb(var(--accent-color))]/10 border border-[rgb(var(--accent-color))]/20 p-4 rounded-lg">
+                <div className="flex items-center mb-3">
+                  <Heart className="w-5 h-5 mr-2 text-[rgb(var(--accent-color))]" />
+                  <h3 className="text-base font-semibold text-[rgb(var(--accent-color))]">
+                    Bijdragen Welkom
+                  </h3>
+                </div>
+                <p className="text-sm text-[rgb(var(--text-color))]/70 mb-3">
+                  Dit is een open source project! Voel je vrij om bij te dragen via GitHub:
+                </p>
+                <div className="space-y-2 text-xs text-[rgb(var(--text-color))]/60">
+                  <p>• 🐛 Bug reports en feature requests</p>
+                  <p>• 🔧 Code contributions en pull requests</p>
+                  <p>• 📖 Documentatie verbeteringen</p>
+                  <p>• 🌍 Vertalingen naar andere talen</p>
+                </div>
               </div>
             </div>
           </motion.div>

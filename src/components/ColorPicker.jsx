@@ -243,7 +243,7 @@ export default function ColorPicker({ isOpen, onClose }) {
               </div>
               <button
                 onClick={onClose}
-                className="w-full sm:w-auto px-6 py-3 bg-primary hover:opacity-90 text-white rounded-lg transition-colors font-medium text-base touch-manipulation min-h-[48px] flex items-center justify-center"
+                className="w-full sm:w-auto px-6 py-3 bg-[rgb(var(--primary-color))] hover:opacity-90 text-white rounded-lg transition-colors font-medium text-base touch-manipulation min-h-[48px] flex items-center justify-center"
               >
                 Sluiten
               </button>

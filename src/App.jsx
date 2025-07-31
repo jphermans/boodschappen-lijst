@@ -597,7 +597,7 @@ function App() {
           <div className="flex items-center justify-between h-16 lg:h-20">
             {/* Logo and Brand */}
             <div className="flex items-center lg:space-x-4 flex-1 min-w-0">
-              <div className="hidden lg:flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-primary to-secondary rounded-xl shadow-lg mr-3">
+              <div className="hidden lg:flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-[rgb(var(--primary-color))] to-[rgb(var(--secondary-color))] rounded-xl shadow-lg mr-3">
                 <List className="w-5 h-5 lg:w-6 lg:h-6 text-white" />
               </div>
               <div className="min-w-0 flex-1 pl-2 sm:pl-0">
@@ -619,7 +619,7 @@ function App() {
                 }}
                 className={`px-4 xl:px-6 py-2.5 rounded-xl font-medium transition-all duration-200 ${
                   !selectedList && currentPage === 'overview'
-                    ? 'bg-primary text-white shadow-lg'
+                    ? 'bg-[rgb(var(--primary-color))] text-white shadow-lg'
                     : 'text-[rgb(var(--text-color))]/80 hover:bg-[rgb(var(--border-color))]/20 hover:text-[rgb(var(--card-text))]'
                 }`}
               >
@@ -630,7 +630,7 @@ function App() {
                 onClick={() => setCurrentPage('settings')}
                 className={`px-4 xl:px-6 py-2.5 rounded-xl font-medium transition-all duration-200 ${
                   currentPage === 'settings'
-                    ? 'bg-primary text-white shadow-lg'
+                    ? 'bg-[rgb(var(--primary-color))] text-white shadow-lg'
                     : 'text-[rgb(var(--text-color))]/80 hover:bg-[rgb(var(--border-color))]/20 hover:text-[rgb(var(--card-text))]'
                 }`}
               >
@@ -641,7 +641,7 @@ function App() {
                 onClick={() => setCurrentPage('analytics')}
                 className={`px-4 xl:px-6 py-2.5 rounded-xl font-medium transition-all duration-200 ${
                   currentPage === 'analytics'
-                    ? 'bg-primary text-white shadow-lg'
+                    ? 'bg-[rgb(var(--primary-color))] text-white shadow-lg'
                     : 'text-[rgb(var(--text-color))]/80 hover:bg-[rgb(var(--border-color))]/20 hover:text-[rgb(var(--card-text))]'
                 }`}
               >
@@ -652,7 +652,7 @@ function App() {
                 onClick={() => setCurrentPage('theme')}
                 className={`px-4 xl:px-6 py-2.5 rounded-xl font-medium transition-all duration-200 ${
                   currentPage === 'theme'
-                    ? 'bg-primary text-white shadow-lg'
+                    ? 'bg-[rgb(var(--primary-color))] text-white shadow-lg'
                     : 'text-[rgb(var(--text-color))]/80 hover:bg-[rgb(var(--border-color))]/20 hover:text-[rgb(var(--card-text))]'
                 }`}
               >
@@ -663,7 +663,7 @@ function App() {
                 onClick={() => setCurrentPage('persistence')}
                 className={`px-4 xl:px-6 py-2.5 rounded-xl font-medium transition-all duration-200 ${
                   currentPage === 'persistence'
-                    ? 'bg-primary text-white shadow-lg'
+                    ? 'bg-[rgb(var(--primary-color))] text-white shadow-lg'
                     : 'text-[rgb(var(--text-color))]/80 hover:bg-[rgb(var(--border-color))]/20 hover:text-[rgb(var(--card-text))]'
                 }`}
               >
