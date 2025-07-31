@@ -2,7 +2,7 @@
   "name": "Boodschappenlijst",
   "short_name": "Boodschappen",
   "description": "Maak en deel boodschappenlijsten eenvoudig met vrienden en familie",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",

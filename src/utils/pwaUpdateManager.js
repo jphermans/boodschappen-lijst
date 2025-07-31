@@ -6,6 +6,8 @@ class PWAUpdateManager {
     this.onUpdateAvailable = null;
     this.onUpdateInstalled = null;
     this.onUpdateError = null;
+    this.currentVersion = null;
+    this.latestVersion = null;
     
     this.init();
   }
@@ -99,14 +101,17 @@ class PWAUpdateManager {
 
   // Check for updates manually
   async checkForUpdates() {
-    if (!this.registration) {
-      console.log('PWA Update Manager: No registration available');
-      return false;
-    }
-
     console.log('PWA Update Manager: Checking for updates...');
     
     try {
+      // First check version-based update
+      const versionUpdateAvailable = await this.checkVersionUpdate();
+      
+      if (!this.registration) {
+        console.log('PWA Update Manager: No registration available, using version check only');
+        return versionUpdateAvailable;
+      }
+
       // Force update check by bypassing cache
       await this.registration.update();
       
@@ -120,6 +125,12 @@ class PWAUpdateManager {
       // Also check if there's an installing service worker
       if (this.registration.installing) {
         console.log('PWA Update Manager: Update installing after manual check');
+        return true;
+      }
+      
+      // Return version-based update result if no service worker update
+      if (versionUpdateAvailable) {
+        this.showUpdateAvailable();
         return true;
       }
       
@@ -156,7 +167,15 @@ class PWAUpdateManager {
   // Get current version info
   async getVersionInfo() {
     if (!this.registration || !this.registration.active) {
-      return null;
+      // Fallback to manifest version
+      try {
+        const response = await fetch('/manifest.json');
+        const manifest = await response.json();
+        return manifest.version || '1.0.0';
+      } catch (error) {
+        console.warn('Could not fetch manifest version:', error);
+        return '1.0.0';
+      }
     }
 
     return new Promise((resolve) => {
@@ -167,11 +186,93 @@ class PWAUpdateManager {
         }
       };
 
+      // Set a timeout in case the service worker doesn't respond
+      setTimeout(() => {
+        resolve(this.getManifestVersion());
+      }, 2000);
+
       this.registration.active.postMessage(
         { type: 'GET_VERSION' },
         [messageChannel.port2]
       );
     });
+  }
+
+  // Get version from manifest.json
+  async getManifestVersion() {
+    try {
+      const response = await fetch('/manifest.json');
+      const manifest = await response.json();
+      return manifest.version || '1.0.0';
+    } catch (error) {
+      console.warn('Could not fetch manifest version:', error);
+      return '1.0.0';
+    }
+  }
+
+  // Compare version strings (semantic versioning)
+  compareVersions(version1, version2) {
+    const v1parts = version1.split('.').map(Number);
+    const v2parts = version2.split('.').map(Number);
+    
+    for (let i = 0; i < Math.max(v1parts.length, v2parts.length); i++) {
+      const v1part = v1parts[i] || 0;
+      const v2part = v2parts[i] || 0;
+      
+      if (v1part < v2part) return -1;
+      if (v1part > v2part) return 1;
+    }
+    
+    return 0;
+  }
+
+  // Check if version-based update is needed
+  async checkVersionUpdate() {
+    try {
+      // Get current version
+      this.currentVersion = await this.getVersionInfo();
+      
+      // Get latest version from server (manifest.json)
+      const response = await fetch('/manifest.json', {
+        cache: 'no-cache',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      });
+      const manifest = await response.json();
+      this.latestVersion = manifest.version || '1.0.0';
+      
+      console.log(`PWA Update Manager: Current version: ${this.currentVersion}, Latest version: ${this.latestVersion}`);
+      
+      // Compare versions
+      const comparison = this.compareVersions(this.currentVersion, this.latestVersion);
+      
+      if (comparison < 0) {
+        console.log('PWA Update Manager: Version update available!');
+        this.updateAvailable = true;
+        return true;
+      }
+      
+      console.log('PWA Update Manager: Version is up to date');
+      return false;
+    } catch (error) {
+      console.error('PWA Update Manager: Version check failed:', error);
+      return false;
+    }
+  }
+
+  // Get version information object
+  async getVersionDetails() {
+    const current = await this.getVersionInfo();
+    const latest = this.latestVersion || current;
+    
+    return {
+      current,
+      latest,
+      updateAvailable: this.compareVersions(current, latest) < 0
+    };
   }
 
   // Force a hard refresh (bypass cache)

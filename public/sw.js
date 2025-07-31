@@ -1,6 +1,7 @@
 // Service Worker for PWA Update Management
-const CACHE_NAME = 'boodschappenlijst-v1.0.1';
-const STATIC_CACHE_NAME = 'boodschappenlijst-static-v1.0.1';
+const CACHE_NAME = 'boodschappenlijst-v1.0.2';
+const STATIC_CACHE_NAME = 'boodschappenlijst-static-v1.0.2';
+const APP_VERSION = '1.0.2';
 
 // Files to cache for offline functionality
 const STATIC_FILES = [
@@ -114,27 +115,58 @@ self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'GET_VERSION') {
     event.ports[0].postMessage({
       type: 'VERSION_INFO',
-      version: CACHE_NAME
+      version: APP_VERSION
     });
   }
 });
 
-// Notify clients when a new version is available
+// Handle version comparison requests
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'CHECK_UPDATE') {
-    // Force update check by trying to fetch the main page
-    fetch('./', { cache: 'no-cache' })
-      .then(() => {
+    // Force update check by trying to fetch the manifest
+    fetch('./manifest.json', {
+      cache: 'no-cache',
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
+    })
+      .then(response => response.json())
+      .then(manifest => {
+        const latestVersion = manifest.version || '1.0.0';
+        const updateAvailable = compareVersions(APP_VERSION, latestVersion) < 0;
+        
         event.ports[0].postMessage({
           type: 'UPDATE_AVAILABLE',
-          available: true
+          available: updateAvailable,
+          currentVersion: APP_VERSION,
+          latestVersion: latestVersion
         });
       })
       .catch(() => {
         event.ports[0].postMessage({
           type: 'UPDATE_AVAILABLE',
-          available: false
+          available: false,
+          currentVersion: APP_VERSION,
+          latestVersion: APP_VERSION
         });
       });
   }
 });
+
+// Version comparison utility
+function compareVersions(version1, version2) {
+  const v1parts = version1.split('.').map(Number);
+  const v2parts = version2.split('.').map(Number);
+  
+  for (let i = 0; i < Math.max(v1parts.length, v2parts.length); i++) {
+    const v1part = v1parts[i] || 0;
+    const v2part = v2parts[i] || 0;
+    
+    if (v1part < v2part) return -1;
+    if (v1part > v2part) return 1;
+  }
+  
+  return 0;
+}

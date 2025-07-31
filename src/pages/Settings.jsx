@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Link2, BarChart3, Settings, RotateCcw, Download, RefreshCw, Copy, User, Database, Shield } from 'lucide-react';
+import { ArrowLeft, Link2, BarChart3, Settings, RotateCcw, Download, RefreshCw, Copy, User, Database, Shield, Package, CheckCircle, AlertCircle, Info } from 'lucide-react';
 import { getDeviceInfo } from '../utils/deviceUID';
 import { getCurrentUserID } from '../firebase';
 import { useToast } from '../context/ToastContext';
@@ -9,20 +9,33 @@ import pwaUpdateManager from '../utils/pwaUpdateManager';
 const SettingsPage = ({ lists = [], onBack, onNavigateToAnalytics, onNavigateToTheme, onNavigateToPersistence }) => {
   const deviceInfo = getDeviceInfo();
   const [isCheckingUpdate, setIsCheckingUpdate] = useState(false);
-  const [appVersion, setAppVersion] = useState('');
+  const [versionDetails, setVersionDetails] = useState({
+    current: '',
+    latest: '',
+    updateAvailable: false
+  });
   const [currentUserID, setCurrentUserID] = useState('');
   const { success, error, info } = useToast();
 
   useEffect(() => {
-    // Get app version info
+    // Get app version details
     const getVersionInfo = async () => {
       try {
-        const version = await pwaUpdateManager.getVersionInfo();
-        if (version) {
-          setAppVersion(version.replace('boodschappenlijst-', '').replace('-v', ' v'));
-        }
+        const details = await pwaUpdateManager.getVersionDetails();
+        setVersionDetails(details);
       } catch (err) {
         console.log('Could not get version info:', err);
+        // Fallback to basic version info
+        try {
+          const version = await pwaUpdateManager.getVersionInfo();
+          setVersionDetails({
+            current: version || '1.0.0',
+            latest: version || '1.0.0',
+            updateAvailable: false
+          });
+        } catch (fallbackErr) {
+          console.log('Fallback version fetch failed:', fallbackErr);
+        }
       }
     };
     
@@ -58,8 +71,12 @@ const SettingsPage = ({ lists = [], onBack, onNavigateToAnalytics, onNavigateToT
     try {
       const updateFound = await pwaUpdateManager.checkForUpdates();
       
+      // Refresh version details after check
+      const details = await pwaUpdateManager.getVersionDetails();
+      setVersionDetails(details);
+      
       setTimeout(() => {
-        if (pwaUpdateManager.updateAvailable) {
+        if (pwaUpdateManager.updateAvailable || details.updateAvailable) {
           success('🚀 Nieuwe versie gevonden! Update notificatie wordt getoond.', 4000);
         } else {
           info('✅ Je gebruikt al de nieuwste versie!', 3000);
@@ -119,6 +136,104 @@ const SettingsPage = ({ lists = [], onBack, onNavigateToAnalytics, onNavigateToT
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 lg:px-8 xl:px-12 py-6 lg:py-8 xl:py-12 safe-area-x content-safe-area" style={{ paddingTop: 'calc(var(--header-height) + 1.5rem)' }}>
         <div className="space-y-8">
+          
+          {/* App Version Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-lg border border-[rgb(var(--border-color))]/20 p-6 lg:p-8"
+          >
+            <h2 className="text-xl lg:text-2xl font-bold text-[rgb(var(--card-text))] mb-6 flex items-center">
+              <Package className="w-6 h-6 mr-3 text-[rgb(var(--primary-color))]" />
+              App Versie
+            </h2>
+            
+            <div className="space-y-4">
+              {/* Current Version */}
+              <div className="bg-[rgb(var(--primary-color))]/10 border border-[rgb(var(--primary-color))]/20 p-4 rounded-lg">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-lg font-semibold text-[rgb(var(--primary-color))] flex items-center">
+                    <CheckCircle className="w-5 h-5 mr-2" />
+                    Huidige Versie
+                  </h3>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <span className="text-sm text-[rgb(var(--text-color))]/60">Actief</span>
+                  </div>
+                </div>
+                <div className="bg-[rgb(var(--card-bg))] p-3 rounded border">
+                  <p className="text-lg font-mono font-bold text-[rgb(var(--primary-color))]">
+                    v{versionDetails.current || 'Laden...'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Latest Version & Update Status */}
+              <div className={`p-4 rounded-lg border ${
+                versionDetails.updateAvailable
+                  ? 'bg-[rgb(var(--warning-color))]/10 border-[rgb(var(--warning-color))]/20'
+                  : 'bg-[rgb(var(--success-color))]/10 border-[rgb(var(--success-color))]/20'
+              }`}>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className={`text-lg font-semibold flex items-center ${
+                    versionDetails.updateAvailable
+                      ? 'text-[rgb(var(--warning-color))]'
+                      : 'text-[rgb(var(--success-color))]'
+                  }`}>
+                    {versionDetails.updateAvailable ? (
+                      <AlertCircle className="w-5 h-5 mr-2" />
+                    ) : (
+                      <CheckCircle className="w-5 h-5 mr-2" />
+                    )}
+                    {versionDetails.updateAvailable ? 'Update Beschikbaar' : 'Up-to-date'}
+                  </h3>
+                  <div className="flex items-center space-x-2">
+                    <div className={`w-3 h-3 rounded-full ${
+                      versionDetails.updateAvailable ? 'bg-orange-500' : 'bg-green-500'
+                    }`}></div>
+                    <span className="text-sm text-[rgb(var(--text-color))]/60">
+                      {versionDetails.updateAvailable ? 'Update vereist' : 'Nieuwste versie'}
+                    </span>
+                  </div>
+                </div>
+                <div className="bg-[rgb(var(--card-bg))] p-3 rounded border">
+                  <p className={`text-lg font-mono font-bold ${
+                    versionDetails.updateAvailable
+                      ? 'text-[rgb(var(--warning-color))]'
+                      : 'text-[rgb(var(--success-color))]'
+                  }`}>
+                    v{versionDetails.latest || versionDetails.current || 'Laden...'}
+                  </p>
+                </div>
+                {versionDetails.updateAvailable && (
+                  <div className="mt-3 p-3 bg-[rgb(var(--warning-color))]/5 rounded border border-[rgb(var(--warning-color))]/10">
+                    <p className="text-sm text-[rgb(var(--warning-color))] flex items-center">
+                      <Info className="w-4 h-4 mr-2" />
+                      Een nieuwe versie is beschikbaar! Gebruik de update knoppen hieronder.
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Version Comparison */}
+              {versionDetails.current && versionDetails.latest && versionDetails.current !== versionDetails.latest && (
+                <div className="bg-[rgb(var(--info-color))]/10 border border-[rgb(var(--info-color))]/20 p-4 rounded-lg">
+                  <h4 className="text-base font-semibold text-[rgb(var(--info-color))] mb-2 flex items-center">
+                    <Info className="w-4 h-4 mr-2" />
+                    Versie Vergelijking
+                  </h4>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-[rgb(var(--text-color))]/70">
+                      v{versionDetails.current} → v{versionDetails.latest}
+                    </span>
+                    <span className="px-2 py-1 bg-[rgb(var(--info-color))]/20 text-[rgb(var(--info-color))] rounded text-xs font-medium">
+                      Update Aanbevolen
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </motion.div>
           {/* User Identity & Sharing Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -341,26 +456,20 @@ const SettingsPage = ({ lists = [], onBack, onNavigateToAnalytics, onNavigateToT
             </h2>
 
             <div className="space-y-4">
-              {appVersion && (
-                <div className="flex items-center justify-between p-4 bg-[rgb(var(--border-color))]/10 rounded-lg">
-                  <div>
-                    <p className="text-sm font-medium text-[rgb(var(--card-text))]">Huidige versie</p>
-                    <p className="text-xs text-[rgb(var(--text-color))]/60">{appVersion}</p>
-                  </div>
-                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                </div>
-              )}
-
               <div className="bg-[rgb(var(--border-color))]/10 p-4 rounded-lg">
                 <p className="text-sm text-[rgb(var(--text-color))]/80 mb-4">
-                  Houd je app up-to-date voor de nieuwste functies en verbeteringen. Updates worden automatisch gedetecteerd.
+                  Houd je app up-to-date voor de nieuwste functies en verbeteringen. Updates worden automatisch gedetecteerd op basis van versienummers.
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <button
                     onClick={handleCheckForUpdates}
                     disabled={isCheckingUpdate}
-                    className="flex items-center justify-center space-x-2 px-4 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200"
+                    className={`flex items-center justify-center space-x-2 px-4 py-3 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200 ${
+                      versionDetails.updateAvailable
+                        ? 'bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white'
+                        : 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white'
+                    }`}
                   >
                     {isCheckingUpdate ? (
                       <>
@@ -370,7 +479,9 @@ const SettingsPage = ({ lists = [], onBack, onNavigateToAnalytics, onNavigateToT
                     ) : (
                       <>
                         <Download className="w-4 h-4" />
-                        <span className="font-medium">Check Updates</span>
+                        <span className="font-medium">
+                          {versionDetails.updateAvailable ? 'Update Beschikbaar!' : 'Check Updates'}
+                        </span>
                       </>
                     )}
                   </button>
@@ -385,8 +496,8 @@ const SettingsPage = ({ lists = [], onBack, onNavigateToAnalytics, onNavigateToT
                 </div>
 
                 <div className="text-xs text-[rgb(var(--text-color))]/50 bg-[rgb(var(--border-color))]/5 p-3 rounded-lg mt-4">
-                  <p className="mb-1"><strong>Check Updates:</strong> Controleert op nieuwe versies</p>
-                  <p><strong>Force Refresh:</strong> Vernieuwt de app volledig (gebruik bij problemen)</p>
+                  <p className="mb-1"><strong>Check Updates:</strong> Controleert op nieuwe versies via versienummer vergelijking</p>
+                  <p><strong>Force Refresh:</strong> Vernieuwt de app volledig en wist alle caches (gebruik bij problemen)</p>
                 </div>
               </div>
             </div>
