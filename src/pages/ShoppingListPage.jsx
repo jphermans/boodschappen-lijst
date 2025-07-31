@@ -221,6 +221,14 @@ const ShoppingListPage = ({ list, onBack, onListUpdate }) => {
 
   const completedCount = items.filter(item => item.completed).length;
   const progress = items.length > 0 ? (completedCount / items.length) * 100 : 0;
+  
+  // Debug logging
+  console.log('Progress Bar Debug:', {
+    totalItems: items.length,
+    completedItems: completedCount,
+    progressPercentage: progress,
+    items: items.map(item => ({ name: item.name, completed: item.completed }))
+  });
 
   if (!list) {
     return (

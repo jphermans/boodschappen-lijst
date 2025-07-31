@@ -226,7 +226,7 @@ const SettingsPage = ({ lists = [], onBack, onNavigateToAnalytics, onNavigateToT
           >
             <h2 className="text-xl lg:text-2xl font-bold text-[rgb(var(--card-text))] mb-6 flex items-center">
               <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
-                <Update className="w-4 h-4 text-white" />
+                <RotateCcw className="w-4 h-4 text-white" />
               </div>
               App Updates
             </h2>
