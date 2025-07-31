@@ -471,10 +471,67 @@ class PersistentStorage {
 
   // Get storage health information
   async getStorageHealth() {
+    // Calculate total storage size
+    let totalSize = 0;
+    let totalItems = 0;
+    
+    // Count localStorage items and size
+    if (this.availableStorage.localStorage) {
+      try {
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && key.startsWith(STORAGE_PREFIX)) {
+            const value = localStorage.getItem(key);
+            if (value) {
+              totalSize += value.length * 2; // Rough estimate: 2 bytes per character
+              totalItems++;
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('Error calculating localStorage size:', e);
+      }
+    }
+    
+    // Count sessionStorage items and size
+    if (this.availableStorage.sessionStorage) {
+      try {
+        for (let i = 0; i < sessionStorage.length; i++) {
+          const key = sessionStorage.key(i);
+          if (key && key.startsWith(SESSION_PREFIX)) {
+            const value = sessionStorage.getItem(key);
+            if (value) {
+              totalSize += value.length * 2; // Rough estimate: 2 bytes per character
+              totalItems++;
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('Error calculating sessionStorage size:', e);
+      }
+    }
+    
+    // Add memory cache size
+    totalItems += this.memoryCache.size;
+    
+    // Determine overall health status
+    let status = 'healthy';
+    const availableCount = Object.values(this.availableStorage).filter(Boolean).length;
+    
+    if (availableCount === 0) {
+      status = 'error';
+    } else if (availableCount < 3) {
+      status = 'warning';
+    }
+    
     return {
       available: this.availableStorage,
       memoryCache: this.memoryCache.size,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      status: status,
+      lastCheck: Date.now(),
+      totalSize: totalSize,
+      items: totalItems
     };
   }
 

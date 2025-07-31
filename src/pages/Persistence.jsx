@@ -213,7 +213,7 @@ const PersistencePage = ({ onBack }) => {
             <button
               onClick={refreshHealthInfo}
               disabled={isLoading}
-              className="w-full flex items-center justify-center px-4 py-3 bg-primary hover:opacity-90 text-white rounded-lg transition-colors disabled:opacity-50"
+              className="w-full flex items-center justify-center px-4 py-3 bg-[rgb(var(--color-primary-button))] hover:opacity-90 text-white rounded-lg transition-colors disabled:opacity-50"
             >
               <RefreshCw className="w-4 h-4 mr-2" />
               Vernieuwen
@@ -222,13 +222,13 @@ const PersistencePage = ({ onBack }) => {
             <button
               onClick={handleCreateBackup}
               disabled={isCreatingBackup || hookCreatingBackup}
-              className="w-full flex items-center justify-center px-4 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors disabled:opacity-50"
+              className="w-full flex items-center justify-center px-4 py-3 bg-[rgb(var(--color-secondary-button))] hover:opacity-90 text-white rounded-lg transition-colors disabled:opacity-50"
             >
               <Download className="w-4 h-4 mr-2" />
               {isCreatingBackup || hookCreatingBackup ? 'Backup maken...' : 'Firebase Backup'}
             </button>
 
-            <label className="w-full flex items-center justify-center px-4 py-3 bg-secondary hover:bg-secondary/90 text-white rounded-lg transition-colors cursor-pointer">
+            <label className="w-full flex items-center justify-center px-4 py-3 bg-[rgb(var(--color-info-button))] hover:opacity-90 text-white rounded-lg transition-colors cursor-pointer">
               <Upload className="w-4 h-4 mr-2" />
               {isRestoring || hookRestoring ? 'Herstellen...' : 'Firebase Herstellen'}
               <input
