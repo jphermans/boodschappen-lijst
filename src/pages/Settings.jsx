@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Link2, BarChart3, Settings, RotateCcw, Download, RefreshCw, Copy, User, Database, Shield, Package, CheckCircle, AlertCircle, Info } from 'lucide-react';
+import { ArrowLeft, Link2, BarChart3, Settings, RotateCcw, Download, RefreshCw, Copy, User, Database, Shield, Package, CheckCircle, AlertCircle, Info, Code, Github, ExternalLink, Heart } from 'lucide-react';
 import { getDeviceInfo } from '../utils/deviceUID';
 import { getCurrentUserID } from '../firebase';
 import { useToast } from '../context/ToastContext';
