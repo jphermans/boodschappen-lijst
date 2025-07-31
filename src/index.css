@@ -195,6 +195,50 @@ body {
   background-color: rgb(var(--color-success));
 }
 
+/* Progress bar specific styles for better visibility */
+.progress-bar-fill {
+  background-color: rgb(var(--color-success));
+  height: 100%;
+  border-radius: inherit;
+  transition: width 0.5s ease-out;
+  min-width: 0;
+}
+
+.progress-bar-container {
+  background-color: rgba(var(--border-color), 0.2);
+  border-radius: 9999px;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+/* Fallback colors for better browser compatibility */
+:root {
+  --progress-bg-light: rgba(213, 196, 161, 0.2);
+  --progress-fill-light: #79740e;
+}
+
+[data-theme="dark"] {
+  --progress-bg-dark: rgba(80, 73, 69, 0.2);
+  --progress-fill-dark: #b8bb26;
+}
+
+.progress-bar-container {
+  background-color: var(--progress-bg-light);
+}
+
+[data-theme="dark"] .progress-bar-container {
+  background-color: var(--progress-bg-dark);
+}
+
+.progress-bar-fill {
+  background-color: var(--progress-fill-light);
+}
+
+[data-theme="dark"] .progress-bar-fill {
+  background-color: var(--progress-fill-dark);
+}
+
 .bg-warning {
   background-color: rgb(var(--color-warning));
 }

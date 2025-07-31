@@ -885,12 +885,11 @@ function App() {
                             {Math.round(((list.items?.filter(item => item.completed).length || 0) / (list.items?.length || 1)) * 100)}%
                           </span>
                         </div>
-                        <div className="w-full bg-[rgb(var(--border-color))]/20 rounded-full h-2 overflow-hidden relative">
+                        <div className="progress-bar-container h-2">
                           <div
-                            className="bg-[rgb(var(--success-color))] h-full rounded-full transition-all duration-500 ease-out absolute top-0 left-0"
+                            className="progress-bar-fill"
                             style={{
-                              width: `${Math.max(0, Math.min(100, ((list.items?.filter(item => item.completed).length || 0) / (list.items?.length || 1)) * 100))}%`,
-                              transform: 'translateZ(0)' // Force hardware acceleration
+                              width: `${Math.max(0, Math.min(100, ((list.items?.filter(item => item.completed).length || 0) / (list.items?.length || 1)) * 100))}%`
                             }}
                           ></div>
                         </div>

@@ -341,12 +341,11 @@ const ShoppingListPage = ({ list, onBack, onListUpdate }) => {
                 {completedCount} van {items.length} voltooid
               </span>
             </div>
-            <div className="w-full bg-[rgb(var(--border-color))]/20 rounded-full h-3 overflow-hidden relative">
+            <div className="progress-bar-container h-3">
               <div
-                className="bg-[rgb(var(--success-color))] h-full rounded-full transition-all duration-500 ease-out absolute top-0 left-0"
+                className="progress-bar-fill"
                 style={{
-                  width: `${Math.max(0, Math.min(100, progress))}%`,
-                  transform: 'translateZ(0)' // Force hardware acceleration
+                  width: `${Math.max(0, Math.min(100, progress))}%`
                 }}
               />
             </div>
