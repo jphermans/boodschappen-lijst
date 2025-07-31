@@ -638,7 +638,7 @@ const SettingsPage = ({ lists = [], onBack, onNavigateToAnalytics, onNavigateToT
                         <p className="text-xs text-[rgb(var(--text-color))]/60">Bekijk en draag bij aan de code</p>
                       </div>
                       <a
-                        href="https://github.com/jphermans/boodschappenlijst"
+                        href="https://github.com/jphermans/boodschappen-lijst"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center space-x-2 px-3 py-2 bg-[rgb(var(--primary-color))]/20 hover:bg-[rgb(var(--primary-color))]/30 text-[rgb(var(--primary-color))] rounded-lg transition-colors text-sm"
@@ -658,7 +658,7 @@ const SettingsPage = ({ lists = [], onBack, onNavigateToAnalytics, onNavigateToT
                         <p className="text-xs text-[rgb(var(--text-color))]/60">GitHub Pages hosting</p>
                       </div>
                       <a
-                        href="https://jphermans.github.io/boodschappenlijst/"
+                        href="https://jphermans.github.io/boodschappen-lijst/"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center space-x-2 px-3 py-2 bg-[rgb(var(--success-color))]/20 hover:bg-[rgb(var(--success-color))]/30 text-[rgb(var(--success-color))] rounded-lg transition-colors text-sm"
