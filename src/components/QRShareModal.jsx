@@ -1,11 +1,15 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { X, Copy, Download } from 'lucide-react';
+import { X, Copy, Download, Share2, MessageCircle, Send } from 'lucide-react';
 import QRCode from 'react-qr-code';
 
 const QRShareModal = ({ listId, list, onClose }) => {
   const shareUrl = `${window.location.origin}${window.location.pathname}#/shared/${listId}`;
   const isOwner = list?.isCreator || false;
+  const listName = list?.name || 'Boodschappenlijst';
+  
+  // Create a nice share message
+  const shareMessage = `🛒 ${listName}\n\nIk deel mijn boodschappenlijst met je! Klik op de link om de lijst te bekijken en items toe te voegen:\n\n${shareUrl}`;
 
   const copyToClipboard = async () => {
     try {
@@ -42,6 +46,45 @@ const QRShareModal = ({ listId, list, onClose }) => {
       };
       
       img.src = 'data:image/svg+xml;base64,' + btoa(svgData);
+    }
+  };
+
+  // Direct sharing functions
+  const shareViaWhatsApp = () => {
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareMessage)}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
+  const shareViaTelegram = () => {
+    const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(`🛒 ${listName} - Boodschappenlijst`)}`;
+    window.open(telegramUrl, '_blank');
+  };
+
+  const shareViaEmail = () => {
+    const subject = encodeURIComponent(`🛒 ${listName} - Gedeelde Boodschappenlijst`);
+    const body = encodeURIComponent(`Hallo!\n\nIk deel mijn boodschappenlijst "${listName}" met je.\n\nKlik op deze link om de lijst te bekijken en items toe te voegen:\n${shareUrl}\n\nGroeten!`);
+    const emailUrl = `mailto:?subject=${subject}&body=${body}`;
+    window.open(emailUrl);
+  };
+
+  const shareViaNativeAPI = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `🛒 ${listName}`,
+          text: `Bekijk mijn boodschappenlijst "${listName}"`,
+          url: shareUrl,
+        });
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          console.error('Error sharing:', err);
+          // Fallback to copy to clipboard
+          copyToClipboard();
+        }
+      }
+    } else {
+      // Fallback to copy to clipboard
+      copyToClipboard();
     }
   };
 
@@ -103,20 +146,66 @@ const QRShareModal = ({ listId, list, onClose }) => {
               </p>
             </div>
 
-            <div className="flex space-x-3">
+            {/* Direct Sharing Buttons */}
+            <div className="space-y-3">
+              <p className="text-sm font-medium text-[rgb(var(--card-text))] text-center">
+                Direct delen via:
+              </p>
+              
+              {/* Primary sharing options */}
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={shareViaWhatsApp}
+                  className="flex items-center justify-center space-x-2 px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  <span className="font-medium text-sm">WhatsApp</span>
+                </button>
+                
+                <button
+                  onClick={shareViaTelegram}
+                  className="flex items-center justify-center space-x-2 px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                >
+                  <Send className="w-4 h-4" />
+                  <span className="font-medium text-sm">Telegram</span>
+                </button>
+              </div>
+              
+              {/* Secondary sharing options */}
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={shareViaEmail}
+                  className="flex items-center justify-center space-x-2 px-4 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                >
+                  <span className="text-sm">📧</span>
+                  <span className="font-medium text-sm">E-mail</span>
+                </button>
+                
+                <button
+                  onClick={shareViaNativeAPI}
+                  className="flex items-center justify-center space-x-2 px-4 py-3 bg-[rgb(var(--color-info-button))] hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                >
+                  <Share2 className="w-4 h-4" />
+                  <span className="font-medium text-sm">Meer...</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Traditional options */}
+            <div className="flex space-x-3 pt-2 border-t border-[rgb(var(--border-color))]/20">
               <button
                 onClick={copyToClipboard}
-                className="flex-1 flex items-center justify-center space-x-2 px-4 py-3 bg-primary hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                className="flex-1 flex items-center justify-center space-x-2 px-4 py-3 bg-[rgb(var(--color-primary-button))] hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
               >
                 <Copy className="w-4 h-4" />
-                <span className="font-medium">📋 Kopieer link</span>
+                <span className="font-medium">📋 Kopieer</span>
               </button>
               <button
                 onClick={downloadQR}
-                className="flex-1 flex items-center justify-center space-x-2 px-4 py-3 bg-secondary hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                className="flex-1 flex items-center justify-center space-x-2 px-4 py-3 bg-[rgb(var(--color-secondary-button))] hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
               >
                 <Download className="w-4 h-4" />
-                <span className="font-medium">💾 Download QR</span>
+                <span className="font-medium">💾 QR</span>
               </button>
             </div>
           </div>
