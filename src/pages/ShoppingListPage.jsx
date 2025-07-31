@@ -333,9 +333,9 @@ const ShoppingListPage = ({ list, onBack, onListUpdate }) => {
                 {completedCount} van {items.length} voltooid
               </span>
             </div>
-            <div className="w-full bg-[rgb(var(--border-color))]/20 rounded-full h-3 overflow-hidden">
+            <div className="w-full bg-[rgb(var(--border-color))]/20 rounded-full h-3 overflow-hidden relative">
               <div
-                className="bg-[rgb(var(--success-color))] h-3 rounded-full transition-all duration-500 ease-out"
+                className="bg-[rgb(var(--success-color))] h-full rounded-full transition-all duration-500 ease-out absolute top-0 left-0"
                 style={{
                   width: `${Math.max(0, Math.min(100, progress))}%`,
                   transform: 'translateZ(0)' // Force hardware acceleration
@@ -435,11 +435,19 @@ const ShoppingListPage = ({ list, onBack, onListUpdate }) => {
                     disabled={!canEdit || isLoading}
                     className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
                       item.completed
-                        ? 'bg-[rgb(var(--success-color))] border-[rgb(var(--success-color))] text-white'
+                        ? 'bg-[rgb(var(--success-color))] border-[rgb(var(--success-color))]'
                         : 'border-[rgb(var(--border-color))] hover:border-[rgb(var(--primary-color))]'
                     }`}
                   >
-                    {item.completed && <Check className="w-4 h-4" />}
+                    {item.completed && (
+                      <Check
+                        className="w-4 h-4"
+                        style={{
+                          color: 'white',
+                          filter: 'drop-shadow(0 0 1px rgba(0,0,0,0.3))'
+                        }}
+                      />
+                    )}
                   </button>
 
                   {editingItemId === item.id ? (

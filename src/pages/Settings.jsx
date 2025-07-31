@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Link2, BarChart3, Settings, Update, Download, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Link2, BarChart3, Settings, RotateCcw, Download, RefreshCw } from 'lucide-react';
 import { getDeviceInfo } from '../utils/deviceUID';
 import { useToast } from '../context/ToastContext';
 import pwaUpdateManager from '../utils/pwaUpdateManager';
