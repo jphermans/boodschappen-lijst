@@ -16,12 +16,14 @@ import UserNameModal from './components/UserNameModal';
 import ConfirmationDialog from './components/ConfirmationDialog';
 import ConnectionError from './components/ConnectionError';
 import ToastContainer from './components/Toast';
+import PWAUpdateNotification from './components/PWAUpdateNotification';
 import { validateListName } from './utils/validation';
 import { validateQRData } from './utils/qrSecurity';
 import { userManager } from './utils/enhancedUserManager';
 import { useUserState } from './hooks/usePersistentState';
 import { useUnifiedThemeContext } from './context/UnifiedThemeContext';
 import { debugThemes } from './utils/debugThemes';
+import pwaUpdateManager from './utils/pwaUpdateManager';
 
 function App() {
   // Enhanced state management hooks
@@ -1243,6 +1245,7 @@ function App() {
       )}
 
       <ToastContainer toasts={toasts} removeToast={removeToast} />
+      <PWAUpdateNotification />
     </div>
   );
 }

@@ -1,10 +1,60 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Link2, BarChart3, Settings } from 'lucide-react';
+import { ArrowLeft, Link2, BarChart3, Settings, Update, Download, RefreshCw } from 'lucide-react';
 import { getDeviceInfo } from '../utils/deviceUID';
+import { useToast } from '../context/ToastContext';
+import pwaUpdateManager from '../utils/pwaUpdateManager';
 
 const SettingsPage = ({ lists = [], onBack, onNavigateToAnalytics, onNavigateToTheme, onNavigateToPersistence }) => {
   const deviceInfo = getDeviceInfo();
+  const [isCheckingUpdate, setIsCheckingUpdate] = useState(false);
+  const [appVersion, setAppVersion] = useState('');
+  const { success, error, info } = useToast();
+
+  useEffect(() => {
+    // Get app version info
+    const getVersionInfo = async () => {
+      try {
+        const version = await pwaUpdateManager.getVersionInfo();
+        if (version) {
+          setAppVersion(version.replace('boodschappenlijst-', '').replace('-v', ' v'));
+        }
+      } catch (err) {
+        console.log('Could not get version info:', err);
+      }
+    };
+    
+    getVersionInfo();
+  }, []);
+
+  const handleCheckForUpdates = async () => {
+    setIsCheckingUpdate(true);
+    info('🔍 Controleren op updates...', 2000);
+    
+    try {
+      const updateFound = await pwaUpdateManager.checkForUpdates();
+      
+      setTimeout(() => {
+        if (pwaUpdateManager.updateAvailable) {
+          success('🚀 Nieuwe versie gevonden! Update notificatie wordt getoond.', 4000);
+        } else {
+          info('✅ Je gebruikt al de nieuwste versie!', 3000);
+        }
+        setIsCheckingUpdate(false);
+      }, 1500);
+    } catch (err) {
+      console.error('Update check failed:', err);
+      error('❌ Kon niet controleren op updates. Controleer je internetverbinding.', 4000);
+      setIsCheckingUpdate(false);
+    }
+  };
+
+  const handleForceRefresh = () => {
+    info('🔄 App wordt geforceerd vernieuwd...', 2000);
+    setTimeout(() => {
+      pwaUpdateManager.forceRefresh();
+    }, 1000);
+  };
 
   return (
     <div className="min-h-screen-safe bg-[rgb(var(--bg-color))] transition-colors duration-300">
@@ -167,11 +217,77 @@ const SettingsPage = ({ lists = [], onBack, onNavigateToAnalytics, onNavigateToT
             </div>
           </motion.div>
 
+          {/* App Update Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.175 }}
+            className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-lg border border-[rgb(var(--border-color))]/20 p-6 lg:p-8"
+          >
+            <h2 className="text-xl lg:text-2xl font-bold text-[rgb(var(--card-text))] mb-6 flex items-center">
+              <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
+                <Update className="w-4 h-4 text-white" />
+              </div>
+              App Updates
+            </h2>
+
+            <div className="space-y-4">
+              {appVersion && (
+                <div className="flex items-center justify-between p-4 bg-[rgb(var(--border-color))]/10 rounded-lg">
+                  <div>
+                    <p className="text-sm font-medium text-[rgb(var(--card-text))]">Huidige versie</p>
+                    <p className="text-xs text-[rgb(var(--text-color))]/60">{appVersion}</p>
+                  </div>
+                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                </div>
+              )}
+
+              <div className="bg-[rgb(var(--border-color))]/10 p-4 rounded-lg">
+                <p className="text-sm text-[rgb(var(--text-color))]/80 mb-4">
+                  Houd je app up-to-date voor de nieuwste functies en verbeteringen. Updates worden automatisch gedetecteerd.
+                </p>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <button
+                    onClick={handleCheckForUpdates}
+                    disabled={isCheckingUpdate}
+                    className="flex items-center justify-center space-x-2 px-4 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200"
+                  >
+                    {isCheckingUpdate ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 animate-spin" />
+                        <span className="font-medium">Controleren...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Download className="w-4 h-4" />
+                        <span className="font-medium">Check Updates</span>
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    onClick={handleForceRefresh}
+                    className="flex items-center justify-center space-x-2 px-4 py-3 bg-[rgb(var(--border-color))]/20 hover:bg-[rgb(var(--border-color))]/30 text-[rgb(var(--card-text))] rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                    <span className="font-medium">Force Refresh</span>
+                  </button>
+                </div>
+
+                <div className="text-xs text-[rgb(var(--text-color))]/50 bg-[rgb(var(--border-color))]/5 p-3 rounded-lg mt-4">
+                  <p className="mb-1"><strong>Check Updates:</strong> Controleert op nieuwe versies</p>
+                  <p><strong>Force Refresh:</strong> Vernieuwt de app volledig (gebruik bij problemen)</p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
           {/* Data & Backup Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+            transition={{ delay: 0.25 }}
             className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-lg border border-[rgb(var(--border-color))]/20 p-6 lg:p-8"
           >
             <h2 className="text-xl lg:text-2xl font-bold text-[rgb(var(--card-text))] mb-6 flex items-center">
