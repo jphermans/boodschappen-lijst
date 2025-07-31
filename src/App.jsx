@@ -859,9 +859,14 @@ function App() {
                             {(() => {
                               const date = list.updatedAt.toDate ? list.updatedAt.toDate() : new Date(list.updatedAt);
                               const now = new Date();
-                              const diffHours = Math.floor((now - date) / (1000 * 60 * 60));
+                              const diffMs = now - date;
+                              const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+                              const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                              
                               if (diffHours < 1) return 'Zojuist';
-                              if (diffHours < 24) return `${diffHours}u geleden`;
+                              if (diffHours < 24 && diffDays === 0) return `${diffHours}u geleden`;
+                              if (diffDays === 1) return 'Gisteren';
+                              if (diffDays < 7) return `${diffDays} dagen geleden`;
                               return date.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' });
                             })()}
                           </span>
