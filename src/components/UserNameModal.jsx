@@ -49,8 +49,8 @@ const UserNameModal = ({ onNameSet }) => {
         className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-xl max-w-md w-full p-6"
       >
         <div className="text-center mb-6">
-          <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full flex items-center justify-center mx-auto mb-4">
-            <User className="w-8 h-8 text-primary" />
+          <div className="w-16 h-16 bg-[rgb(var(--primary-color))]/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <User className="w-8 h-8 text-[rgb(var(--primary-color))]" />
           </div>
           <h2 className="text-2xl font-bold text-[rgb(var(--card-text))] mb-2">
             Welkom bij Boodschappenlijst!
@@ -71,7 +71,7 @@ const UserNameModal = ({ onNameSet }) => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Bijv. Jan Janssen"
-              className="w-full px-4 py-3 border border-[rgb(var(--border-color))]/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-[rgb(var(--card-bg))] text-[rgb(var(--card-text))] placeholder-[rgb(var(--text-color))]/40 transition-all duration-200"
+              className="w-full px-4 py-3 border border-[rgb(var(--border-color))]/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-[rgb(var(--primary-color))] focus:border-transparent bg-[rgb(var(--card-bg))] text-[rgb(var(--card-text))] placeholder-[rgb(var(--text-color))]/40 transition-all duration-200"
               disabled={isSubmitting}
               autoFocus
             />
@@ -80,7 +80,7 @@ const UserNameModal = ({ onNameSet }) => {
           <button
             type="submit"
             disabled={!name.trim() || isSubmitting}
-            className="w-full flex items-center justify-center px-6 py-3 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200 font-semibold"
+            className="w-full flex items-center justify-center px-6 py-3 bg-[rgb(var(--primary-color))] hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200 font-semibold"
           >
             {isSubmitting ? (
               <>

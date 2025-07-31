@@ -35,7 +35,7 @@ const SettingsPage = ({ lists = [], onBack, onNavigateToAnalytics, onNavigateToT
             </div>
 
             {/* Settings Icon */}
-            <div className="flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-primary to-secondary rounded-xl shadow-lg">
+            <div className="flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-[rgb(var(--primary-color))] rounded-xl shadow-lg">
               <Settings className="w-5 h-5 lg:w-6 lg:h-6 text-white" />
             </div>
           </div>
@@ -103,7 +103,7 @@ const SettingsPage = ({ lists = [], onBack, onNavigateToAnalytics, onNavigateToT
                 
                 <button
                   onClick={onNavigateToAnalytics}
-                  className="w-full flex items-center justify-center px-6 py-4 bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                  className="w-full flex items-center justify-center px-6 py-4 bg-[rgb(var(--primary-color))] hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
                 >
                   <BarChart3 className="w-5 h-5 mr-3" />
                   <span className="font-medium">Open Analytics Dashboard</span>
@@ -112,24 +112,24 @@ const SettingsPage = ({ lists = [], onBack, onNavigateToAnalytics, onNavigateToT
               
               {lists.length > 0 && (
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div className="bg-primary/10 rounded-lg p-4 text-center">
-                    <div className="text-2xl font-bold text-primary">{lists.length}</div>
+                  <div className="bg-[rgb(var(--primary-color))]/10 rounded-lg p-4 text-center">
+                    <div className="text-2xl font-bold text-[rgb(var(--primary-color))]">{lists.length}</div>
                     <div className="text-xs text-[rgb(var(--text-color))]/60">Totaal lijsten</div>
                   </div>
-                  <div className="bg-secondary/10 rounded-lg p-4 text-center">
-                    <div className="text-2xl font-bold text-secondary">
+                  <div className="bg-[rgb(var(--secondary-color))]/10 rounded-lg p-4 text-center">
+                    <div className="text-2xl font-bold text-[rgb(var(--secondary-color))]">
                       {lists.filter(list => list.isCreator).length}
                     </div>
                     <div className="text-xs text-[rgb(var(--text-color))]/60">Eigenaar van</div>
                   </div>
-                  <div className="bg-accent/10 rounded-lg p-4 text-center">
-                    <div className="text-2xl font-bold text-accent">
+                  <div className="bg-[rgb(var(--accent-color))]/10 rounded-lg p-4 text-center">
+                    <div className="text-2xl font-bold text-[rgb(var(--accent-color))]">
                       {lists.filter(list => !list.isCreator).length}
                     </div>
                     <div className="text-xs text-[rgb(var(--text-color))]/60">Gedeeld met jou</div>
                   </div>
-                  <div className="bg-green-500/10 rounded-lg p-4 text-center">
-                    <div className="text-2xl font-bold text-green-600">
+                  <div className="bg-[rgb(var(--success-color))]/10 rounded-lg p-4 text-center">
+                    <div className="text-2xl font-bold text-[rgb(var(--success-color))]">
                       {lists.reduce((sum, list) => sum + (list.items || []).length, 0)}
                     </div>
                     <div className="text-xs text-[rgb(var(--text-color))]/60">Totaal items</div>
@@ -147,7 +147,7 @@ const SettingsPage = ({ lists = [], onBack, onNavigateToAnalytics, onNavigateToT
             className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-lg border border-[rgb(var(--border-color))]/20 p-6 lg:p-8"
           >
             <h2 className="text-xl lg:text-2xl font-bold text-[rgb(var(--card-text))] mb-6 flex items-center">
-              <div className="w-6 h-6 mr-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg"></div>
+              <div className="w-6 h-6 mr-3 bg-[rgb(var(--accent-color))] rounded-lg"></div>
               Thema Instellingen
             </h2>
             
@@ -159,7 +159,7 @@ const SettingsPage = ({ lists = [], onBack, onNavigateToAnalytics, onNavigateToT
                 
                 <button
                   onClick={onNavigateToTheme}
-                  className="w-full flex items-center justify-center px-6 py-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                  className="w-full flex items-center justify-center px-6 py-4 bg-[rgb(var(--accent-color))] hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
                 >
                   <span className="font-medium">Thema Aanpassen</span>
                 </button>
@@ -175,7 +175,7 @@ const SettingsPage = ({ lists = [], onBack, onNavigateToAnalytics, onNavigateToT
             className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-lg border border-[rgb(var(--border-color))]/20 p-6 lg:p-8"
           >
             <h2 className="text-xl lg:text-2xl font-bold text-[rgb(var(--card-text))] mb-6 flex items-center">
-              <div className="w-6 h-6 mr-3 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg"></div>
+              <div className="w-6 h-6 mr-3 bg-[rgb(var(--info-color))] rounded-lg"></div>
               Data & Backup
             </h2>
             
@@ -187,14 +187,14 @@ const SettingsPage = ({ lists = [], onBack, onNavigateToAnalytics, onNavigateToT
                 
                 <button
                   onClick={onNavigateToPersistence}
-                  className="w-full flex items-center justify-center px-6 py-4 bg-gradient-to-r from-blue-500 to-cyan-500 hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 mb-3"
+                  className="w-full flex items-center justify-center px-6 py-4 bg-[rgb(var(--info-color))] hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 mb-3"
                 >
                   <span className="font-medium">Data Beheren</span>
                 </button>
               </div>
 
-              <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-lg">
-                <h3 className="text-lg font-semibold text-red-600 mb-2">Problemen oplossen</h3>
+              <div className="bg-[rgb(var(--error-color))]/10 border border-[rgb(var(--error-color))]/20 p-4 rounded-lg">
+                <h3 className="text-lg font-semibold text-[rgb(var(--error-color))] mb-2">Problemen oplossen</h3>
                 <p className="text-sm text-[rgb(var(--text-color))]/70 mb-4">
                   Als je een leeg scherm of laadproblemen ervaart, kun je de lokale opslag wissen om de app te resetten.
                 </p>
@@ -227,7 +227,7 @@ const SettingsPage = ({ lists = [], onBack, onNavigateToAnalytics, onNavigateToT
                       }
                     }
                   }}
-                  className="w-full flex items-center justify-center px-6 py-4 bg-gradient-to-r from-red-500 to-red-600 hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                  className="w-full flex items-center justify-center px-6 py-4 bg-[rgb(var(--error-color))] hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
                 >
                   <span className="font-medium">Opslag wissen & Herstarten</span>
                 </button>

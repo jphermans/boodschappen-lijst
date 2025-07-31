@@ -85,7 +85,7 @@ const SettingsModal = ({ lists = [], onClose }) => {
               <button
                 onClick={unifiedToggleMode}
                 disabled={themeLoading}
-                className="flex items-center justify-center space-x-3 p-4 w-full rounded-xl bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center justify-center space-x-3 p-4 w-full rounded-xl bg-[rgb(var(--primary-color))] hover:opacity-90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {unifiedMode === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
                 <span className="font-medium">
@@ -109,7 +109,7 @@ const SettingsModal = ({ lists = [], onClose }) => {
                   </div>
                   <button
                     onClick={() => setShowColorPicker(true)}
-                    className="flex items-center space-x-2 px-3 py-2 bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+                    className="flex items-center space-x-2 px-3 py-2 bg-[rgb(var(--primary-color))] hover:opacity-90 text-white rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
                   >
                     <Settings className="w-4 h-4" />
                     <span className="text-sm font-medium">Aanpassen</span>
@@ -276,7 +276,7 @@ const SettingsModal = ({ lists = [], onClose }) => {
                   
                   <button
                     onClick={() => setShowAnalytics(true)}
-                    className="w-full flex items-center justify-center px-4 py-3 bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                    className="w-full flex items-center justify-center px-4 py-3 bg-[rgb(var(--primary-color))] hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
                   >
                     <BarChart3 className="w-5 h-5 mr-2" />
                     <span className="font-medium">Open Analytics Dashboard</span>
@@ -285,12 +285,12 @@ const SettingsModal = ({ lists = [], onClose }) => {
                 
                 {lists.length > 0 && (
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-primary/10 rounded-lg p-3 text-center">
-                      <div className="text-lg font-bold text-primary">{lists.length}</div>
+                    <div className="bg-[rgb(var(--primary-color))]/10 rounded-lg p-3 text-center">
+                      <div className="text-lg font-bold text-[rgb(var(--primary-color))]">{lists.length}</div>
                       <div className="text-xs text-[rgb(var(--text-color))]/60">Totaal lijsten</div>
                     </div>
-                    <div className="bg-secondary/10 rounded-lg p-3 text-center">
-                      <div className="text-lg font-bold text-secondary">
+                    <div className="bg-[rgb(var(--secondary-color))]/10 rounded-lg p-3 text-center">
+                      <div className="text-lg font-bold text-[rgb(var(--secondary-color))]">
                         {lists.filter(list => list.isCreator).length}
                       </div>
                       <div className="text-xs text-[rgb(var(--text-color))]/60">Eigenaar van</div>
@@ -310,7 +310,7 @@ const SettingsModal = ({ lists = [], onClose }) => {
             </div>
             <button
               onClick={onClose}
-              className="w-full sm:w-auto px-6 py-3 bg-primary hover:opacity-90 text-white rounded-lg transition-colors font-medium text-base touch-manipulation min-h-[48px] flex items-center justify-center"
+              className="w-full sm:w-auto px-6 py-3 bg-[rgb(var(--primary-color))] hover:opacity-90 text-white rounded-lg transition-colors font-medium text-base touch-manipulation min-h-[48px] flex items-center justify-center"
             >
               Sluiten
             </button>

@@ -136,12 +136,12 @@ const VoiceInput = ({
           relative flex items-center justify-center rounded-xl shadow-lg hover:shadow-xl
           transform transition-all duration-200 overflow-hidden
           ${hasPermission === false
-            ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-3 animate-pulse'
+            ? 'bg-[rgb(var(--warning-color))] text-white px-4 py-3 animate-pulse'
             : isTimingOut
-              ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white p-3'
+              ? 'bg-[rgb(var(--warning-color))] text-white p-3'
               : isListening
-                ? 'bg-gradient-to-r from-accent to-accent/80 text-white p-3'
-                : 'bg-gradient-to-r from-secondary to-secondary/80 hover:opacity-90 text-white p-3'
+                ? 'bg-[rgb(var(--accent-color))] hover:opacity-90 text-white p-3'
+                : 'bg-[rgb(var(--secondary-color))] hover:opacity-90 text-white p-3'
           }
         `}
         title={
@@ -186,7 +186,7 @@ const VoiceInput = ({
         </motion.div>
 
         {/* Liquid glass effect */}
-        <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-sm" />
+        <div className="absolute inset-0 rounded-xl bg-white/10 backdrop-blur-sm" />
       </motion.button>
 
       {/* Listening indicator */}
@@ -210,7 +210,7 @@ const VoiceInput = ({
                         repeat: Infinity, 
                         delay: i * 0.2 
                       }}
-                      className="w-1.5 h-1.5 bg-accent rounded-full"
+                      className="w-1.5 h-1.5 bg-[rgb(var(--accent-color))] rounded-full"
                     />
                   ))}
                 </div>

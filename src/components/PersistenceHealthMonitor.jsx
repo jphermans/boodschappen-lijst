@@ -72,7 +72,7 @@ const PersistenceHealthMonitor = ({ onClose }) => {
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
         <div className="bg-[rgb(var(--card-bg))] rounded-2xl p-6 max-w-md w-full mx-4">
           <div className="flex items-center justify-center">
-            <RefreshCw className="w-6 h-6 animate-spin text-primary mr-3" />
+            <RefreshCw className="w-6 h-6 animate-spin text-[rgb(var(--primary-color))] mr-3" />
             <span className="text-[rgb(var(--card-text))]">Laden van persistentie informatie...</span>
           </div>
         </div>
@@ -92,7 +92,7 @@ const PersistenceHealthMonitor = ({ onClose }) => {
         {/* Header - Now Scrollable */}
         <div className="flex items-center justify-between p-4 lg:p-6 border-b border-[rgb(var(--border-color))]/20 sticky top-0 bg-[rgb(var(--card-bg))] z-10">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-[rgb(var(--primary-color))] rounded-xl flex items-center justify-center">
               <Database className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -202,21 +202,21 @@ const PersistenceHealthMonitor = ({ onClose }) => {
             
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
               <div className="text-center p-4 bg-[rgb(var(--border-color))]/10 rounded-xl">
-                <div className="text-2xl font-bold text-primary">
+                <div className="text-2xl font-bold text-[rgb(var(--primary-color))]">
                   {healthInfo?.state?.lists?.length || 0}
                 </div>
                 <div className="text-sm text-[rgb(var(--text-color))]/60">Lijsten</div>
               </div>
               
               <div className="text-center p-4 bg-[rgb(var(--border-color))]/10 rounded-xl">
-                <div className="text-2xl font-bold text-secondary">
+                <div className="text-2xl font-bold text-[rgb(var(--secondary-color))]">
                   {healthInfo?.syncQueue || 0}
                 </div>
                 <div className="text-sm text-[rgb(var(--text-color))]/60">Sync Queue</div>
               </div>
               
               <div className="text-center p-4 bg-[rgb(var(--border-color))]/10 rounded-xl">
-                <div className="text-2xl font-bold text-accent">
+                <div className="text-2xl font-bold text-[rgb(var(--accent-color))]">
                   {healthInfo?.storageHealth?.memoryCache || 0}
                 </div>
                 <div className="text-sm text-[rgb(var(--text-color))]/60">Memory Cache</div>
@@ -243,7 +243,7 @@ const PersistenceHealthMonitor = ({ onClose }) => {
               <button
                 onClick={createBackup}
                 disabled={isCreatingBackup}
-                className="w-full flex items-center justify-center px-4 py-3 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200 font-semibold"
+                className="w-full flex items-center justify-center px-4 py-3 bg-[rgb(var(--primary-color))] hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200 font-semibold"
               >
                 {isCreatingBackup ? (
                   <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
@@ -256,8 +256,8 @@ const PersistenceHealthMonitor = ({ onClose }) => {
               {/* Restore from File */}
               <div
                 className={`border-2 border-dashed rounded-xl p-6 text-center transition-colors ${
-                  dragOver 
-                    ? 'border-primary bg-primary/10' 
+                  dragOver
+                    ? 'border-[rgb(var(--primary-color))] bg-[rgb(var(--primary-color))]/10'
                     : 'border-[rgb(var(--border-color))]/40 hover:border-[rgb(var(--border-color))]/60'
                 }`}
                 onDragOver={handleDragOver}
@@ -268,7 +268,7 @@ const PersistenceHealthMonitor = ({ onClose }) => {
                 <p className="text-[rgb(var(--text-color))]/60 mb-2">
                   Sleep backup bestand hierheen of
                 </p>
-                <label className="inline-flex items-center px-4 py-2 bg-secondary hover:bg-secondary/90 text-white rounded-lg cursor-pointer transition-colors">
+                <label className="inline-flex items-center px-4 py-2 bg-[rgb(var(--secondary-color))] hover:opacity-90 text-white rounded-lg cursor-pointer transition-colors">
                   <Upload className="w-4 h-4 mr-2" />
                   Selecteer Bestand
                   <input
@@ -279,7 +279,7 @@ const PersistenceHealthMonitor = ({ onClose }) => {
                   />
                 </label>
                 {isRestoring && (
-                  <div className="mt-2 flex items-center justify-center text-primary">
+                  <div className="mt-2 flex items-center justify-center text-[rgb(var(--primary-color))]">
                     <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
                     <span>Herstellen...</span>
                   </div>
@@ -339,7 +339,7 @@ const PersistenceHealthMonitor = ({ onClose }) => {
             <button
               onClick={refreshHealthInfo}
               disabled={isLoading}
-              className="flex items-center px-4 py-2 text-primary hover:bg-primary/10 rounded-lg transition-colors"
+              className="flex items-center px-4 py-2 text-[rgb(var(--primary-color))] hover:bg-[rgb(var(--primary-color))]/10 rounded-lg transition-colors"
             >
               <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
               Vernieuwen
@@ -349,7 +349,7 @@ const PersistenceHealthMonitor = ({ onClose }) => {
           <div className="flex justify-center">
             <button
               onClick={onClose}
-              className="w-full sm:w-auto px-6 py-3 bg-primary hover:opacity-90 text-white rounded-lg transition-colors font-medium text-base touch-manipulation min-h-[48px] flex items-center justify-center"
+              className="w-full sm:w-auto px-6 py-3 bg-[rgb(var(--primary-color))] hover:opacity-90 text-white rounded-lg transition-colors font-medium text-base touch-manipulation min-h-[48px] flex items-center justify-center"
             >
               Sluiten
             </button>

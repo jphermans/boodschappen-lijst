@@ -136,7 +136,7 @@ const ThemePage = ({ onBack }) => {
             </div>
 
             {/* Theme Icon */}
-            <div className="flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl shadow-lg">
+            <div className="flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-[rgb(var(--accent-color))] rounded-xl shadow-lg">
               <Palette className="w-5 h-5 lg:w-6 lg:h-6 text-white" />
             </div>
           </div>
@@ -153,7 +153,7 @@ const ThemePage = ({ onBack }) => {
             className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-lg border border-[rgb(var(--border-color))]/20 p-6 lg:p-8"
           >
             <h2 className="text-xl lg:text-2xl font-bold text-[rgb(var(--card-text))] mb-6 flex items-center">
-              {mode === 'light' ? <Sun className="w-6 h-6 mr-3 text-yellow-500" /> : <Moon className="w-6 h-6 mr-3 text-blue-500" />}
+              {mode === 'light' ? <Sun className="w-6 h-6 mr-3 text-[rgb(var(--warning-color))]" /> : <Moon className="w-6 h-6 mr-3 text-[rgb(var(--info-color))]" />}
               Donker/Licht Modus
             </h2>
             
@@ -197,13 +197,13 @@ const ThemePage = ({ onBack }) => {
                   whileTap={{ scale: 0.98 }}
                   className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all ${
                     selectedTheme === themeOption.key
-                      ? 'border-primary bg-primary/10'
+                      ? 'border-[rgb(var(--primary-color))] bg-[rgb(var(--primary-color))]/10'
                       : 'border-[rgb(var(--border-color))]/30 hover:border-[rgb(var(--border-color))]/50'
                   }`}
                   onClick={() => handleThemeChange(themeOption.key)}
                 >
                   {selectedTheme === themeOption.key && (
-                    <Check className="absolute top-2 right-2 w-5 h-5 text-primary" />
+                    <Check className="absolute top-2 right-2 w-5 h-5 text-[rgb(var(--primary-color))]" />
                   )}
                   
                   <h3 className="font-semibold text-[rgb(var(--card-text))] mb-1">
@@ -233,13 +233,13 @@ const ThemePage = ({ onBack }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <button
                 onClick={handleExportTheme}
-                className="flex items-center justify-center px-6 py-4 bg-gradient-to-r from-green-500 to-emerald-500 hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                className="flex items-center justify-center px-6 py-4 bg-[rgb(var(--success-color))] hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
               >
                 <Download className="w-5 h-5 mr-3" />
                 <span className="font-medium">Thema exporteren</span>
               </button>
               
-              <label className="flex items-center justify-center px-6 py-4 bg-gradient-to-r from-blue-500 to-cyan-500 hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 cursor-pointer">
+              <label className="flex items-center justify-center px-6 py-4 bg-[rgb(var(--info-color))] hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 cursor-pointer">
                 <Upload className="w-5 h-5 mr-3" />
                 <span className="font-medium">Thema importeren</span>
                 <input
@@ -257,9 +257,9 @@ const ThemePage = ({ onBack }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-red-500/10 border border-red-500/20 rounded-2xl p-6 lg:p-8"
+            className="bg-[rgb(var(--error-color))]/10 border border-[rgb(var(--error-color))]/20 rounded-2xl p-6 lg:p-8"
           >
-            <h2 className="text-xl lg:text-2xl font-bold text-red-600 mb-4">
+            <h2 className="text-xl lg:text-2xl font-bold text-[rgb(var(--error-color))] mb-4">
               Thema resetten
             </h2>
             <p className="text-sm text-[rgb(var(--text-color))]/70 mb-4">
@@ -267,7 +267,7 @@ const ThemePage = ({ onBack }) => {
             </p>
             <button
               onClick={handleResetTheme}
-              className="px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+              className="px-6 py-3 bg-[rgb(var(--error-color))] hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
             >
               Reset naar standaard
             </button>

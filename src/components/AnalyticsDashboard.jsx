@@ -127,7 +127,7 @@ const AnalyticsDashboard = ({ lists, onClose }) => {
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-[rgb(var(--border-color))]/50">
           <div className="flex items-center space-x-3">
-            <BarChart3 className="w-6 h-6 text-primary" />
+            <BarChart3 className="w-6 h-6 text-[rgb(var(--primary-color))]" />
             <div>
               <h2 className="text-xl font-semibold text-[rgb(var(--card-text))]">
                 Analytics Dashboard
@@ -149,26 +149,26 @@ const AnalyticsDashboard = ({ lists, onClose }) => {
         <div className="flex-1 p-6 overflow-y-auto" style={{ minHeight: 0 }}>
           {/* Overview Statistics */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg p-4 text-center">
-              <List className="w-8 h-8 text-primary mx-auto mb-2" />
+            <div className="bg-[rgb(var(--primary-color))]/10 rounded-lg p-4 text-center">
+              <List className="w-8 h-8 text-[rgb(var(--primary-color))] mx-auto mb-2" />
               <div className="text-2xl font-bold text-[rgb(var(--card-text))]">{analytics.totalLists}</div>
               <div className="text-sm text-[rgb(var(--text-color))]/60">Totaal lijsten</div>
             </div>
             
-            <div className="bg-gradient-to-br from-secondary/10 to-secondary/5 rounded-lg p-4 text-center">
-              <Shield className="w-8 h-8 text-secondary mx-auto mb-2" />
+            <div className="bg-[rgb(var(--secondary-color))]/10 rounded-lg p-4 text-center">
+              <Shield className="w-8 h-8 text-[rgb(var(--secondary-color))] mx-auto mb-2" />
               <div className="text-2xl font-bold text-[rgb(var(--card-text))]">{analytics.totalOwnedLists}</div>
               <div className="text-sm text-[rgb(var(--text-color))]/60">Eigenaar van</div>
             </div>
             
-            <div className="bg-gradient-to-br from-accent/10 to-accent/5 rounded-lg p-4 text-center">
-              <Users className="w-8 h-8 text-accent mx-auto mb-2" />
+            <div className="bg-[rgb(var(--accent-color))]/10 rounded-lg p-4 text-center">
+              <Users className="w-8 h-8 text-[rgb(var(--accent-color))] mx-auto mb-2" />
               <div className="text-2xl font-bold text-[rgb(var(--card-text))]">{analytics.totalSharedLists}</div>
               <div className="text-sm text-[rgb(var(--text-color))]/60">Gedeeld met jou</div>
             </div>
             
-            <div className="bg-gradient-to-br from-green-500/10 to-green-500/5 rounded-lg p-4 text-center">
-              <Share2 className="w-8 h-8 text-green-500 mx-auto mb-2" />
+            <div className="bg-[rgb(var(--success-color))]/10 rounded-lg p-4 text-center">
+              <Share2 className="w-8 h-8 text-[rgb(var(--success-color))] mx-auto mb-2" />
               <div className="text-2xl font-bold text-[rgb(var(--card-text))]">{analytics.totalShares}</div>
               <div className="text-sm text-[rgb(var(--text-color))]/60">Keer gedeeld</div>
             </div>
@@ -179,7 +179,7 @@ const AnalyticsDashboard = ({ lists, onClose }) => {
             {/* Sharing Statistics */}
             <div className="bg-[rgb(var(--border-color))]/10 rounded-lg p-6">
               <h3 className="text-lg font-semibold text-[rgb(var(--card-text))] mb-4 flex items-center">
-                <Share2 className="w-5 h-5 mr-2 text-secondary" />
+                <Share2 className="w-5 h-5 mr-2 text-[rgb(var(--secondary-color))]" />
                 Deel Statistieken
               </h3>
               
@@ -203,7 +203,7 @@ const AnalyticsDashboard = ({ lists, onClose }) => {
                     <div className="font-medium text-[rgb(var(--card-text))]">
                       {analytics.mostSharedList.name}
                     </div>
-                    <div className="text-sm text-secondary">
+                    <div className="text-sm text-[rgb(var(--secondary-color))]">
                       {analytics.maxShares} gebruiker{analytics.maxShares !== 1 ? 's' : ''}
                     </div>
                   </div>
@@ -214,7 +214,7 @@ const AnalyticsDashboard = ({ lists, onClose }) => {
             {/* Activity Statistics */}
             <div className="bg-[rgb(var(--border-color))]/10 rounded-lg p-6">
               <h3 className="text-lg font-semibold text-[rgb(var(--card-text))] mb-4 flex items-center">
-                <Activity className="w-5 h-5 mr-2 text-primary" />
+                <Activity className="w-5 h-5 mr-2 text-[rgb(var(--primary-color))]" />
                 Activiteit Overzicht
               </h3>
               
@@ -231,13 +231,13 @@ const AnalyticsDashboard = ({ lists, onClose }) => {
                 
                 <div className="flex justify-between items-center">
                   <span className="text-[rgb(var(--text-color))]/80">Voltooiingspercentage:</span>
-                  <span className="font-semibold text-green-500">{analytics.completionRate}%</span>
+                  <span className="font-semibold text-[rgb(var(--success-color))]">{analytics.completionRate}%</span>
                 </div>
                 
                 <div className="pt-2 border-t border-[rgb(var(--border-color))]/20">
                   <div className="w-full bg-[rgb(var(--border-color))]/20 rounded-full h-2">
                     <div 
-                      className="bg-gradient-to-r from-green-500 to-green-400 h-2 rounded-full transition-all duration-300"
+                      className="bg-[rgb(var(--success-color))] h-2 rounded-full transition-all duration-300"
                       style={{ width: `${analytics.completionRate}%` }}
                     ></div>
                   </div>
@@ -249,7 +249,7 @@ const AnalyticsDashboard = ({ lists, onClose }) => {
           {/* Top Lists by Size */}
           <div className="mb-8">
             <h3 className="text-lg font-semibold text-[rgb(var(--card-text))] mb-4 flex items-center">
-              <TrendingUp className="w-5 h-5 mr-2 text-accent" />
+              <TrendingUp className="w-5 h-5 mr-2 text-[rgb(var(--accent-color))]" />
               Grootste Lijsten
             </h3>
             
@@ -257,7 +257,7 @@ const AnalyticsDashboard = ({ lists, onClose }) => {
               {analytics.listSizes.slice(0, 5).map((list, index) => (
                 <div key={index} className="flex items-center justify-between py-2 border-b border-[rgb(var(--border-color))]/10 last:border-b-0">
                   <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center text-sm font-medium text-primary">
+                    <div className="w-8 h-8 bg-[rgb(var(--primary-color))]/20 rounded-full flex items-center justify-center text-sm font-medium text-[rgb(var(--primary-color))]">
                       {index + 1}
                     </div>
                     <div>
@@ -285,7 +285,7 @@ const AnalyticsDashboard = ({ lists, onClose }) => {
           {/* Recent Activity */}
           <div>
             <h3 className="text-lg font-semibold text-[rgb(var(--card-text))] mb-4 flex items-center">
-              <Calendar className="w-5 h-5 mr-2 text-secondary" />
+              <Calendar className="w-5 h-5 mr-2 text-[rgb(var(--secondary-color))]" />
               Recente Activiteit
             </h3>
             
@@ -293,7 +293,7 @@ const AnalyticsDashboard = ({ lists, onClose }) => {
               {analytics.recentActivity.map((list, index) => (
                 <div key={index} className="flex items-center justify-between py-3 border-b border-[rgb(var(--border-color))]/10 last:border-b-0">
                   <div className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <div className="w-2 h-2 bg-[rgb(var(--success-color))] rounded-full"></div>
                     <div>
                       <div className="font-medium text-[rgb(var(--card-text))]">{list.name}</div>
                       <div className="text-sm text-[rgb(var(--text-color))]/60">
@@ -327,7 +327,7 @@ const AnalyticsDashboard = ({ lists, onClose }) => {
             </div>
             <button
               onClick={onClose}
-              className="px-4 py-2 bg-primary hover:opacity-90 text-white rounded-lg transition-colors"
+              className="px-4 py-2 bg-[rgb(var(--primary-color))] hover:opacity-90 text-white rounded-lg transition-colors"
             >
               Sluiten
             </button>

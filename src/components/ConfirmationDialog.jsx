@@ -19,23 +19,23 @@ const ConfirmationDialog = ({
       case 'danger':
         return {
           icon: AlertTriangle,
-          iconColor: 'text-red-500',
-          confirmButton: 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700',
-          border: 'border-red-200'
+          iconColor: 'text-[rgb(var(--error-color))]',
+          confirmButton: 'bg-[rgb(var(--error-color))] hover:opacity-90',
+          border: 'border-[rgb(var(--error-color))]/20'
         };
       case 'warning':
         return {
           icon: AlertTriangle,
-          iconColor: 'text-yellow-500',
-          confirmButton: 'bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700',
-          border: 'border-yellow-200'
+          iconColor: 'text-[rgb(var(--warning-color))]',
+          confirmButton: 'bg-[rgb(var(--warning-color))] hover:opacity-90',
+          border: 'border-[rgb(var(--warning-color))]/20'
         };
       default:
         return {
           icon: AlertTriangle,
-          iconColor: 'text-blue-500',
-          confirmButton: 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700',
-          border: 'border-blue-200'
+          iconColor: 'text-[rgb(var(--info-color))]',
+          confirmButton: 'bg-[rgb(var(--info-color))] hover:opacity-90',
+          border: 'border-[rgb(var(--info-color))]/20'
         };
     }
   };

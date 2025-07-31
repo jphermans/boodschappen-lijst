@@ -229,7 +229,7 @@ const ShoppingListPage = ({ list, onBack, onListUpdate }) => {
           <h2 className="text-xl font-bold text-[rgb(var(--card-text))] mb-2">Lijst niet gevonden</h2>
           <button
             onClick={onBack}
-            className="px-4 py-2 bg-primary text-white rounded-lg hover:opacity-90"
+            className="px-4 py-2 bg-[rgb(var(--primary-color))] text-white rounded-lg hover:opacity-90"
           >
             Terug naar overzicht
           </button>
@@ -265,7 +265,7 @@ const ShoppingListPage = ({ list, onBack, onListUpdate }) => {
                   />
                   <button
                     onClick={updateListName}
-                    className="p-2 text-green-500 hover:bg-green-500/10 rounded-lg"
+                    className="p-2 text-[rgb(var(--success-color))] hover:bg-[rgb(var(--success-color))]/10 rounded-lg"
                     disabled={isLoading}
                   >
                     <Save className="w-5 h-5" />
@@ -275,14 +275,14 @@ const ShoppingListPage = ({ list, onBack, onListUpdate }) => {
                       setIsEditingName(false);
                       setTempListName(listName);
                     }}
-                    className="p-2 text-red-500 hover:bg-red-500/10 rounded-lg"
+                    className="p-2 text-[rgb(var(--error-color))] hover:bg-[rgb(var(--error-color))]/10 rounded-lg"
                   >
                     <X className="w-5 h-5" />
                   </button>
                 </div>
               ) : (
                 <h1 
-                  className="text-xl font-bold text-[rgb(var(--card-text))] cursor-pointer hover:text-primary transition-colors"
+                  className="text-xl font-bold text-[rgb(var(--card-text))] cursor-pointer hover:text-[rgb(var(--primary-color))] transition-colors"
                   onClick={() => canEdit && setIsEditingName(true)}
                 >
                   {listName}
@@ -335,7 +335,7 @@ const ShoppingListPage = ({ list, onBack, onListUpdate }) => {
             </div>
             <div className="w-full bg-[rgb(var(--border-color))]/20 rounded-full h-3">
               <motion.div
-                className="bg-gradient-to-r from-green-500 to-green-400 h-3 rounded-full"
+                className="bg-[rgb(var(--success-color))] h-3 rounded-full"
                 initial={{ width: 0 }}
                 animate={{ width: `${progress}%` }}
                 transition={{ duration: 0.5 }}
@@ -362,12 +362,12 @@ const ShoppingListPage = ({ list, onBack, onListUpdate }) => {
                 onChange={(e) => setNewItemName(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && addItem()}
                 placeholder="Wat wil je toevoegen?"
-                className="flex-1 px-4 py-3 border-2 border-[rgb(var(--border-color))]/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary/50 bg-[rgb(var(--card-bg))] text-[rgb(var(--card-text))] placeholder:text-[rgb(var(--text-color))]/40"
+                className="flex-1 px-4 py-3 border-2 border-[rgb(var(--border-color))]/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-[rgb(var(--primary-color))] focus:border-[rgb(var(--primary-color))]/50 bg-[rgb(var(--card-bg))] text-[rgb(var(--card-text))] placeholder:text-[rgb(var(--text-color))]/40"
               />
               <button
                 onClick={addItem}
                 disabled={!newItemName.trim() || isLoading}
-                className="px-6 py-3 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white rounded-xl shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-lg transition-all duration-200"
+                className="px-6 py-3 bg-[rgb(var(--primary-color))] hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-lg transition-all duration-200"
               >
                 <Plus className="w-5 h-5" />
               </button>
@@ -404,8 +404,8 @@ const ShoppingListPage = ({ list, onBack, onListUpdate }) => {
               className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-lg border border-[rgb(var(--border-color))]/20 p-12 text-center"
             >
               <div className="max-w-md mx-auto">
-                <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Check className="w-8 h-8 text-primary" />
+                <div className="w-16 h-16 bg-[rgb(var(--primary-color))]/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Check className="w-8 h-8 text-[rgb(var(--primary-color))]" />
                 </div>
                 <h3 className="text-xl font-bold text-[rgb(var(--card-text))] mb-2">
                   {canEdit ? 'Begin met winkelen!' : 'Geen items in deze lijst'}
@@ -434,8 +434,8 @@ const ShoppingListPage = ({ list, onBack, onListUpdate }) => {
                     disabled={!canEdit || isLoading}
                     className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
                       item.completed
-                        ? 'bg-green-500 border-green-500 text-white'
-                        : 'border-[rgb(var(--border-color))] hover:border-primary'
+                        ? 'bg-[rgb(var(--success-color))] border-[rgb(var(--success-color))] text-white'
+                        : 'border-[rgb(var(--border-color))] hover:border-[rgb(var(--primary-color))]'
                     }`}
                   >
                     {item.completed && <Check className="w-4 h-4" />}
@@ -448,12 +448,12 @@ const ShoppingListPage = ({ list, onBack, onListUpdate }) => {
                         value={editingItemName}
                         onChange={(e) => setEditingItemName(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && editItem(item.id)}
-                        className="flex-1 px-2 py-1 border border-[rgb(var(--border-color))]/50 rounded bg-[rgb(var(--card-bg))] text-[rgb(var(--card-text))] focus:outline-none focus:ring-1 focus:ring-primary"
+                        className="flex-1 px-2 py-1 border border-[rgb(var(--border-color))]/50 rounded bg-[rgb(var(--card-bg))] text-[rgb(var(--card-text))] focus:outline-none focus:ring-1 focus:ring-[rgb(var(--primary-color))]"
                         autoFocus
                       />
                       <button
                         onClick={() => editItem(item.id)}
-                        className="p-1 text-green-500 hover:bg-green-500/10 rounded"
+                        className="p-1 text-[rgb(var(--success-color))] hover:bg-[rgb(var(--success-color))]/10 rounded"
                         disabled={isLoading}
                       >
                         <Save className="w-4 h-4" />
@@ -463,7 +463,7 @@ const ShoppingListPage = ({ list, onBack, onListUpdate }) => {
                           setEditingItemId(null);
                           setEditingItemName('');
                         }}
-                        className="p-1 text-red-500 hover:bg-red-500/10 rounded"
+                        className="p-1 text-[rgb(var(--error-color))] hover:bg-[rgb(var(--error-color))]/10 rounded"
                       >
                         <X className="w-4 h-4" />
                       </button>
@@ -487,13 +487,13 @@ const ShoppingListPage = ({ list, onBack, onListUpdate }) => {
                               setEditingItemId(item.id);
                               setEditingItemName(item.name);
                             }}
-                            className="p-1 text-[rgb(var(--text-color))]/60 hover:text-primary transition-colors"
+                            className="p-1 text-[rgb(var(--text-color))]/60 hover:text-[rgb(var(--primary-color))] transition-colors"
                           >
                             <Edit3 className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => deleteItem(item.id)}
-                            className="p-1 text-[rgb(var(--text-color))]/60 hover:text-red-500 transition-colors"
+                            className="p-1 text-[rgb(var(--text-color))]/60 hover:text-[rgb(var(--error-color))] transition-colors"
                             disabled={isLoading}
                           >
                             <Trash2 className="w-4 h-4" />

@@ -137,7 +137,7 @@ const AnalyticsPage = ({ lists, onBack }) => {
             </div>
 
             {/* Analytics Icon */}
-            <div className="flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-primary to-secondary rounded-xl shadow-lg">
+            <div className="flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-[rgb(var(--primary-color))] rounded-xl shadow-lg">
               <BarChart3 className="w-5 h-5 lg:w-6 lg:h-6 text-white" />
             </div>
           </div>
@@ -153,26 +153,26 @@ const AnalyticsPage = ({ lists, onBack }) => {
             animate={{ opacity: 1, y: 0 }}
             className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6"
           >
-            <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl lg:rounded-2xl p-4 lg:p-6 text-center">
-              <List className="w-8 h-8 lg:w-10 lg:h-10 text-primary mx-auto mb-3" />
+            <div className="bg-[rgb(var(--primary-color))]/10 rounded-xl lg:rounded-2xl p-4 lg:p-6 text-center">
+              <List className="w-8 h-8 lg:w-10 lg:h-10 text-[rgb(var(--primary-color))] mx-auto mb-3" />
               <div className="text-2xl lg:text-3xl font-bold text-[rgb(var(--card-text))]">{analytics.totalLists}</div>
               <div className="text-sm lg:text-base text-[rgb(var(--text-color))]/60">Totaal lijsten</div>
             </div>
             
-            <div className="bg-gradient-to-br from-secondary/10 to-secondary/5 rounded-xl lg:rounded-2xl p-4 lg:p-6 text-center">
-              <Shield className="w-8 h-8 lg:w-10 lg:h-10 text-secondary mx-auto mb-3" />
+            <div className="bg-[rgb(var(--secondary-color))]/10 rounded-xl lg:rounded-2xl p-4 lg:p-6 text-center">
+              <Shield className="w-8 h-8 lg:w-10 lg:h-10 text-[rgb(var(--secondary-color))] mx-auto mb-3" />
               <div className="text-2xl lg:text-3xl font-bold text-[rgb(var(--card-text))]">{analytics.totalOwnedLists}</div>
               <div className="text-sm lg:text-base text-[rgb(var(--text-color))]/60">Eigenaar van</div>
             </div>
             
-            <div className="bg-gradient-to-br from-accent/10 to-accent/5 rounded-xl lg:rounded-2xl p-4 lg:p-6 text-center">
-              <Users className="w-8 h-8 lg:w-10 lg:h-10 text-accent mx-auto mb-3" />
+            <div className="bg-[rgb(var(--accent-color))]/10 rounded-xl lg:rounded-2xl p-4 lg:p-6 text-center">
+              <Users className="w-8 h-8 lg:w-10 lg:h-10 text-[rgb(var(--accent-color))] mx-auto mb-3" />
               <div className="text-2xl lg:text-3xl font-bold text-[rgb(var(--card-text))]">{analytics.totalSharedLists}</div>
               <div className="text-sm lg:text-base text-[rgb(var(--text-color))]/60">Gedeeld met jou</div>
             </div>
             
-            <div className="bg-gradient-to-br from-green-500/10 to-green-500/5 rounded-xl lg:rounded-2xl p-4 lg:p-6 text-center">
-              <Share2 className="w-8 h-8 lg:w-10 lg:h-10 text-green-500 mx-auto mb-3" />
+            <div className="bg-[rgb(var(--success-color))]/10 rounded-xl lg:rounded-2xl p-4 lg:p-6 text-center">
+              <Share2 className="w-8 h-8 lg:w-10 lg:h-10 text-[rgb(var(--success-color))] mx-auto mb-3" />
               <div className="text-2xl lg:text-3xl font-bold text-[rgb(var(--card-text))]">{analytics.totalShares}</div>
               <div className="text-sm lg:text-base text-[rgb(var(--text-color))]/60">Keer gedeeld</div>
             </div>
@@ -188,7 +188,7 @@ const AnalyticsPage = ({ lists, onBack }) => {
               className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-lg border border-[rgb(var(--border-color))]/20 p-6 lg:p-8"
             >
               <h2 className="text-xl lg:text-2xl font-bold text-[rgb(var(--card-text))] mb-6 flex items-center">
-                <Share2 className="w-6 h-6 mr-3 text-secondary" />
+                <Share2 className="w-6 h-6 mr-3 text-[rgb(var(--secondary-color))]" />
                 Deel Statistieken
               </h2>
               
@@ -212,7 +212,7 @@ const AnalyticsPage = ({ lists, onBack }) => {
                     <div className="font-medium text-[rgb(var(--card-text))] text-lg">
                       {analytics.mostSharedList.name}
                     </div>
-                    <div className="text-sm text-secondary">
+                    <div className="text-sm text-[rgb(var(--secondary-color))]">
                       {analytics.maxShares} gebruiker{analytics.maxShares !== 1 ? 's' : ''}
                     </div>
                   </div>
@@ -228,7 +228,7 @@ const AnalyticsPage = ({ lists, onBack }) => {
               className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-lg border border-[rgb(var(--border-color))]/20 p-6 lg:p-8"
             >
               <h2 className="text-xl lg:text-2xl font-bold text-[rgb(var(--card-text))] mb-6 flex items-center">
-                <Activity className="w-6 h-6 mr-3 text-primary" />
+                <Activity className="w-6 h-6 mr-3 text-[rgb(var(--primary-color))]" />
                 Activiteit Overzicht
               </h2>
               
@@ -245,13 +245,13 @@ const AnalyticsPage = ({ lists, onBack }) => {
                 
                 <div className="flex justify-between items-center">
                   <span className="text-[rgb(var(--text-color))]/80">Voltooiingspercentage:</span>
-                  <span className="font-semibold text-green-500 text-lg">{analytics.completionRate}%</span>
+                  <span className="font-semibold text-[rgb(var(--success-color))] text-lg">{analytics.completionRate}%</span>
                 </div>
                 
                 <div className="pt-4 border-t border-[rgb(var(--border-color))]/20">
                   <div className="w-full bg-[rgb(var(--border-color))]/20 rounded-full h-3">
                     <div 
-                      className="bg-gradient-to-r from-green-500 to-green-400 h-3 rounded-full transition-all duration-300"
+                      className="bg-[rgb(var(--success-color))] h-3 rounded-full transition-all duration-300"
                       style={{ width: `${analytics.completionRate}%` }}
                     ></div>
                   </div>
@@ -268,7 +268,7 @@ const AnalyticsPage = ({ lists, onBack }) => {
             className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-lg border border-[rgb(var(--border-color))]/20 p-6 lg:p-8"
           >
             <h2 className="text-xl lg:text-2xl font-bold text-[rgb(var(--card-text))] mb-6 flex items-center">
-              <TrendingUp className="w-6 h-6 mr-3 text-accent" />
+              <TrendingUp className="w-6 h-6 mr-3 text-[rgb(var(--accent-color))]" />
               Grootste Lijsten
             </h2>
             
@@ -276,7 +276,7 @@ const AnalyticsPage = ({ lists, onBack }) => {
               {analytics.listSizes.slice(0, 5).map((list, index) => (
                 <div key={index} className="flex items-center justify-between py-3 lg:py-4 border-b border-[rgb(var(--border-color))]/10 last:border-b-0">
                   <div className="flex items-center space-x-4">
-                    <div className="w-10 h-10 lg:w-12 lg:h-12 bg-primary/20 rounded-full flex items-center justify-center text-sm lg:text-base font-medium text-primary">
+                    <div className="w-10 h-10 lg:w-12 lg:h-12 bg-[rgb(var(--primary-color))]/20 rounded-full flex items-center justify-center text-sm lg:text-base font-medium text-[rgb(var(--primary-color))]">
                       {index + 1}
                     </div>
                     <div>
@@ -309,7 +309,7 @@ const AnalyticsPage = ({ lists, onBack }) => {
             className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-lg border border-[rgb(var(--border-color))]/20 p-6 lg:p-8"
           >
             <h2 className="text-xl lg:text-2xl font-bold text-[rgb(var(--card-text))] mb-6 flex items-center">
-              <Calendar className="w-6 h-6 mr-3 text-secondary" />
+              <Calendar className="w-6 h-6 mr-3 text-[rgb(var(--secondary-color))]" />
               Recente Activiteit
             </h2>
             
@@ -317,7 +317,7 @@ const AnalyticsPage = ({ lists, onBack }) => {
               {analytics.recentActivity.map((list, index) => (
                 <div key={index} className="flex items-center justify-between py-3 lg:py-4 border-b border-[rgb(var(--border-color))]/10 last:border-b-0">
                   <div className="flex items-center space-x-4">
-                    <div className="w-3 h-3 bg-green-500 rounded-full flex-shrink-0"></div>
+                    <div className="w-3 h-3 bg-[rgb(var(--success-color))] rounded-full flex-shrink-0"></div>
                     <div>
                       <div className="font-medium text-[rgb(var(--card-text))] text-base lg:text-lg">{list.name}</div>
                       <div className="text-sm text-[rgb(var(--text-color))]/60">

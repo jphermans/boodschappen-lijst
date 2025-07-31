@@ -33,15 +33,15 @@ const Toast = ({ toast, onRemove }) => {
   const getStyles = () => {
     switch (type) {
       case 'success':
-        return 'bg-gradient-to-r from-green-500 to-emerald-600 text-white';
+        return 'bg-[rgb(var(--success-color))] text-white';
       case 'error':
-        return 'bg-gradient-to-r from-red-500 to-red-600 text-white';
+        return 'bg-[rgb(var(--error-color))] text-white';
       case 'warning':
-        return 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white';
+        return 'bg-[rgb(var(--warning-color))] text-white';
       case 'info':
-        return 'bg-primary text-white';
+        return 'bg-[rgb(var(--info-color))] text-white';
       case 'delete':
-        return 'bg-accent text-white';
+        return 'bg-[rgb(var(--accent-color))] text-white';
       default:
         return 'bg-[rgb(var(--border-color))] text-[rgb(var(--card-text))]';
     }
