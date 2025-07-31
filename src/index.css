@@ -512,3 +512,47 @@ body {
     min-height: calc(56px + var(--safe-area-inset-top));
   }
 }
+
+/* iPad-specific fixes for text layout issues */
+@media (min-width: 768px) and (max-width: 1024px) {
+  /* Prevent vertical text display on iPad */
+  .ipad-text-fix {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+    flex-shrink: 0;
+  }
+  
+  /* Ensure proper text wrapping for titles on iPad */
+  .ipad-title-fix {
+    word-break: keep-all;
+    overflow-wrap: normal;
+    hyphens: none;
+    white-space: normal;
+    line-height: 1.2;
+    min-width: 200px;
+  }
+  
+  /* Fix flex container issues on iPad */
+  .ipad-flex-fix {
+    flex-wrap: nowrap;
+    min-width: 0;
+  }
+  
+  /* Prevent text from being displayed vertically */
+  .ipad-horizontal-text {
+    writing-mode: horizontal-tb;
+    text-orientation: mixed;
+    direction: ltr;
+  }
+}
+
+/* Additional iPad Pro specific fixes */
+@media (min-width: 1024px) and (max-width: 1366px) and (orientation: landscape) {
+  .ipad-pro-text-fix {
+    white-space: normal;
+    word-break: normal;
+    overflow-wrap: break-word;
+  }
+}

@@ -601,7 +601,7 @@ function App() {
                 <List className="w-5 h-5 lg:w-6 lg:h-6 text-white" />
               </div>
               <div className="min-w-0 flex-1 pl-2 sm:pl-0">
-                <h1 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-[rgb(var(--card-text))] tracking-tight break-words">
+                <h1 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-[rgb(var(--card-text))] tracking-tight break-words ipad-title-fix ipad-horizontal-text">
                   Boodschappenlijst
                 </h1>
                 <p className="hidden lg:block text-sm text-[rgb(var(--text-color))]/60 font-medium">
@@ -763,9 +763,9 @@ function App() {
                 animate={{ opacity: 1, y: 0 }}
                 className="bg-[rgb(var(--card-bg))] rounded-xl sm:rounded-2xl shadow-lg border border-[rgb(var(--border-color))]/20 p-4 sm:p-6 lg:p-8 xl:p-10 mb-6 sm:mb-8"
               >
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 lg:mb-8">
-                  <div className="mb-4 sm:mb-0">
-                    <h2 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-[rgb(var(--card-text))] mb-1 sm:mb-2">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 lg:mb-8 ipad-flex-fix">
+                  <div className="mb-4 sm:mb-0 min-w-0 flex-1">
+                    <h2 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-[rgb(var(--card-text))] mb-1 sm:mb-2 ipad-title-fix ipad-horizontal-text">
                       Nieuwe lijst maken
                     </h2>
                     <p className="text-[rgb(var(--text-color))]/60 text-sm lg:text-base">

@@ -706,7 +706,7 @@ const SettingsPage = ({ lists = [], onBack, onNavigateToAnalytics, onNavigateToT
                     <div className="w-2 h-2 bg-[rgb(var(--info-color))] rounded-full mt-2 flex-shrink-0"></div>
                     <div>
                       <p className="font-medium">Offline Support</p>
-                      <p className="text-xs text-[rgb(var(--text-color))]/60">Werkt ook zonder internetverbinding</p>
+                      <p className="text-xs text-[rgb(var(--text-color))]/60">Werkt ook beperkt zonder internetverbinding</p>
                     </div>
                   </div>
                 </div>

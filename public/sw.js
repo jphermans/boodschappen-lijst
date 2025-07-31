@@ -1,7 +1,7 @@
 // Service Worker for PWA Update Management
-const CACHE_NAME = 'boodschappenlijst-v1.0.4';
-const STATIC_CACHE_NAME = 'boodschappenlijst-static-v1.0.4';
-const APP_VERSION = '1.0.4';
+const CACHE_NAME = 'boodschappenlijst-v1.0.5';
+const STATIC_CACHE_NAME = 'boodschappenlijst-static-v1.0.5';
+const APP_VERSION = '1.0.5';
 
 // Files to cache for offline functionality
 const STATIC_FILES = [
