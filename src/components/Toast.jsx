@@ -33,17 +33,41 @@ const Toast = ({ toast, onRemove }) => {
   const getStyles = () => {
     switch (type) {
       case 'success':
-        return 'bg-green-500/90 text-white backdrop-blur-sm';
+        return {
+          backgroundColor: 'rgba(34, 197, 94, 0.9)', // green-500 with 90% opacity
+          color: 'white',
+          backdropFilter: 'blur(4px)'
+        };
       case 'error':
-        return 'bg-red-500/90 text-white backdrop-blur-sm';
+        return {
+          backgroundColor: 'rgba(239, 68, 68, 0.9)', // red-500 with 90% opacity
+          color: 'white',
+          backdropFilter: 'blur(4px)'
+        };
       case 'warning':
-        return 'bg-orange-500/90 text-white backdrop-blur-sm';
+        return {
+          backgroundColor: 'rgba(249, 115, 22, 0.9)', // orange-500 with 90% opacity
+          color: 'white',
+          backdropFilter: 'blur(4px)'
+        };
       case 'info':
-        return 'bg-blue-500/90 text-white backdrop-blur-sm';
+        return {
+          backgroundColor: 'rgba(59, 130, 246, 0.9)', // blue-500 with 90% opacity
+          color: 'white',
+          backdropFilter: 'blur(4px)'
+        };
       case 'delete':
-        return 'bg-red-600/90 text-white backdrop-blur-sm';
+        return {
+          backgroundColor: 'rgba(220, 38, 38, 0.9)', // red-600 with 90% opacity
+          color: 'white',
+          backdropFilter: 'blur(4px)'
+        };
       default:
-        return 'bg-gray-600/90 text-white backdrop-blur-sm';
+        return {
+          backgroundColor: 'rgba(75, 85, 99, 0.9)', // gray-600 with 90% opacity
+          color: 'white',
+          backdropFilter: 'blur(4px)'
+        };
     }
   };
 
@@ -52,7 +76,8 @@ const Toast = ({ toast, onRemove }) => {
       initial={{ opacity: 0, y: -50, scale: 0.9 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -50, scale: 0.9 }}
-      className={`flex items-center space-x-2 sm:space-x-3 px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl shadow-lg border border-white/20 ${getStyles()} max-w-xs sm:max-w-sm lg:max-w-md mx-auto mb-2`}
+      style={getStyles()}
+      className={`flex items-center space-x-2 sm:space-x-3 px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl shadow-lg border border-white/20 max-w-xs sm:max-w-sm lg:max-w-md mx-auto mb-2`}
     >
       <div className="flex-shrink-0">
         <div className="w-4 h-4 sm:w-5 sm:h-5">

@@ -685,7 +685,7 @@ function App() {
             </nav>
 
             {/* Action Buttons - Mobile Optimized */}
-            <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-3 flex-shrink-0">
+            <div className="flex items-center space-x-2 sm:space-x-2 lg:space-x-3 flex-shrink-0 pr-2 sm:pr-0">
               {/* Mobile QR Scanner */}
               <button
                 onClick={() => setShowScanner(true)}
