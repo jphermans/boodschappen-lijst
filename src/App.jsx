@@ -887,9 +887,8 @@ function App() {
                           <div
                             className="bg-[rgb(var(--success-color))] h-2 rounded-full transition-all duration-500 ease-out"
                             style={{
-                              width: `${((list.items?.filter(item => item.completed).length || 0) / (list.items?.length || 1)) * 100}%`,
-                              minWidth: '0%',
-                              maxWidth: '100%'
+                              width: `${Math.max(0, Math.min(100, ((list.items?.filter(item => item.completed).length || 0) / (list.items?.length || 1)) * 100))}%`,
+                              transform: 'translateZ(0)' // Force hardware acceleration
                             }}
                           ></div>
                         </div>
