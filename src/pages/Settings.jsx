@@ -612,7 +612,7 @@ const SettingsPage = ({ lists = [], onBack, onNavigateToAnalytics, onNavigateToT
                 </div>
                 <div className="bg-[rgb(var(--card-bg))] p-3 rounded border">
                   <p className="text-base font-medium text-[rgb(var(--card-text))]">
-                    Jan-Pieter Hermans
+                    Jean-Pierre Hermans
                   </p>
                   <p className="text-sm text-[rgb(var(--text-color))]/60 mt-1">
                     Full-Stack Developer & PWA Specialist
