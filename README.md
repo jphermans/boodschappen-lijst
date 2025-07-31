@@ -1,10 +1,11 @@
 # 🛒 Boodschappenlijst Applicatie
 
-Een geavanceerde React web applicatie voor het maken en delen van boodschappenlijsten met realtime synchronisatie, gebruikersbeheer en een moderne Gruvbox interface.
+Een geavanceerde React PWA (Progressive Web App) voor het maken en delen van boodschappenlijsten met realtime synchronisatie, gebruikersbeheer, analytics en een moderne Gruvbox interface.
 
-![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)
+![Version](https://img.shields.io/badge/version-2.1.0-blue.svg)
 ![React](https://img.shields.io/badge/React-18+-blue.svg)
 ![Firebase](https://img.shields.io/badge/Firebase-9+-orange.svg)
+![PWA](https://img.shields.io/badge/PWA-Ready-green.svg)
 ![Dutch](https://img.shields.io/badge/Language-Dutch%2FBelgium-green.svg)
 
 ## ✨ Hoofdfuncties
@@ -22,15 +23,17 @@ Een geavanceerde React web applicatie voor het maken en delen van boodschappenli
 - ✅ **Items toevoegen, bewerken en markeren als voltooid**
 - ✅ **Slimme item suggesties** tijdens het typen
 - ✅ **Populaire items** voor snelle toevoeging
-- ✅ **Filter functies**: Alles, Actief, Voltooid
-- ✅ **Bulk acties**: Alle voltooide items verwijderen
+- ✅ **Voortgangsbalk** - Visuele weergave van voltooiingspercentage
 - ✅ **Creator namen** - Zie wie elke lijst heeft gemaakt
 - ✅ **Item attributie** - Zie wie elk item heeft toegevoegd
+- ✅ **Lijst naam bewerken** - Klik op lijstnaam om te bewerken
 
 ### 📱 **Delen & Synchronisatie**
 - ✅ **QR-codes voor delen** van lijsten tussen gebruikers
 - ✅ **QR-code generatie** met veilige validatie
-- ✅ **Handmatige QR-code invoer** (camera scanning is placeholder)
+- ✅ **QR-code scanner** - Scan codes om lijsten te delen
+- ✅ **Direct delen** - WhatsApp, Telegram, Email integratie
+- ✅ **Native Share API** - Gebruik apparaat's eigen deel functionaliteit
 - ✅ **Gebruikers koppelen** voor gedeelde toegang
 - ✅ **Creator permissies** - alleen makers kunnen lijsten verwijderen
 - ✅ **Gedeelde toegang** - anderen kunnen items toevoegen/bewerken
@@ -40,20 +43,55 @@ Een geavanceerde React web applicatie voor het maken en delen van boodschappenli
 - ✅ **Gebruikersbeheer modal** - Beheer wie toegang heeft tot je lijsten
 
 ### 🎨 **Interface & Thema's**
+- ✅ **Unified Theme System** - Geavanceerd thema management
 - ✅ **Gruvbox thema** - Authentieke Gruvbox kleuren voor licht en donker
+- ✅ **Custom thema's** - Maak je eigen kleurenschema's
+- ✅ **Thema preview** - Bekijk thema's voordat je ze toepast
 - ✅ **Donker/licht thema** met naadloze overgangen
 - ✅ **Warme, oogvriendelijke kleuren** geoptimaliseerd voor comfort
 - ✅ **Responsive design** voor alle apparaten
 - ✅ **Framer Motion animaties** voor vloeiende overgangen
 - ✅ **Desktop geoptimaliseerd** - Enhanced layout voor grote schermen
+- ✅ **SafeArea ondersteuning** - Optimaal voor mobiele apparaten
+
+### 📊 **Analytics & Inzichten**
+- ✅ **Analytics dashboard** - Uitgebreide statistieken over je lijstgebruik
+- ✅ **Deel statistieken** - Zie hoeveel mensen toegang hebben tot je lijsten
+- ✅ **Activiteit overzicht** - Voltooiingspercentages en trends
+- ✅ **Grootste lijsten** - Ranking van je meest gebruikte lijsten
+- ✅ **Recente activiteit** - Overzicht van recent gewijzigde lijsten
+- ✅ **Voortgangsbalk** - Visuele weergave van voltooiing in analytics
+
+### 🔧 **Instellingen & Beheer**
+- ✅ **Settings pagina** - Centraal beheer van alle instellingen
+- ✅ **Thema instellingen** - Toegang tot thema aanpassingen
+- ✅ **Analytics toegang** - Directe link naar statistieken
+- ✅ **Persistentie beheer** - Data backup en herstel opties
+- ✅ **PWA update systeem** - Automatische app updates met gebruikerscontrole
+
+### 💾 **Data Persistentie**
+- ✅ **Persistentie pagina** - Overzicht van data opslag
+- ✅ **Health monitoring** - Status van data synchronisatie
+- ✅ **Backup functionaliteit** - Export en import van data
+- ✅ **Firebase integratie** - Veilige cloud opslag
+- ✅ **Lokale opslag** - Offline functionaliteit
+
+### 📱 **PWA Functionaliteit**
+- ✅ **Progressive Web App** - Installeerbaar op alle apparaten
+- ✅ **App iconen** - Favicon en Apple Touch iconen
+- ✅ **Manifest configuratie** - Volledige PWA ondersteuning
+- ✅ **Service Worker** - Offline functionaliteit en caching
+- ✅ **Update notificaties** - Automatische melding van nieuwe versies
+- ✅ **Install prompts** - Gebruiksvriendelijke installatie
+- ✅ **GitHub Pages optimalisatie** - Werkt perfect op GitHub Pages
 
 ### 🔄 **Gebruikerservaring**
 - ✅ **Toast notificaties** met duidelijke feedback
 - ✅ **Nederlandse interface** volledig gelokaliseerd
 - ✅ **Toegankelijkheid** met ARIA labels en keyboard navigation
-- ✅ **Analytics dashboard** - Inzicht in je lijstgebruik
-- ✅ **Settings modal** - Centraal beheer van instellingen
 - ✅ **Browser waarschuwing** - Melding bij browserwissel voor naam instelling
+- ✅ **Confirmation dialogs** - Veilige bevestiging voor belangrijke acties
+- ✅ **Loading states** - Duidelijke feedback tijdens bewerkingen
 
 ## 🚀 Installatie
 
@@ -125,35 +163,38 @@ Voor automatische deployment naar GitHub Pages met Firebase secrets:
 
 ### 🏠 **Hoofdscherm**
 - **Nieuwe lijst maken**: Type naam → klik "Lijst Aanmaken"
-- **QR-code scannen**: Klik op QR icoon → voer code handmatig in
+- **QR-code scannen**: Klik op QR icoon → scan code of voer handmatig in
 - **Thema wisselen**: Klik op zon/maan icoon voor Gruvbox licht/donker
 - **Instellingen**: Klik op tandwiel voor analytics en instellingen
 
 ### 📝 **Lijstbeheer**
 - **Lijst openen**: Klik "Lijst Openen" op een lijst
-- **Lijst delen**: Klik "Delen" → QR-code en link verschijnen
+- **Lijst delen**: Klik "Delen" → QR-code, link en direct delen opties
 - **Gebruikers beheren**: Klik "Gebruikers" (alleen voor creators)
 - **Lijst verwijderen**: Klik "Verwijderen"
 - **Creator info**: Zie "Gemaakt door [naam]" onder elke lijst
+- **Voortgang**: Zie voltooiingspercentage met groene voortgangsbalk
 
 ### 🛍️ **Items beheren**
 - **Item toevoegen**: Type naam → klik "Toevoegen"
 - **Item voltooien**: Klik op checkbox naast item
+- **Item bewerken**: Klik op potlood icoon
 - **Item verwijderen**: Klik op prullenbak icoon
-- **Filteren**: Gebruik "Alles", "Actief", "Voltooid" knoppen
 - **Populaire items**: Klik op voorgestelde items voor snelle toevoeging
 - **Contributor info**: Zie "Toegevoegd door [naam]" onder elk item
 
 ### 📱 **QR-code delen**
 1. **Delen**: Klik "Delen" knop op lijst
 2. **QR-code**: Toon QR-code aan ander apparaat
-3. **Link kopiëren**: Klik "Link kopiëren" voor delen via bericht
-4. **Cross-device toegang**: Anderen krijgen automatisch toegang wanneer ze de link openen
+3. **Direct delen**: Gebruik WhatsApp, Telegram of Email knoppen
+4. **Link kopiëren**: Klik "Link kopiëren" voor delen via bericht
+5. **Native Share**: Gebruik apparaat's eigen deel functionaliteit
 
 ### 📷 **QR-code scannen**
 1. **Scanner openen**: Klik QR icoon in header
-2. **Handmatig invoeren**: Typ code in tekstveld (camera scanning is nog niet geïmplementeerd)
-3. **Automatische toegang**: Lijst wordt automatisch toegevoegd aan je account
+2. **Code scannen**: Gebruik camera om QR-code te scannen
+3. **Handmatig invoeren**: Typ code in tekstveld als alternatief
+4. **Automatische toegang**: Lijst wordt automatisch toegevoegd aan je account
 
 ### 🔗 **Link delen tussen apparaten**
 1. **Deel link**: Kopieer de deellink en stuur naar ander apparaat
@@ -166,6 +207,27 @@ Voor automatische deployment naar GitHub Pages met Firebase secrets:
 2. **Gebruikers zien**: Bekijk wie toegang heeft tot je lijst
 3. **Toegang intrekken**: Verwijder gebruikers uit gedeelde lijsten
 4. **Creator rechten**: Alleen de maker van een lijst kan gebruikers beheren
+
+### 📊 **Analytics Dashboard**
+1. **Analytics openen**: Klik op "Analytics" in het menu
+2. **Overzicht statistieken**: Zie totaal lijsten, eigenaarschap en deel info
+3. **Deel statistieken**: Bekijk hoeveel mensen toegang hebben
+4. **Activiteit overzicht**: Zie voltooiingspercentages en trends
+5. **Grootste lijsten**: Ranking van meest gebruikte lijsten
+6. **Recente activiteit**: Overzicht van recent gewijzigde lijsten
+
+### 🎨 **Thema Aanpassingen**
+1. **Thema pagina**: Klik op "Thema" in het menu
+2. **Vooraf ingestelde thema's**: Kies uit Gruvbox Light/Dark
+3. **Custom thema's**: Maak je eigen kleurenschema
+4. **Live preview**: Zie wijzigingen direct in de interface
+5. **Opslaan**: Thema wordt automatisch opgeslagen
+
+### 📱 **PWA Installatie**
+1. **Install prompt**: Klik "Installeren" wanneer de melding verschijnt
+2. **Handmatige installatie**: Gebruik browser menu → "Installeren" of "Toevoegen aan startscherm"
+3. **App updates**: Krijg automatisch meldingen van nieuwe versies
+4. **Offline gebruik**: App werkt ook zonder internetverbinding
 
 ## ⚙️ Scripts
 
@@ -230,6 +292,7 @@ service cloud.firestore {
 ### **Styling & Animaties**
 - **Tailwind CSS** - Utility-first CSS framework
 - **Framer Motion** - Productie-ready animatie library
+- **Unified Theme System** - Geavanceerd thema management
 - **Gruvbox Theme** - Authentieke Gruvbox kleuren voor optimaal comfort
 
 ### **Backend & Database**
@@ -237,8 +300,14 @@ service cloud.firestore {
 - **Firebase Authentication** - Anonymous authentication
 - **Firebase Hosting** - Geoptimaliseerde web hosting
 
+### **PWA & Performance**
+- **Service Worker** - Offline functionaliteit en caching
+- **Web App Manifest** - PWA configuratie
+- **PWA Update Manager** - Automatische update detectie
+
 ### **QR & Funcionaliteit**
 - **react-qr-code** - QR-code generatie
+- **QR Scanner** - Camera-based QR code scanning
 - **Lucide React** - Moderne icon library
 - **React Hooks** - State management en side effects
 
@@ -253,10 +322,11 @@ service cloud.firestore {
 |---------|--------|---------|--------|------|
 | **Basis functionaliteit** | ✅ | ✅ | ✅ | ✅ |
 | **QR code generatie** | ✅ | ✅ | ✅ | ✅ |
+| **QR code scanning** | ✅ | ✅ | ✅ | ✅ |
+| **PWA installatie** | ✅ | ✅ | ✅ | ✅ |
 | **Gruvbox thema** | ✅ | ✅ | ✅ | ✅ |
 | **Realtime sync** | ✅ | ✅ | ✅ | ✅ |
-
-⚠️ = Beperkte ondersteuning
+| **Service Worker** | ✅ | ✅ | ✅ | ✅ |
 
 ## 📱 Responsive Design
 
@@ -264,6 +334,7 @@ service cloud.firestore {
 - **📱 Tablet**: Aangepaste layout voor tablets (768px+)
 - **💻 Desktop**: Volledige functionaliteit met sidebar (1024px+)
 - **🖥️ Large screens**: Enhanced ervaring met analytics (1440px+)
+- **SafeArea**: Ondersteuning voor notch en home indicator
 
 ## 🔧 Ontwikkeling
 
@@ -272,35 +343,47 @@ service cloud.firestore {
 src/
 ├── components/          # React componenten
 │   ├── QRScannerModal.jsx # QR scanner functionaliteit
+│   ├── QRShareModal.jsx # QR delen met direct share opties
 │   ├── UserNameModal.jsx # Gebruikersnaam instelling
 │   ├── UserManagementModal.jsx # Gebruikersbeheer
-│   ├── AnalyticsDashboard.jsx # Analytics weergave
-│   ├── SettingsModal.jsx # Instellingen modal
-│   └── ...
+│   ├── ConfirmationDialog.jsx # Bevestigingsdialogen
+│   ├── PWAUpdateNotification.jsx # PWA update meldingen
+│   └── Toast.jsx       # Notificatie systeem
+├── pages/              # Pagina componenten
+│   ├── Analytics.jsx   # Analytics dashboard
+│   ├── Settings.jsx    # Instellingen pagina
+│   ├── ThemePage.jsx   # Thema aanpassingen
+│   ├── Persistence.jsx # Data persistentie
+│   └── ShoppingListPage.jsx # Lijst detail pagina
 ├── context/            # React Context providers
-│   ├── ThemeContext.jsx # Gruvbox thema management
+│   ├── UnifiedThemeContext.jsx # Unified thema systeem
+│   ├── ThemeContext.jsx # Legacy thema support
 │   └── ToastContext.jsx # Notificatie systeem
 ├── utils/              # Utility functies
 │   ├── userManager.js  # Gebruikersbeheer
 │   ├── qrSecurity.js   # QR validatie
 │   ├── deviceUID.js    # Apparaat identificatie
+│   ├── pwaUpdateManager.js # PWA update management
+│   ├── colorManager.js # Kleur utilities
 │   └── groceryItems.js # Item suggesties
+├── hooks/              # Custom React hooks
+│   └── usePersistentState.js # Persistent state management
 └── firebase.js         # Firebase configuratie
 ```
 
 ### Nieuwe Features Toevoegen
 
-1. **Component maken**: Maak nieuwe component in `/components`
+1. **Component maken**: Maak nieuwe component in `/components` of `/pages`
 2. **Context gebruiken**: Gebruik bestaande contexts voor state
-3. **Styling**: Gebruik Tailwind classes en Gruvbox kleuren
-4. **Testen**: Test op verschillende apparaten en browsers
-5. **Documentatie**: Update README.md met nieuwe functionaliteit
+3. **Styling**: Gebruik Tailwind classes en Unified Theme System
+4. **PWA**: Overweeg PWA functionaliteit voor nieuwe features
+5. **Testen**: Test op verschillende apparaten en browsers
+6. **Documentatie**: Update README.md met nieuwe functionaliteit
 
 ## 🚧 Bekende Beperkingen
 
-- **Camera QR Scanning**: Momenteel alleen handmatige invoer, camera scanning is nog niet geïmplementeerd
-- **Offline Mode**: Beperkte functionaliteit zonder internetverbinding
-- **Spraakherkenning**: Spraakfunctionaliteit is niet meer beschikbaar in de huidige versie
+- **Offline Mode**: Beperkte functionaliteit zonder internetverbinding (alleen cached data)
+- **Browser Permissions**: QR scanning vereist camera toegang
 
 ## 🤝 Bijdragen
 
@@ -314,9 +397,11 @@ src/
 - Gebruik **Nederlandse** variabele namen waar mogelijk
 - Volg **React hooks** best practices
 - Gebruik **Tailwind CSS** voor styling
+- Gebruik **Unified Theme System** voor kleuren
 - Voeg **JSDoc comments** toe voor complexe functies
 - Test op **mobiele apparaten**
-- Respecteer **Gruvbox kleuren** voor consistentie
+- Respecteer **PWA best practices**
+- Test **offline functionaliteit**
 
 ## 📄 Licentie
 
@@ -327,6 +412,7 @@ MIT License - zie [LICENSE](LICENSE) voor details
 - **Design Inspiratie**: Gruvbox color scheme
 - **Icons**: Lucide React
 - **Nederlandse lokalisatie**: Native speaker optimized
+- **PWA**: Modern Progressive Web App standards
 
 ---
 
