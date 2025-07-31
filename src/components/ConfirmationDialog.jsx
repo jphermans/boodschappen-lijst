@@ -19,23 +19,23 @@ const ConfirmationDialog = ({
       case 'danger':
         return {
           icon: AlertTriangle,
-          iconColor: 'text-[rgb(var(--error-color))]',
-          confirmButton: 'bg-[rgb(var(--error-color))] hover:opacity-90',
-          border: 'border-[rgb(var(--error-color))]/20'
+          iconColor: 'text-[rgb(var(--color-error))]',
+          confirmButton: 'bg-[rgb(var(--color-error-button))] hover:opacity-90',
+          border: 'border-[rgb(var(--color-error))]/20'
         };
       case 'warning':
         return {
           icon: AlertTriangle,
-          iconColor: 'text-[rgb(var(--warning-color))]',
-          confirmButton: 'bg-[rgb(var(--warning-color))] hover:opacity-90',
-          border: 'border-[rgb(var(--warning-color))]/20'
+          iconColor: 'text-[rgb(var(--color-warning))]',
+          confirmButton: 'bg-[rgb(var(--color-warning-button))] hover:opacity-90',
+          border: 'border-[rgb(var(--color-warning))]/20'
         };
       default:
         return {
           icon: AlertTriangle,
-          iconColor: 'text-[rgb(var(--info-color))]',
-          confirmButton: 'bg-[rgb(var(--info-color))] hover:opacity-90',
-          border: 'border-[rgb(var(--info-color))]/20'
+          iconColor: 'text-[rgb(var(--color-info))]',
+          confirmButton: 'bg-[rgb(var(--color-info-button))] hover:opacity-90',
+          border: 'border-[rgb(var(--color-info))]/20'
         };
     }
   };

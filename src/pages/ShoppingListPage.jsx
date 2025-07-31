@@ -229,7 +229,7 @@ const ShoppingListPage = ({ list, onBack, onListUpdate }) => {
           <h2 className="text-xl font-bold text-[rgb(var(--card-text))] mb-2">Lijst niet gevonden</h2>
           <button
             onClick={onBack}
-            className="px-4 py-2 bg-[rgb(var(--primary-color))] text-white rounded-lg hover:opacity-90"
+            className="px-4 py-2 bg-[rgb(var(--color-primary-button))] text-white rounded-lg hover:opacity-90"
           >
             Terug naar overzicht
           </button>
@@ -367,7 +367,7 @@ const ShoppingListPage = ({ list, onBack, onListUpdate }) => {
               <button
                 onClick={addItem}
                 disabled={!newItemName.trim() || isLoading}
-                className="px-6 py-3 bg-[rgb(var(--primary-color))] hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-lg transition-all duration-200"
+                className="px-6 py-3 bg-[rgb(var(--color-primary-button))] hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-lg transition-all duration-200"
               >
                 <Plus className="w-5 h-5" />
               </button>

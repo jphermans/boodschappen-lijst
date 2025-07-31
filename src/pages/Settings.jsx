@@ -103,7 +103,7 @@ const SettingsPage = ({ lists = [], onBack, onNavigateToAnalytics, onNavigateToT
                 
                 <button
                   onClick={onNavigateToAnalytics}
-                  className="w-full flex items-center justify-center px-6 py-4 bg-[rgb(var(--primary-color))] hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                  className="w-full flex items-center justify-center px-6 py-4 bg-[rgb(var(--color-primary-button))] hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
                 >
                   <BarChart3 className="w-5 h-5 mr-3" />
                   <span className="font-medium">Open Analytics Dashboard</span>
@@ -159,7 +159,7 @@ const SettingsPage = ({ lists = [], onBack, onNavigateToAnalytics, onNavigateToT
                 
                 <button
                   onClick={onNavigateToTheme}
-                  className="w-full flex items-center justify-center px-6 py-4 bg-[rgb(var(--accent-color))] hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                  className="w-full flex items-center justify-center px-6 py-4 bg-[rgb(var(--color-accent-button))] hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
                 >
                   <span className="font-medium">Thema Aanpassen</span>
                 </button>
@@ -187,7 +187,7 @@ const SettingsPage = ({ lists = [], onBack, onNavigateToAnalytics, onNavigateToT
                 
                 <button
                   onClick={onNavigateToPersistence}
-                  className="w-full flex items-center justify-center px-6 py-4 bg-[rgb(var(--info-color))] hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 mb-3"
+                  className="w-full flex items-center justify-center px-6 py-4 bg-[rgb(var(--color-info-button))] hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 mb-3"
                 >
                   <span className="font-medium">Data Beheren</span>
                 </button>
@@ -227,7 +227,7 @@ const SettingsPage = ({ lists = [], onBack, onNavigateToAnalytics, onNavigateToT
                       }
                     }
                   }}
-                  className="w-full flex items-center justify-center px-6 py-4 bg-[rgb(var(--error-color))] hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                  className="w-full flex items-center justify-center px-6 py-4 bg-[rgb(var(--color-error-button))] hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
                 >
                   <span className="font-medium">Opslag wissen & Herstarten</span>
                 </button>

@@ -233,13 +233,13 @@ const ThemePage = ({ onBack }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <button
                 onClick={handleExportTheme}
-                className="flex items-center justify-center px-6 py-4 bg-[rgb(var(--success-color))] hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                className="flex items-center justify-center px-6 py-4 bg-[rgb(var(--color-success))] hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
               >
                 <Download className="w-5 h-5 mr-3" />
                 <span className="font-medium">Thema exporteren</span>
               </button>
               
-              <label className="flex items-center justify-center px-6 py-4 bg-[rgb(var(--info-color))] hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 cursor-pointer">
+              <label className="flex items-center justify-center px-6 py-4 bg-[rgb(var(--color-info-button))] hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 cursor-pointer">
                 <Upload className="w-5 h-5 mr-3" />
                 <span className="font-medium">Thema importeren</span>
                 <input
@@ -267,7 +267,7 @@ const ThemePage = ({ onBack }) => {
             </p>
             <button
               onClick={handleResetTheme}
-              className="px-6 py-3 bg-[rgb(var(--error-color))] hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+              className="px-6 py-3 bg-[rgb(var(--color-error-button))] hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
             >
               Reset naar standaard
             </button>

@@ -188,7 +188,7 @@ const QRScannerModal = ({ onClose, onScanSuccess }) => {
               }}
               className={`flex-1 flex items-center justify-center px-4 py-3 rounded-xl transition-all duration-200 font-medium ${
                 scanMethod === 'camera'
-                  ? 'bg-[rgb(var(--primary-color))] text-white shadow-lg'
+                  ? 'bg-[rgb(var(--color-primary-button))] text-white shadow-lg'
                   : 'bg-[rgb(var(--border-color))]/20 text-[rgb(var(--text-color))]/80 hover:bg-[rgb(var(--border-color))]/30'
               }`}
             >
@@ -203,7 +203,7 @@ const QRScannerModal = ({ onClose, onScanSuccess }) => {
               }}
               className={`flex-1 flex items-center justify-center px-4 py-3 rounded-xl transition-all duration-200 font-medium ${
                 scanMethod === 'manual'
-                  ? 'bg-[rgb(var(--primary-color))] text-white shadow-lg'
+                  ? 'bg-[rgb(var(--color-primary-button))] text-white shadow-lg'
                   : 'bg-[rgb(var(--border-color))]/20 text-[rgb(var(--text-color))]/80 hover:bg-[rgb(var(--border-color))]/30'
               }`}
             >
@@ -221,7 +221,7 @@ const QRScannerModal = ({ onClose, onScanSuccess }) => {
                   <p className="text-[rgb(var(--text-color))]/80 mb-6 leading-relaxed">{error}</p>
                   <button
                     onClick={() => setScanMethod('manual')}
-                    className="px-6 py-3 bg-[rgb(var(--primary-color))] hover:opacity-90 text-white rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+                    className="px-6 py-3 bg-[rgb(var(--color-primary-button))] hover:opacity-90 text-white rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
                   >
                     Gebruik handmatige invoer
                   </button>
@@ -275,7 +275,7 @@ const QRScannerModal = ({ onClose, onScanSuccess }) => {
                     </p>
                     
                     <div className="flex space-x-3">
-                      <label className="flex-1 flex items-center justify-center px-4 py-3 bg-[rgb(var(--secondary-color))] hover:opacity-90 text-white rounded-xl cursor-pointer transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:scale-105">
+                      <label className="flex-1 flex items-center justify-center px-4 py-3 bg-[rgb(var(--color-secondary-button))] hover:opacity-90 text-white rounded-xl cursor-pointer transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:scale-105">
                         <Upload className="w-4 h-4 mr-2" />
                         Upload Afbeelding
                         <input
@@ -309,7 +309,7 @@ const QRScannerModal = ({ onClose, onScanSuccess }) => {
               <button
                 onClick={handleManualSubmit}
                 disabled={!manualCode.trim() || isProcessing}
-                className="w-full flex items-center justify-center px-6 py-4 bg-[rgb(var(--primary-color))] hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200 font-semibold"
+                className="w-full flex items-center justify-center px-6 py-4 bg-[rgb(var(--color-primary-button))] hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200 font-semibold"
               >
                 {isProcessing ? (
                   <>

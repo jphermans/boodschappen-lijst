@@ -689,7 +689,7 @@ function App() {
               {/* Mobile QR Scanner */}
               <button
                 onClick={() => setShowScanner(true)}
-                className="lg:hidden flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-[rgb(var(--secondary-color))] hover:opacity-90 text-white shadow-md hover:shadow-lg transform active:scale-95 transition-all duration-200"
+                className="lg:hidden flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-[rgb(var(--color-secondary-button))] hover:opacity-90 text-white shadow-md hover:shadow-lg transform active:scale-95 transition-all duration-200"
                 aria-label="QR-code scannen"
               >
                 <QrCode className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -698,7 +698,7 @@ function App() {
               {/* Theme Toggle */}
               <button
                 onClick={toggleTheme}
-                className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-lg bg-[rgb(var(--primary-color))] hover:opacity-90 text-white shadow-md hover:shadow-lg transform active:scale-95 sm:hover:scale-105 transition-all duration-200 group"
+                className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-lg bg-[rgb(var(--color-primary-button))] hover:opacity-90 text-white shadow-md hover:shadow-lg transform active:scale-95 sm:hover:scale-105 transition-all duration-200 group"
                 aria-label="Thema wisselen"
               >
                 <span className="text-sm sm:text-base lg:text-xl group-hover:scale-110 transition-transform duration-200">
@@ -797,7 +797,7 @@ function App() {
                   <button
                     onClick={createList}
                     disabled={!newListName.trim() || isCreatingList}
-                    className="flex items-center justify-center px-4 sm:px-6 lg:px-8 xl:px-10 py-3 lg:py-4 bg-[rgb(var(--primary-color))] hover:opacity-90 text-white rounded-lg sm:rounded-xl lg:rounded-2xl shadow-lg hover:shadow-xl transform active:scale-95 sm:hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:hover:shadow-lg transition-all duration-200 font-semibold text-sm sm:text-base lg:text-lg whitespace-nowrap touch-manipulation"
+                    className="flex items-center justify-center px-4 sm:px-6 lg:px-8 xl:px-10 py-3 lg:py-4 bg-[rgb(var(--color-primary-button))] hover:opacity-90 text-white rounded-lg sm:rounded-xl lg:rounded-2xl shadow-lg hover:shadow-xl transform active:scale-95 sm:hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:hover:shadow-lg transition-all duration-200 font-semibold text-sm sm:text-base lg:text-lg whitespace-nowrap touch-manipulation"
                   >
                     <Plus className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 mr-2 lg:mr-3" />
                     <span>{isCreatingList ? 'Bezig...' : 'Lijst Aanmaken'}</span>
@@ -898,7 +898,7 @@ function App() {
                           setSelectedList(list);
                           setCurrentPage('list');
                         }}
-                        className="w-full flex items-center justify-center px-3 sm:px-4 py-2.5 sm:py-3 lg:py-4 bg-[rgb(var(--primary-color))] hover:opacity-90 text-white rounded-lg sm:rounded-xl lg:rounded-2xl shadow-lg hover:shadow-xl transform active:scale-95 sm:hover:scale-105 transition-all duration-200 font-semibold text-sm sm:text-base lg:text-lg touch-manipulation"
+                        className="w-full flex items-center justify-center px-3 sm:px-4 py-2.5 sm:py-3 lg:py-4 bg-[rgb(var(--color-primary-button))] hover:opacity-90 text-white rounded-lg sm:rounded-xl lg:rounded-2xl shadow-lg hover:shadow-xl transform active:scale-95 sm:hover:scale-105 transition-all duration-200 font-semibold text-sm sm:text-base lg:text-lg touch-manipulation"
                       >
                         <Check className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 mr-2 sm:mr-3" />
                         <span>Lijst Openen</span>
@@ -910,7 +910,7 @@ function App() {
                           e.stopPropagation();
                           handleShare(list.id);
                         }}
-                        className="w-full flex items-center justify-center px-3 sm:px-4 py-2.5 sm:py-3 lg:py-4 bg-[rgb(var(--primary-color))] hover:opacity-90 text-white rounded-lg sm:rounded-xl lg:rounded-2xl shadow-lg hover:shadow-xl transform active:scale-95 sm:hover:scale-105 transition-all duration-200 font-semibold text-sm sm:text-base lg:text-lg touch-manipulation"
+                        className="w-full flex items-center justify-center px-3 sm:px-4 py-2.5 sm:py-3 lg:py-4 bg-[rgb(var(--color-secondary-button))] hover:opacity-90 text-white rounded-lg sm:rounded-xl lg:rounded-2xl shadow-lg hover:shadow-xl transform active:scale-95 sm:hover:scale-105 transition-all duration-200 font-semibold text-sm sm:text-base lg:text-lg touch-manipulation"
                         title="Delen"
                       >
                         <Share2 className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 mr-2 sm:mr-3" />
@@ -926,7 +926,7 @@ function App() {
                                 e.stopPropagation();
                                 handleUserManagement(list.id);
                               }}
-                              className="flex-1 flex items-center justify-center px-3 sm:px-4 py-2 sm:py-2.5 lg:py-3 bg-[rgb(var(--info-color))] hover:opacity-90 text-white rounded-lg lg:rounded-xl shadow-md hover:shadow-lg transform active:scale-95 sm:hover:scale-105 transition-all duration-200 font-medium text-sm lg:text-base touch-manipulation"
+                              className="flex-1 flex items-center justify-center px-3 sm:px-4 py-2 sm:py-2.5 lg:py-3 bg-[rgb(var(--color-info-button))] hover:opacity-90 text-white rounded-lg lg:rounded-xl shadow-md hover:shadow-lg transform active:scale-95 sm:hover:scale-105 transition-all duration-200 font-medium text-sm lg:text-base touch-manipulation"
                               title="Gebruikers beheren"
                             >
                               <Users className="w-4 h-4 lg:w-5 lg:h-5 mr-1 sm:mr-2" />
@@ -940,7 +940,7 @@ function App() {
                                 e.stopPropagation();
                                 handleDeleteList(list.id);
                               }}
-                              className="flex-1 flex items-center justify-center px-3 sm:px-4 py-2 sm:py-2.5 lg:py-3 bg-[rgb(var(--accent-color))] hover:opacity-90 text-white rounded-lg lg:rounded-xl shadow-md hover:shadow-lg transform active:scale-95 sm:hover:scale-105 transition-all duration-200 font-medium text-sm lg:text-base touch-manipulation"
+                              className="flex-1 flex items-center justify-center px-3 sm:px-4 py-2 sm:py-2.5 lg:py-3 bg-[rgb(var(--color-error-button))] hover:opacity-90 text-white rounded-lg lg:rounded-xl shadow-md hover:shadow-lg transform active:scale-95 sm:hover:scale-105 transition-all duration-200 font-medium text-sm lg:text-base touch-manipulation"
                               title="Verwijderen"
                             >
                               <Trash2 className="w-4 h-4 lg:w-5 lg:h-5 mr-1 sm:mr-2" />
@@ -978,7 +978,7 @@ function App() {
                     <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 justify-center items-center">
                       <button
                         onClick={() => setShowScanner(true)}
-                        className="flex items-center justify-center px-6 lg:px-8 py-3 lg:py-4 bg-[rgb(var(--secondary-color))] hover:opacity-90 text-white rounded-xl lg:rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 font-semibold text-base lg:text-lg"
+                        className="flex items-center justify-center px-6 lg:px-8 py-3 lg:py-4 bg-[rgb(var(--color-secondary-button))] hover:opacity-90 text-white rounded-xl lg:rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 font-semibold text-base lg:text-lg"
                       >
                         <QrCode className="w-5 h-5 lg:w-6 lg:h-6 mr-3" />
                         <span>Scan Gedeelde Lijst</span>
@@ -1051,7 +1051,7 @@ function App() {
                   <div className="space-y-3">
                     <button
                       onClick={() => setShowScanner(true)}
-                      className="w-full flex items-center px-4 py-3 bg-[rgb(var(--secondary-color))] hover:opacity-90 text-white rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+                      className="w-full flex items-center px-4 py-3 bg-[rgb(var(--color-secondary-button))] hover:opacity-90 text-white rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
                     >
                       <QrCode className="w-5 h-5 mr-3" />
                       <span className="font-medium">QR Scanner</span>
@@ -1085,7 +1085,7 @@ function App() {
                     </p>
                     <button
                       onClick={() => setCurrentPage('theme')}
-                      className="w-full flex items-center px-4 py-3 bg-[rgb(var(--accent-color))] hover:opacity-90 text-white rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+                      className="w-full flex items-center px-4 py-3 bg-[rgb(var(--color-accent-button))] hover:opacity-90 text-white rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
                     >
                       <span className="font-medium">Thema Aanpassen</span>
                     </button>
@@ -1110,7 +1110,7 @@ function App() {
                     </p>
                     <button
                       onClick={() => setCurrentPage('persistence')}
-                      className="w-full flex items-center px-4 py-3 bg-[rgb(var(--info-color))] hover:opacity-90 text-white rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+                      className="w-full flex items-center px-4 py-3 bg-[rgb(var(--color-info-button))] hover:opacity-90 text-white rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
                     >
                       <span className="font-medium">Data Beheren</span>
                     </button>

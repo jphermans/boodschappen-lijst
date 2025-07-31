@@ -243,7 +243,7 @@ const PersistenceHealthMonitor = ({ onClose }) => {
               <button
                 onClick={createBackup}
                 disabled={isCreatingBackup}
-                className="w-full flex items-center justify-center px-4 py-3 bg-[rgb(var(--primary-color))] hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200 font-semibold"
+                className="w-full flex items-center justify-center px-4 py-3 bg-[rgb(var(--color-primary-button))] hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-200 font-semibold"
               >
                 {isCreatingBackup ? (
                   <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
@@ -268,7 +268,7 @@ const PersistenceHealthMonitor = ({ onClose }) => {
                 <p className="text-[rgb(var(--text-color))]/60 mb-2">
                   Sleep backup bestand hierheen of
                 </p>
-                <label className="inline-flex items-center px-4 py-2 bg-[rgb(var(--secondary-color))] hover:opacity-90 text-white rounded-lg cursor-pointer transition-colors">
+                <label className="inline-flex items-center px-4 py-2 bg-[rgb(var(--color-secondary-button))] hover:opacity-90 text-white rounded-lg cursor-pointer transition-colors">
                   <Upload className="w-4 h-4 mr-2" />
                   Selecteer Bestand
                   <input
@@ -349,7 +349,7 @@ const PersistenceHealthMonitor = ({ onClose }) => {
           <div className="flex justify-center">
             <button
               onClick={onClose}
-              className="w-full sm:w-auto px-6 py-3 bg-[rgb(var(--primary-color))] hover:opacity-90 text-white rounded-lg transition-colors font-medium text-base touch-manipulation min-h-[48px] flex items-center justify-center"
+              className="w-full sm:w-auto px-6 py-3 bg-[rgb(var(--color-primary-button))] hover:opacity-90 text-white rounded-lg transition-colors font-medium text-base touch-manipulation min-h-[48px] flex items-center justify-center"
             >
               Sluiten
             </button>

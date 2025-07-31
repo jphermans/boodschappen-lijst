@@ -38,6 +38,14 @@
   --color-error: 157 0 6; /* Gruvbox red #9d0006 */
   --color-info: 69 133 136; /* Gruvbox blue #458588 */
   
+  /* Button-specific colors for better contrast */
+  --color-primary-button: 175 58 3; /* Darker orange for buttons */
+  --color-secondary-button: 121 116 14; /* Darker green for buttons */
+  --color-accent-button: 204 36 29; /* Brighter red for buttons #cc241d */
+  --color-info-button: 69 133 136; /* Blue for info buttons */
+  --color-error-button: 204 36 29; /* Brighter red for error buttons #cc241d */
+  --color-warning-button: 181 118 20; /* Darker yellow for buttons #b57614 */
+  
   /* Legacy support */
   --bg-color: var(--color-background);
   --text-color: var(--color-text);
@@ -72,6 +80,14 @@
   --color-warning: 250 189 47; /* Gruvbox yellow #fabd2f */
   --color-error: 251 73 52; /* Gruvbox red #fb4934 */
   --color-info: 131 165 152; /* Gruvbox blue #83a598 */
+  
+  /* Button-specific colors for better contrast */
+  --color-primary-button: 254 128 25; /* Bright orange for buttons */
+  --color-secondary-button: 184 187 38; /* Bright green for buttons */
+  --color-accent-button: 251 73 52; /* Bright red for buttons */
+  --color-info-button: 131 165 152; /* Blue for info buttons */
+  --color-error-button: 251 73 52; /* Bright red for error buttons */
+  --color-warning-button: 250 189 47; /* Bright yellow for buttons */
   
   /* Legacy support */
   --bg-color: var(--color-background);
@@ -197,6 +213,31 @@ body {
 
 .bg-background {
   background-color: rgb(var(--color-background));
+}
+
+/* Button-specific background utilities for better contrast */
+.bg-primary-button {
+  background-color: rgb(var(--color-primary-button));
+}
+
+.bg-secondary-button {
+  background-color: rgb(var(--color-secondary-button));
+}
+
+.bg-accent-button {
+  background-color: rgb(var(--color-accent-button));
+}
+
+.bg-info-button {
+  background-color: rgb(var(--color-info-button));
+}
+
+.bg-error-button {
+  background-color: rgb(var(--color-error-button));
+}
+
+.bg-warning-button {
+  background-color: rgb(var(--color-warning-button));
 }
 
 /* Border utilities */

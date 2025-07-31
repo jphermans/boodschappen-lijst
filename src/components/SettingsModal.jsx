@@ -85,7 +85,7 @@ const SettingsModal = ({ lists = [], onClose }) => {
               <button
                 onClick={unifiedToggleMode}
                 disabled={themeLoading}
-                className="flex items-center justify-center space-x-3 p-4 w-full rounded-xl bg-[rgb(var(--primary-color))] hover:opacity-90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center justify-center space-x-3 p-4 w-full rounded-xl bg-[rgb(var(--color-primary-button))] hover:opacity-90 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {unifiedMode === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
                 <span className="font-medium">
@@ -109,7 +109,7 @@ const SettingsModal = ({ lists = [], onClose }) => {
                   </div>
                   <button
                     onClick={() => setShowColorPicker(true)}
-                    className="flex items-center space-x-2 px-3 py-2 bg-[rgb(var(--primary-color))] hover:opacity-90 text-white rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
+                    className="flex items-center space-x-2 px-3 py-2 bg-[rgb(var(--color-primary-button))] hover:opacity-90 text-white rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
                   >
                     <Settings className="w-4 h-4" />
                     <span className="text-sm font-medium">Aanpassen</span>
@@ -276,7 +276,7 @@ const SettingsModal = ({ lists = [], onClose }) => {
                   
                   <button
                     onClick={() => setShowAnalytics(true)}
-                    className="w-full flex items-center justify-center px-4 py-3 bg-[rgb(var(--primary-color))] hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                    className="w-full flex items-center justify-center px-4 py-3 bg-[rgb(var(--color-primary-button))] hover:opacity-90 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
                   >
                     <BarChart3 className="w-5 h-5 mr-2" />
                     <span className="font-medium">Open Analytics Dashboard</span>
@@ -310,7 +310,7 @@ const SettingsModal = ({ lists = [], onClose }) => {
             </div>
             <button
               onClick={onClose}
-              className="w-full sm:w-auto px-6 py-3 bg-[rgb(var(--primary-color))] hover:opacity-90 text-white rounded-lg transition-colors font-medium text-base touch-manipulation min-h-[48px] flex items-center justify-center"
+              className="w-full sm:w-auto px-6 py-3 bg-[rgb(var(--color-primary-button))] hover:opacity-90 text-white rounded-lg transition-colors font-medium text-base touch-manipulation min-h-[48px] flex items-center justify-center"
             >
               Sluiten
             </button>

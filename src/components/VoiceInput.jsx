@@ -136,12 +136,12 @@ const VoiceInput = ({
           relative flex items-center justify-center rounded-xl shadow-lg hover:shadow-xl
           transform transition-all duration-200 overflow-hidden
           ${hasPermission === false
-            ? 'bg-[rgb(var(--warning-color))] text-white px-4 py-3 animate-pulse'
+            ? 'bg-[rgb(var(--color-warning-button))] text-white px-4 py-3 animate-pulse'
             : isTimingOut
-              ? 'bg-[rgb(var(--warning-color))] text-white p-3'
+              ? 'bg-[rgb(var(--color-warning-button))] text-white p-3'
               : isListening
-                ? 'bg-[rgb(var(--accent-color))] hover:opacity-90 text-white p-3'
-                : 'bg-[rgb(var(--secondary-color))] hover:opacity-90 text-white p-3'
+                ? 'bg-[rgb(var(--color-accent-button))] hover:opacity-90 text-white p-3'
+                : 'bg-[rgb(var(--color-secondary-button))] hover:opacity-90 text-white p-3'
           }
         `}
         title={
