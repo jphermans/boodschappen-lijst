@@ -601,10 +601,10 @@ function App() {
                 <List className="w-5 h-5 lg:w-6 lg:h-6 text-white" />
               </div>
               <div className="min-w-0 flex-1 pl-2 sm:pl-0">
-                <h1 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-[rgb(var(--card-text))] tracking-tight break-words ipad-title-fix ipad-horizontal-text">
+                <h1 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-[rgb(var(--card-text))] tracking-tight break-words ipad-heading-fix ipad-force-horizontal">
                   Boodschappenlijst
                 </h1>
-                <p className="hidden lg:block text-sm text-[rgb(var(--text-color))]/60 font-medium">
+                <p className="hidden lg:block text-sm text-[rgb(var(--text-color))]/60 font-medium ipad-subtitle-fix ipad-force-horizontal">
                   Beheer en deel je lijsten
                 </p>
               </div>
@@ -765,10 +765,10 @@ function App() {
               >
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 lg:mb-8 ipad-flex-fix">
                   <div className="mb-4 sm:mb-0 min-w-0 flex-1">
-                    <h2 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-[rgb(var(--card-text))] mb-1 sm:mb-2 ipad-title-fix ipad-horizontal-text">
+                    <h2 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-[rgb(var(--card-text))] mb-1 sm:mb-2 ipad-heading-fix ipad-force-horizontal">
                       Nieuwe lijst maken
                     </h2>
-                    <p className="text-[rgb(var(--text-color))]/60 text-sm lg:text-base">
+                    <p className="text-[rgb(var(--text-color))]/60 text-sm lg:text-base ipad-subtitle-fix ipad-force-horizontal">
                       Maak een nieuwe boodschappenlijst en deel deze met anderen
                     </p>
                   </div>
@@ -825,7 +825,7 @@ function App() {
                     {/* Header - Completely restructured for full visibility */}
                     <div className="mb-4 lg:mb-6">
                       {/* Title */}
-                      <h3 className="text-base md:text-lg lg:text-xl xl:text-2xl font-bold text-[rgb(var(--card-text))] mb-2 md:mb-3 group-hover:text-primary transition-colors duration-200 break-words leading-tight">
+                      <h3 className="text-base md:text-lg lg:text-xl xl:text-2xl font-bold text-[rgb(var(--card-text))] mb-2 md:mb-3 group-hover:text-primary transition-colors duration-200 break-words leading-tight ipad-heading-fix ipad-force-horizontal">
                         {list.name}
                       </h3>
                       
@@ -842,7 +842,7 @@ function App() {
                       
                       {/* Creator info */}
                       {list.creatorName && (
-                        <div className="text-xs text-[rgb(var(--text-color))]/50 mb-2 md:mb-3 break-words">
+                        <div className="text-xs text-[rgb(var(--text-color))]/50 mb-2 md:mb-3 break-words ipad-subtitle-fix ipad-force-horizontal">
                           Gemaakt door {list.creatorName}
                         </div>
                       )}
@@ -974,11 +974,11 @@ function App() {
                       <List className="w-10 h-10 lg:w-12 lg:h-12 text-primary" />
                     </div>
                     
-                    <h3 className="text-xl lg:text-2xl xl:text-3xl font-bold text-[rgb(var(--card-text))] mb-4 lg:mb-6">
+                    <h3 className="text-xl lg:text-2xl xl:text-3xl font-bold text-[rgb(var(--card-text))] mb-4 lg:mb-6 ipad-heading-fix ipad-force-horizontal">
                       Welkom bij Boodschappenlijst!
                     </h3>
                     
-                    <p className="text-[rgb(var(--text-color))]/60 mb-8 lg:mb-10 text-base lg:text-lg leading-relaxed">
+                    <p className="text-[rgb(var(--text-color))]/60 mb-8 lg:mb-10 text-base lg:text-lg leading-relaxed ipad-subtitle-fix ipad-force-horizontal">
                       Je hebt nog geen lijsten. Begin door een nieuwe lijst aan te maken of scan een gedeelde lijst van iemand anders.
                     </p>
                     
@@ -997,7 +997,7 @@ function App() {
                         <div className="w-12 h-px bg-[rgb(var(--border-color))]/30"></div>
                       </div>
                       
-                      <p className="text-[rgb(var(--text-color))]/60 text-sm lg:text-base">
+                      <p className="text-[rgb(var(--text-color))]/60 text-sm lg:text-base ipad-subtitle-fix ipad-force-horizontal">
                         Maak hierboven een nieuwe lijst aan
                       </p>
                     </div>
@@ -1016,7 +1016,7 @@ function App() {
                   animate={{ opacity: 1, x: 0 }}
                   className="bg-[rgb(var(--card-bg))] rounded-xl md:rounded-2xl shadow-lg border border-[rgb(var(--border-color))]/20 p-4 md:p-6"
                 >
-                  <h3 className="text-base md:text-lg font-bold text-[rgb(var(--card-text))] mb-3 md:mb-4 flex items-center">
+                  <h3 className="text-base md:text-lg font-bold text-[rgb(var(--card-text))] mb-3 md:mb-4 flex items-center ipad-heading-fix ipad-force-horizontal">
                     <div className="w-2 h-2 bg-primary rounded-full mr-3"></div>
                     Overzicht
                   </h3>
@@ -1050,7 +1050,7 @@ function App() {
                   transition={{ delay: 0.1 }}
                   className="bg-[rgb(var(--card-bg))] rounded-xl md:rounded-2xl shadow-lg border border-[rgb(var(--border-color))]/20 p-4 md:p-6"
                 >
-                  <h3 className="text-base md:text-lg font-bold text-[rgb(var(--card-text))] mb-3 md:mb-4 flex items-center">
+                  <h3 className="text-base md:text-lg font-bold text-[rgb(var(--card-text))] mb-3 md:mb-4 flex items-center ipad-heading-fix ipad-force-horizontal">
                     <div className="w-2 h-2 bg-secondary rounded-full mr-3"></div>
                     Snelle acties
                   </h3>
@@ -1081,13 +1081,13 @@ function App() {
                   transition={{ delay: 0.15 }}
                   className="bg-[rgb(var(--card-bg))] rounded-xl md:rounded-2xl shadow-lg border border-[rgb(var(--border-color))]/20 p-4 md:p-6"
                 >
-                  <h3 className="text-base md:text-lg font-bold text-[rgb(var(--card-text))] mb-3 md:mb-4 flex items-center">
+                  <h3 className="text-base md:text-lg font-bold text-[rgb(var(--card-text))] mb-3 md:mb-4 flex items-center ipad-heading-fix ipad-force-horizontal">
                     <div className="w-2 h-2 bg-purple-500 rounded-full mr-3"></div>
                     Thema Instellingen
                   </h3>
                   
                   <div className="space-y-2 md:space-y-3">
-                    <p className="text-xs md:text-sm text-[rgb(var(--text-color))]/60">
+                    <p className="text-xs md:text-sm text-[rgb(var(--text-color))]/60 ipad-subtitle-fix ipad-force-horizontal">
                       Pas het uiterlijk van de app aan naar jouw voorkeur
                     </p>
                     <button
@@ -1106,13 +1106,13 @@ function App() {
                   transition={{ delay: 0.2 }}
                   className="bg-[rgb(var(--card-bg))] rounded-xl md:rounded-2xl shadow-lg border border-[rgb(var(--border-color))]/20 p-4 md:p-6"
                 >
-                  <h3 className="text-base md:text-lg font-bold text-[rgb(var(--card-text))] mb-3 md:mb-4 flex items-center">
+                  <h3 className="text-base md:text-lg font-bold text-[rgb(var(--card-text))] mb-3 md:mb-4 flex items-center ipad-heading-fix ipad-force-horizontal">
                     <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
                     Data & Backup
                   </h3>
                   
                   <div className="space-y-2 md:space-y-3">
-                    <p className="text-xs md:text-sm text-[rgb(var(--text-color))]/60">
+                    <p className="text-xs md:text-sm text-[rgb(var(--text-color))]/60 ipad-subtitle-fix ipad-force-horizontal">
                       Beheer je data en maak back-ups
                     </p>
                     <button
@@ -1132,7 +1132,7 @@ function App() {
                     transition={{ delay: 0.2 }}
                     className="bg-[rgb(var(--card-bg))] rounded-xl md:rounded-2xl shadow-lg border border-[rgb(var(--border-color))]/20 p-4 md:p-6"
                   >
-                    <h3 className="text-base md:text-lg font-bold text-[rgb(var(--card-text))] mb-3 md:mb-4 flex items-center">
+                    <h3 className="text-base md:text-lg font-bold text-[rgb(var(--card-text))] mb-3 md:mb-4 flex items-center ipad-heading-fix ipad-force-horizontal">
                       <div className="w-2 h-2 bg-accent rounded-full mr-3"></div>
                       Recente activiteit
                     </h3>
@@ -1157,10 +1157,10 @@ function App() {
                           >
                             <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0"></div>
                             <div className="flex-1 min-w-0">
-                              <p className="font-medium text-[rgb(var(--card-text))] break-words text-xs md:text-sm">
+                              <p className="font-medium text-[rgb(var(--card-text))] break-words text-xs md:text-sm ipad-subtitle-fix ipad-force-horizontal">
                                 {list.name}
                               </p>
-                              <p className="text-xs text-[rgb(var(--text-color))]/60">
+                              <p className="text-xs text-[rgb(var(--text-color))]/60 ipad-subtitle-fix ipad-force-horizontal">
                                 {list.items?.length || 0} items • {list.isCreator ? 'Eigenaar' : 'Gedeeld'}
                               </p>
                             </div>
@@ -1168,7 +1168,7 @@ function App() {
                         ))}
                       
                       {lists.filter(list => list.updatedAt).length === 0 && (
-                        <p className="text-xs md:text-sm text-[rgb(var(--text-color))]/60 text-center py-3 md:py-4">
+                        <p className="text-xs md:text-sm text-[rgb(var(--text-color))]/60 text-center py-3 md:py-4 ipad-subtitle-fix ipad-force-horizontal">
                           Geen recente activiteit
                         </p>
                       )}
