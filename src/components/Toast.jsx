@@ -16,34 +16,34 @@ const Toast = ({ toast, onRemove }) => {
   const getIcon = () => {
     switch (type) {
       case 'success':
-        return <Check className="w-5 h-5" />;
+        return <Check className="w-full h-full" />;
       case 'error':
-        return <X className="w-5 h-5" />;
+        return <X className="w-full h-full" />;
       case 'warning':
-        return <AlertCircle className="w-5 h-5" />;
+        return <AlertCircle className="w-full h-full" />;
       case 'info':
-        return <Info className="w-5 h-5" />;
+        return <Info className="w-full h-full" />;
       case 'delete':
-        return <Trash2 className="w-5 h-5" />;
+        return <Trash2 className="w-full h-full" />;
       default:
-        return <Info className="w-5 h-5" />;
+        return <Info className="w-full h-full" />;
     }
   };
 
   const getStyles = () => {
     switch (type) {
       case 'success':
-        return 'bg-[rgb(var(--success-color))] text-white';
+        return 'bg-green-500/90 text-white backdrop-blur-sm';
       case 'error':
-        return 'bg-[rgb(var(--error-color))] text-white';
+        return 'bg-red-500/90 text-white backdrop-blur-sm';
       case 'warning':
-        return 'bg-[rgb(var(--warning-color))] text-white';
+        return 'bg-orange-500/90 text-white backdrop-blur-sm';
       case 'info':
-        return 'bg-[rgb(var(--info-color))] text-white';
+        return 'bg-blue-500/90 text-white backdrop-blur-sm';
       case 'delete':
-        return 'bg-[rgb(var(--accent-color))] text-white';
+        return 'bg-red-600/90 text-white backdrop-blur-sm';
       default:
-        return 'bg-[rgb(var(--border-color))] text-[rgb(var(--card-text))]';
+        return 'bg-gray-600/90 text-white backdrop-blur-sm';
     }
   };
 
@@ -52,17 +52,19 @@ const Toast = ({ toast, onRemove }) => {
       initial={{ opacity: 0, y: -50, scale: 0.9 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -50, scale: 0.9 }}
-      className={`flex items-center space-x-3 px-4 py-3 rounded-xl shadow-lg ${getStyles()} max-w-sm mx-auto mb-2`}
+      className={`flex items-center space-x-2 sm:space-x-3 px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl shadow-lg border border-white/20 ${getStyles()} max-w-xs sm:max-w-sm lg:max-w-md mx-auto mb-2`}
     >
       <div className="flex-shrink-0">
-        {getIcon()}
+        <div className="w-4 h-4 sm:w-5 sm:h-5">
+          {getIcon()}
+        </div>
       </div>
-      <p className="flex-1 font-medium text-sm">{message}</p>
+      <p className="flex-1 font-medium text-xs sm:text-sm lg:text-base">{message}</p>
       <button
         onClick={() => onRemove(id)}
         className="flex-shrink-0 opacity-70 hover:opacity-100 transition-opacity"
       >
-        <X className="w-4 h-4" />
+        <X className="w-3 h-3 sm:w-4 sm:h-4" />
       </button>
     </motion.div>
   );
