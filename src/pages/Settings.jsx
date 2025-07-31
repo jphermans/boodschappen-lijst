@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Link2, BarChart3, Settings, RotateCcw, Download, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Link2, BarChart3, Settings, RotateCcw, Download, RefreshCw, Copy, User, Database, Shield } from 'lucide-react';
 import { getDeviceInfo } from '../utils/deviceUID';
+import { getCurrentUserID } from '../firebase';
 import { useToast } from '../context/ToastContext';
 import pwaUpdateManager from '../utils/pwaUpdateManager';
 
@@ -9,6 +10,7 @@ const SettingsPage = ({ lists = [], onBack, onNavigateToAnalytics, onNavigateToT
   const deviceInfo = getDeviceInfo();
   const [isCheckingUpdate, setIsCheckingUpdate] = useState(false);
   const [appVersion, setAppVersion] = useState('');
+  const [currentUserID, setCurrentUserID] = useState('');
   const { success, error, info } = useToast();
 
   useEffect(() => {
@@ -24,8 +26,30 @@ const SettingsPage = ({ lists = [], onBack, onNavigateToAnalytics, onNavigateToT
       }
     };
     
+    // Get current user ID
+    const userID = getCurrentUserID();
+    if (userID) {
+      setCurrentUserID(userID);
+    }
+    
     getVersionInfo();
   }, []);
+
+  const copyToClipboard = async (text, label) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      success(`${label} gekopieerd naar klembord!`, 2000);
+    } catch (err) {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      success(`${label} gekopieerd naar klembord!`, 2000);
+    }
+  };
 
   const handleCheckForUpdates = async () => {
     setIsCheckingUpdate(true);
@@ -95,40 +119,125 @@ const SettingsPage = ({ lists = [], onBack, onNavigateToAnalytics, onNavigateToT
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 lg:px-8 xl:px-12 py-6 lg:py-8 xl:py-12 safe-area-x content-safe-area" style={{ paddingTop: 'calc(var(--header-height) + 1.5rem)' }}>
         <div className="space-y-8">
-          {/* Sharing Information Section */}
+          {/* User Identity & Sharing Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-lg border border-[rgb(var(--border-color))]/20 p-6 lg:p-8"
           >
             <h2 className="text-xl lg:text-2xl font-bold text-[rgb(var(--card-text))] mb-6 flex items-center">
-              <Link2 className="w-6 h-6 mr-3 text-secondary" />
-              Lijsten delen
+              <User className="w-6 h-6 mr-3 text-primary" />
+              Gebruiker Identiteit
             </h2>
             
-            <div className="space-y-4">
-              <div className="bg-[rgb(var(--border-color))]/10 p-4 rounded-lg">
-                <p className="text-sm text-[rgb(var(--text-color))]/80 mb-3 font-medium">
-                  Hoe lijsten delen:
+            <div className="space-y-6">
+              {/* Complete User ID Display */}
+              <div className="bg-[rgb(var(--primary-color))]/10 border border-[rgb(var(--primary-color))]/20 p-4 rounded-lg">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-lg font-semibold text-[rgb(var(--primary-color))] flex items-center">
+                    <Shield className="w-5 h-5 mr-2" />
+                    Firebase Gebruiker ID
+                  </h3>
+                  <button
+                    onClick={() => copyToClipboard(currentUserID, 'Gebruiker ID')}
+                    className="flex items-center space-x-2 px-3 py-1.5 bg-[rgb(var(--primary-color))]/20 hover:bg-[rgb(var(--primary-color))]/30 text-[rgb(var(--primary-color))] rounded-lg transition-colors text-sm"
+                  >
+                    <Copy className="w-4 h-4" />
+                    <span>Kopiëren</span>
+                  </button>
+                </div>
+                <div className="bg-[rgb(var(--card-bg))] p-3 rounded border">
+                  <p className="text-sm font-mono text-[rgb(var(--card-text))] break-all">
+                    {currentUserID || 'Laden...'}
+                  </p>
+                </div>
+                <p className="text-xs text-[rgb(var(--text-color))]/60 mt-2">
+                  Dit is je unieke Firebase authenticatie ID die automatisch wordt gegenereerd
                 </p>
-                <div className="space-y-2 text-sm text-[rgb(var(--text-color))]/70">
-                  <p>• Klik op "Delen" bij een lijst</p>
-                  <p>• Deel de QR-code of link met anderen</p>
-                  <p>• Anderen kunnen de QR-code scannen of de link openen</p>
-                  <p>• De lijst verschijnt automatisch in hun overzicht</p>
+              </div>
+
+              {/* Legacy Device ID */}
+              <div className="bg-[rgb(var(--border-color))]/10 p-4 rounded-lg">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-base font-medium text-[rgb(var(--card-text))]">
+                    Legacy Device ID
+                  </h3>
+                  <button
+                    onClick={() => copyToClipboard(deviceInfo.deviceId, 'Device ID')}
+                    className="flex items-center space-x-2 px-3 py-1.5 bg-[rgb(var(--border-color))]/20 hover:bg-[rgb(var(--border-color))]/30 text-[rgb(var(--card-text))] rounded-lg transition-colors text-sm"
+                  >
+                    <Copy className="w-4 h-4" />
+                    <span>Kopiëren</span>
+                  </button>
+                </div>
+                <div className="bg-[rgb(var(--card-bg))] p-3 rounded border">
+                  <p className="text-sm font-mono text-[rgb(var(--card-text))] break-all">
+                    {deviceInfo.deviceId}
+                  </p>
+                </div>
+                <p className="text-xs text-[rgb(var(--text-color))]/60 mt-2">
+                  Lokaal gegenereerd apparaat ID (gebruikt voor backward compatibility)
+                </p>
+              </div>
+
+              {/* Where User ID is Used */}
+              <div className="bg-[rgb(var(--info-color))]/10 border border-[rgb(var(--info-color))]/20 p-4 rounded-lg">
+                <h3 className="text-base font-semibold text-[rgb(var(--info-color))] mb-3 flex items-center">
+                  <Database className="w-5 h-5 mr-2" />
+                  Waar wordt je User ID gebruikt?
+                </h3>
+                <div className="space-y-3 text-sm text-[rgb(var(--text-color))]/80">
+                  <div className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-[rgb(var(--success-color))] rounded-full mt-2 flex-shrink-0"></div>
+                    <div>
+                      <p className="font-medium">Lijst Eigenaarschap</p>
+                      <p className="text-xs text-[rgb(var(--text-color))]/60">Als <code className="bg-[rgb(var(--border-color))]/20 px-1 rounded">creatorId</code> en <code className="bg-[rgb(var(--border-color))]/20 px-1 rounded">deviceUID</code> in Firebase</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-[rgb(var(--success-color))] rounded-full mt-2 flex-shrink-0"></div>
+                    <div>
+                      <p className="font-medium">Lijst Delen</p>
+                      <p className="text-xs text-[rgb(var(--text-color))]/60">Toegevoegd aan <code className="bg-[rgb(var(--border-color))]/20 px-1 rounded">sharedWith</code> array bij delen</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-[rgb(var(--success-color))] rounded-full mt-2 flex-shrink-0"></div>
+                    <div>
+                      <p className="font-medium">Item Tracking</p>
+                      <p className="text-xs text-[rgb(var(--text-color))]/60">Als <code className="bg-[rgb(var(--border-color))]/20 px-1 rounded">addedBy</code> bij nieuwe items</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-[rgb(var(--success-color))] rounded-full mt-2 flex-shrink-0"></div>
+                    <div>
+                      <p className="font-medium">Toegangscontrole</p>
+                      <p className="text-xs text-[rgb(var(--text-color))]/60">Firebase Security Rules controleren toegang op basis van dit ID</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-[rgb(var(--success-color))] rounded-full mt-2 flex-shrink-0"></div>
+                    <div>
+                      <p className="font-medium">QR Code Delen</p>
+                      <p className="text-xs text-[rgb(var(--text-color))]/60">Gebruikt voor automatische toegang bij scannen</p>
+                    </div>
+                  </div>
                 </div>
               </div>
-              
-              <div className="bg-[rgb(var(--border-color))]/10 p-4 rounded-lg">
-                <p className="text-sm text-[rgb(var(--text-color))]/80 mb-2 font-medium">
-                  Gebruiker ID:
-                </p>
-                <p className="text-sm text-[rgb(var(--text-color))]/60 font-mono bg-[rgb(var(--border-color))]/20 p-2 rounded">
-                  {deviceInfo.deviceId.substring(0, 12)}...
-                </p>
-                <p className="text-xs text-[rgb(var(--text-color))]/60 mt-2">
-                  Dit ID wordt automatisch gebruikt voor het delen van lijsten
-                </p>
+
+              {/* Sharing Instructions */}
+              <div className="bg-[rgb(var(--secondary-color))]/10 border border-[rgb(var(--secondary-color))]/20 p-4 rounded-lg">
+                <h3 className="text-base font-semibold text-[rgb(var(--secondary-color))] mb-3 flex items-center">
+                  <Link2 className="w-5 h-5 mr-2" />
+                  Hoe lijsten delen werkt
+                </h3>
+                <div className="space-y-2 text-sm text-[rgb(var(--text-color))]/70">
+                  <p>1. Klik op "Delen" bij een lijst die je hebt gemaakt</p>
+                  <p>2. Deel de QR-code of link met anderen</p>
+                  <p>3. Anderen scannen de QR-code of openen de link</p>
+                  <p>4. Hun User ID wordt automatisch toegevoegd aan de lijst</p>
+                  <p>5. De lijst verschijnt in hun overzicht met "Gedeeld" badge</p>
+                </div>
               </div>
             </div>
           </motion.div>
