@@ -333,12 +333,13 @@ const ShoppingListPage = ({ list, onBack, onListUpdate }) => {
                 {completedCount} van {items.length} voltooid
               </span>
             </div>
-            <div className="w-full bg-[rgb(var(--border-color))]/20 rounded-full h-3">
+            <div className="w-full bg-[rgb(var(--border-color))]/20 rounded-full h-3 overflow-hidden">
               <motion.div
-                className="bg-[rgb(var(--success-color))] h-3 rounded-full"
-                initial={{ width: 0 }}
+                className="bg-[rgb(var(--success-color))] h-3 rounded-full transition-all duration-500 ease-out"
+                initial={{ width: "0%" }}
                 animate={{ width: `${progress}%` }}
-                transition={{ duration: 0.5 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+                style={{ width: `${progress}%` }}
               />
             </div>
             <div className="text-center mt-2">

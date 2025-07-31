@@ -883,11 +883,13 @@ function App() {
                             {Math.round(((list.items?.filter(item => item.completed).length || 0) / (list.items?.length || 1)) * 100)}%
                           </span>
                         </div>
-                        <div className="w-full bg-[rgb(var(--border-color))]/20 rounded-full h-2">
+                        <div className="w-full bg-[rgb(var(--border-color))]/20 rounded-full h-2 overflow-hidden">
                           <div
-                            className="bg-[rgb(var(--success-color))] h-2 rounded-full transition-all duration-500"
+                            className="bg-[rgb(var(--success-color))] h-2 rounded-full transition-all duration-500 ease-out"
                             style={{
-                              width: `${((list.items?.filter(item => item.completed).length || 0) / (list.items?.length || 1)) * 100}%`
+                              width: `${((list.items?.filter(item => item.completed).length || 0) / (list.items?.length || 1)) * 100}%`,
+                              minWidth: '0%',
+                              maxWidth: '100%'
                             }}
                           ></div>
                         </div>
