@@ -7,6 +7,8 @@ Een geavanceerde React PWA (Progressive Web App) voor het maken en delen van boo
 ![Firebase](https://img.shields.io/badge/Firebase-9+-orange.svg)
 ![PWA](https://img.shields.io/badge/PWA-Ready-green.svg)
 ![Dutch](https://img.shields.io/badge/Language-Dutch%2FBelgium-green.svg)
+![Lines of Code](https://img.shields.io/badge/Lines%20of%20Code-13K+-brightgreen.svg)
+![Files](https://img.shields.io/badge/Source%20Files-46-blue.svg)
 
 ## ✨ Hoofdfuncties
 
@@ -336,39 +338,98 @@ service cloud.firestore {
 - **🖥️ Large screens**: Enhanced ervaring met analytics (1440px+)
 - **SafeArea**: Ondersteuning voor notch en home indicator
 
+## 📊 Code Statistieken
+
+Het project bevat een aanzienlijke hoeveelheid code verdeeld over verschillende bestandstypen:
+
+| **Categorie** | **Bestanden** | **Regels Code** | **Beschrijving** |
+|---------------|---------------|-----------------|------------------|
+| **JavaScript/JSX** | 45 bestanden | ~12,385 regels | React componenten, hooks, utilities en pagina's |
+| **CSS** | 1 bestand | ~513 regels | Globale styling, thema's en responsive design |
+| **PWA/Config** | 2 bestanden | ~179 regels | Service Worker en PWA manifest |
+| **Totaal** | **48 bestanden** | **~13,077 regels** | **Complete applicatie** |
+
+### **Code Verdeling per Categorie**
+- **🧩 Components**: 14 React componenten voor UI functionaliteit
+- **📄 Pages**: 6 pagina componenten voor verschillende app secties
+- **🔧 Utils**: 15 utility bestanden voor diverse functionaliteiten
+- **🎣 Hooks**: 3 custom React hooks voor herbruikbare logica
+- **🌐 Context**: 3 context providers voor state management
+- **🎨 Styling**: 1 CSS bestand met 500+ regels voor complete theming
+- **📱 PWA**: Service Worker en manifest voor Progressive Web App
+
+### **Kwaliteitskenmerken**
+- **Modulair ontwerp**: Code verdeeld over logische modules
+- **Herbruikbare componenten**: DRY principe toegepast
+- **TypeScript-ready**: Moderne JavaScript ES6+ syntax
+- **Responsive**: Mobile-first design approach
+- **PWA-compliant**: Volledige Progressive Web App implementatie
+
 ## 🔧 Ontwikkeling
 
 ### Project Structuur
 ```
 src/
-├── components/          # React componenten
+├── App.jsx            # Hoofd applicatie component
+├── main.jsx           # React applicatie entry point
+├── index.css          # Globale CSS en thema definities
+├── firebase.js        # Firebase configuratie en functies
+├── components/        # React componenten
+│   ├── AnalyticsDashboard.jsx # Analytics weergave component
+│   ├── ColorPicker.jsx # Kleur selectie component
+│   ├── ConfirmationDialog.jsx # Bevestigingsdialogen
+│   ├── ConnectionError.jsx # Verbindingsfout weergave
+│   ├── DeviceLinkModal.jsx # Apparaat koppeling modal
+│   ├── PersistenceHealthMonitor.jsx # Data sync status
+│   ├── PWAUpdateNotification.jsx # PWA update meldingen
 │   ├── QRScannerModal.jsx # QR scanner functionaliteit
 │   ├── QRShareModal.jsx # QR delen met direct share opties
-│   ├── UserNameModal.jsx # Gebruikersnaam instelling
+│   ├── SettingsModal.jsx # Instellingen modal (legacy)
+│   ├── Toast.jsx      # Notificatie systeem
 │   ├── UserManagementModal.jsx # Gebruikersbeheer
-│   ├── ConfirmationDialog.jsx # Bevestigingsdialogen
-│   ├── PWAUpdateNotification.jsx # PWA update meldingen
-│   └── Toast.jsx       # Notificatie systeem
-├── pages/              # Pagina componenten
-│   ├── Analytics.jsx   # Analytics dashboard
-│   ├── Settings.jsx    # Instellingen pagina
-│   ├── ThemePage.jsx   # Thema aanpassingen
-│   ├── Persistence.jsx # Data persistentie
-│   └── ShoppingListPage.jsx # Lijst detail pagina
-├── context/            # React Context providers
-│   ├── UnifiedThemeContext.jsx # Unified thema systeem
-│   ├── ThemeContext.jsx # Legacy thema support
-│   └── ToastContext.jsx # Notificatie systeem
-├── utils/              # Utility functies
-│   ├── userManager.js  # Gebruikersbeheer
-│   ├── qrSecurity.js   # QR validatie
-│   ├── deviceUID.js    # Apparaat identificatie
-│   ├── pwaUpdateManager.js # PWA update management
-│   ├── colorManager.js # Kleur utilities
-│   └── groceryItems.js # Item suggesties
-├── hooks/              # Custom React hooks
-│   └── usePersistentState.js # Persistent state management
-└── firebase.js         # Firebase configuratie
+│   ├── UserNameModal.jsx # Gebruikersnaam instelling
+│   └── VoiceInput.jsx # Spraak input component
+├── pages/             # Pagina componenten
+│   ├── Analytics.jsx  # Analytics dashboard pagina
+│   ├── Persistence.jsx # Data persistentie pagina
+│   ├── Settings.jsx   # Instellingen pagina
+│   ├── ShoppingListPage.jsx # Lijst detail pagina
+│   ├── Theme.jsx      # Thema component (legacy)
+│   └── ThemePage.jsx  # Thema aanpassingen pagina
+├── context/           # React Context providers
+│   ├── ThemeContext.jsx # Legacy thema context
+│   ├── ToastContext.jsx # Notificatie context
+│   └── UnifiedThemeContext.jsx # Unified thema systeem
+├── hooks/             # Custom React hooks
+│   ├── usePersistentState.js # Persistent state management
+│   ├── useSpeechRecognition.js # Spraakherkenning hook
+│   └── useUnifiedTheme.js # Unified thema hook
+└── utils/             # Utility functies
+    ├── colorManager.js # Kleur utilities en conversies
+    ├── debugThemes.js # Thema debugging tools
+    ├── deviceUID.js   # Apparaat identificatie
+    ├── enhancedUserManager.js # Geavanceerd gebruikersbeheer
+    ├── firebaseBackup.js # Firebase backup functionaliteit
+    ├── groceryItems.js # Item suggesties database
+    ├── persistentStorage.js # Lokale opslag management
+    ├── pwaUpdateManager.js # PWA update management
+    ├── qrSecurity.js  # QR validatie en beveiliging
+    ├── secureStorage.js # Veilige lokale opslag
+    ├── stateManager.js # State management utilities
+    ├── testThemes.js  # Thema test utilities
+    ├── themePalettes.js # Thema kleurpaletten
+    ├── userManager.js # Basis gebruikersbeheer
+    └── validation.js  # Input validatie functies
+
+public/
+├── index.html         # HTML template
+├── manifest.json      # PWA manifest configuratie
+├── sw.js             # Service Worker voor PWA
+├── favicon.ico       # Browser favicon
+├── icon.svg          # Scalable app icon
+├── apple-touch-icon.png # iOS home screen icon (180x180)
+├── apple-touch-icon-57x57.png # iOS legacy icon
+└── apple-touch-icon-180x180.png # iOS retina icon
 ```
 
 ### Nieuwe Features Toevoegen
