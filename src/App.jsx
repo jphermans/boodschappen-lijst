@@ -598,7 +598,7 @@ function App() {
               <div className="hidden lg:flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-primary to-secondary rounded-xl shadow-lg mr-3">
                 <List className="w-5 h-5 lg:w-6 lg:h-6 text-white" />
               </div>
-              <div className="min-w-0 flex-1">
+              <div className="min-w-0 flex-1 pl-2 sm:pl-0">
                 <h1 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-[rgb(var(--card-text))] tracking-tight break-words">
                   Boodschappenlijst
                 </h1>
