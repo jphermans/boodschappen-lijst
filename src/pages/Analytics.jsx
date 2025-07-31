@@ -249,9 +249,9 @@ const AnalyticsPage = ({ lists, onBack }) => {
                 </div>
                 
                 <div className="pt-4 border-t border-[rgb(var(--border-color))]/20">
-                  <div className="w-full bg-[rgb(var(--border-color))]/20 rounded-full h-3">
-                    <div 
-                      className="bg-[rgb(var(--success-color))] h-3 rounded-full transition-all duration-300"
+                  <div className="progress-bar-container h-3">
+                    <div
+                      className="progress-bar-fill"
                       style={{ width: `${analytics.completionRate}%` }}
                     ></div>
                   </div>

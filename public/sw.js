@@ -1,6 +1,6 @@
 // Service Worker for PWA Update Management
-const CACHE_NAME = 'boodschappenlijst-v1.0.0';
-const STATIC_CACHE_NAME = 'boodschappenlijst-static-v1.0.0';
+const CACHE_NAME = 'boodschappenlijst-v1.0.1';
+const STATIC_CACHE_NAME = 'boodschappenlijst-static-v1.0.1';
 
 // Files to cache for offline functionality
 const STATIC_FILES = [
@@ -23,8 +23,8 @@ self.addEventListener('install', (event) => {
       })
       .then(() => {
         console.log('Service Worker: Installation complete');
-        // Force the waiting service worker to become the active service worker
-        return self.skipWaiting();
+        // Don't automatically skip waiting - let the user decide
+        console.log('Service Worker: Waiting for user to apply update...');
       })
   );
 });

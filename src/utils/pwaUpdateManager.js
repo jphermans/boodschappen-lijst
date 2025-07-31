@@ -107,8 +107,24 @@ class PWAUpdateManager {
     console.log('PWA Update Manager: Checking for updates...');
     
     try {
+      // Force update check by bypassing cache
       await this.registration.update();
-      return true;
+      
+      // Check if there's a waiting service worker after update
+      if (this.registration.waiting) {
+        console.log('PWA Update Manager: Update found after manual check');
+        this.showUpdateAvailable();
+        return true;
+      }
+      
+      // Also check if there's an installing service worker
+      if (this.registration.installing) {
+        console.log('PWA Update Manager: Update installing after manual check');
+        return true;
+      }
+      
+      console.log('PWA Update Manager: No updates found');
+      return false;
     } catch (error) {
       console.error('PWA Update Manager: Update check failed:', error);
       return false;
@@ -117,17 +133,24 @@ class PWAUpdateManager {
 
   // Start periodic update checks
   startUpdateCheck() {
-    // Check for updates every 30 minutes
+    // Check for updates every 5 minutes for better responsiveness
     setInterval(() => {
       this.checkForUpdates();
-    }, 30 * 60 * 1000);
+    }, 5 * 60 * 1000);
 
     // Also check when the page becomes visible again
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden) {
-        this.checkForUpdates();
+        setTimeout(() => {
+          this.checkForUpdates();
+        }, 1000); // Small delay to ensure page is fully visible
       }
     });
+    
+    // Check for updates when the page loads
+    setTimeout(() => {
+      this.checkForUpdates();
+    }, 2000);
   }
 
   // Get current version info
@@ -158,17 +181,24 @@ class PWAUpdateManager {
     // Clear all caches first
     if ('caches' in window) {
       caches.keys().then((cacheNames) => {
-        cacheNames.forEach((cacheName) => {
-          caches.delete(cacheName);
-        });
+        return Promise.all(
+          cacheNames.map(cacheName => caches.delete(cacheName))
+        );
       }).then(() => {
-        // Hard reload
-        window.location.reload(true);
+        // Hard reload with cache bypass
+        window.location.reload();
       });
     } else {
       // Fallback hard reload
-      window.location.reload(true);
+      window.location.reload();
     }
+  }
+  
+  // Check if update is available (for manual checking)
+  isUpdateAvailable() {
+    return this.updateAvailable ||
+           (this.registration && this.registration.waiting) ||
+           (this.registration && this.registration.installing);
   }
 
   // Unregister service worker (for debugging)
