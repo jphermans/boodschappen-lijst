@@ -77,19 +77,28 @@ function App() {
       if (isIPad && titleRef.current) {
         // Apply inline styles with highest specificity to force horizontal text
         const titleElement = titleRef.current;
+        
+        // Try multiple approaches in sequence
         titleElement.style.setProperty('writing-mode', 'horizontal-tb', 'important');
         titleElement.style.setProperty('-webkit-writing-mode', 'horizontal-tb', 'important');
         titleElement.style.setProperty('-ms-writing-mode', 'lr-tb', 'important');
-        titleElement.style.setProperty('text-orientation', 'mixed', 'important');
-        titleElement.style.setProperty('-webkit-text-orientation', 'mixed', 'important');
+        titleElement.style.setProperty('text-orientation', 'upright', 'important');
+        titleElement.style.setProperty('-webkit-text-orientation', 'upright', 'important');
         titleElement.style.setProperty('direction', 'ltr', 'important');
         titleElement.style.setProperty('unicode-bidi', 'normal', 'important');
-        titleElement.style.setProperty('display', 'block', 'important');
+        titleElement.style.setProperty('display', 'inline-block', 'important');
         titleElement.style.setProperty('width', '100%', 'important');
         titleElement.style.setProperty('text-align', 'left', 'important');
-        titleElement.style.setProperty('transform', 'none', 'important');
-        titleElement.style.setProperty('-webkit-transform', 'none', 'important');
+        titleElement.style.setProperty('transform', 'rotate(0deg)', 'important');
+        titleElement.style.setProperty('-webkit-transform', 'rotate(0deg)', 'important');
         titleElement.style.setProperty('position', 'relative', 'important');
+        titleElement.style.setProperty('white-space', 'nowrap', 'important');
+        titleElement.style.setProperty('overflow', 'visible', 'important');
+        titleElement.style.setProperty('text-overflow', 'clip', 'important');
+        titleElement.style.setProperty('box-sizing', 'border-box', 'important');
+        titleElement.style.setProperty('flex-shrink', '0', 'important');
+        titleElement.style.setProperty('flex-grow', '0', 'important');
+        titleElement.style.setProperty('flex-basis', 'auto', 'important');
         
         // Additional font properties to ensure proper rendering
         titleElement.style.setProperty('font-style', 'normal', 'important');
@@ -99,7 +108,112 @@ function App() {
         titleElement.style.setProperty('letter-spacing', 'normal', 'important');
         titleElement.style.setProperty('word-spacing', 'normal', 'important');
         
+        // Force re-render by temporarily changing the text
+        const originalText = titleElement.textContent;
+        titleElement.textContent = '';
+        setTimeout(() => {
+          titleElement.textContent = originalText;
+          
+          // Last resort: If still vertical, try CSS content approach
+          setTimeout(() => {
+            const computedStyle = window.getComputedStyle(titleElement);
+            const isStillVertical = computedStyle.writingMode === 'vertical-rl' || 
+                                  computedStyle.writingMode === 'vertical-lr' ||
+                                  computedStyle.writingMode === 'tb-rl' ||
+                                  computedStyle.writingMode === 'tb-lr';
+            
+            if (isStillVertical) {
+              console.log('Standard fixes failed, applying emergency CSS content fix');
+              // Create a wrapper with CSS content
+              titleElement.style.setProperty('visibility', 'hidden', 'important');
+              titleElement.style.setProperty('position', 'relative', 'important');
+              
+              // Add pseudo-element with the text
+              const style = document.createElement('style');
+              style.textContent = `
+                h1[data-ipad-fix]::before {
+                  content: "Boodschappenlijst" !important;
+                  visibility: visible !important;
+                  position: absolute !important;
+                  top: 0 !important;
+                  left: 0 !important;
+                  writing-mode: horizontal-tb !important;
+                  -webkit-writing-mode: horizontal-tb !important;
+                  text-orientation: upright !important;
+                  -webkit-text-orientation: upright !important;
+                  direction: ltr !important;
+                  display: inline-block !important;
+                  width: 100% !important;
+                  white-space: nowrap !important;
+                }
+              `;
+              document.head.appendChild(style);
+              titleElement.setAttribute('data-ipad-fix', 'true');
+            } else {
+              console.log('Standard fixes appear to be working');
+            }
+            
+            // Ultimate fallback: Replace with individual character spans
+            setTimeout(() => {
+              const finalComputedStyle = window.getComputedStyle(titleElement);
+              const stillVertical = finalComputedStyle.writingMode === 'vertical-rl' || 
+                                  finalComputedStyle.writingMode === 'vertical-lr' ||
+                                  finalComputedStyle.writingMode === 'tb-rl' ||
+                                  finalComputedStyle.writingMode === 'tb-lr';
+              
+              if (stillVertical) {
+                console.log('All CSS fixes failed, applying character-span fallback');
+                const text = 'Boodschappenlijst';
+                titleElement.innerHTML = '';
+                
+                // Create a wrapper div
+                const wrapper = document.createElement('div');
+                wrapper.style.cssText = `
+                  display: flex !important;
+                  flex-direction: row !important;
+                  align-items: center !important;
+                  writing-mode: horizontal-tb !important;
+                  -webkit-writing-mode: horizontal-tb !important;
+                  direction: ltr !important;
+                  white-space: nowrap !important;
+                `;
+                
+                // Add each character as a span
+                for (let i = 0; i < text.length; i++) {
+                  const span = document.createElement('span');
+                  span.textContent = text[i];
+                  span.style.cssText = `
+                    display: inline-block !important;
+                    writing-mode: horizontal-tb !important;
+                    -webkit-writing-mode: horizontal-tb !important;
+                    text-orientation: upright !important;
+                    -webkit-text-orientation: upright !important;
+                    direction: ltr !important;
+                    transform: rotate(0deg) !important;
+                    -webkit-transform: rotate(0deg) !important;
+                  `;
+                  wrapper.appendChild(span);
+                }
+                
+                titleElement.appendChild(wrapper);
+              }
+            }, 200);
+          }, 100);
+        }, 50);
+        
+        // Debug: Log the computed styles to see what's actually being applied
+        const computedStyle = window.getComputedStyle(titleElement);
         console.log('iPad detected - Applied horizontal text fix to title');
+        console.log('Computed writing-mode:', computedStyle.writingMode);
+        console.log('Computed text-orientation:', computedStyle.textOrientation);
+        console.log('Computed direction:', computedStyle.direction);
+        console.log('Computed display:', computedStyle.display);
+        console.log('Element styles:', {
+          writingMode: titleElement.style.writingMode,
+          textOrientation: titleElement.style.textOrientation,
+          direction: titleElement.style.direction,
+          display: titleElement.style.display
+        });
       }
     };
 

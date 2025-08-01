@@ -667,11 +667,11 @@ h1[class*="ipad-force-horizontal-always"] {
   writing-mode: horizontal-tb !important;
   -webkit-writing-mode: horizontal-tb !important;
   -ms-writing-mode: lr-tb !important;
-  text-orientation: mixed !important;
-  -webkit-text-orientation: mixed !important;
+  text-orientation: upright !important;
+  -webkit-text-orientation: upright !important;
   direction: ltr !important;
   unicode-bidi: normal !important;
-  display: block !important;
+  display: inline-block !important;
   width: 100% !important;
   text-align: left !important;
   font-style: normal !important;
@@ -683,6 +683,15 @@ h1[class*="ipad-force-horizontal-always"] {
   text-indent: 0 !important;
   text-shadow: none !important;
   text-decoration: none !important;
+  transform: rotate(0deg) !important;
+  -webkit-transform: rotate(0deg) !important;
+  white-space: nowrap !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  box-sizing: border-box !important;
+  flex-shrink: 0 !important;
+  flex-grow: 0 !important;
+  flex-basis: auto !important;
 }
 
 /* Target the specific title text content */
