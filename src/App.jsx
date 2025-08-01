@@ -78,19 +78,30 @@ function App() {
         // Apply inline styles with highest specificity to force horizontal text
         const titleElement = titleRef.current;
         
-        // Try multiple approaches in sequence
-        titleElement.style.setProperty('writing-mode', 'horizontal-tb', 'important');
-        titleElement.style.setProperty('-webkit-writing-mode', 'horizontal-tb', 'important');
-        titleElement.style.setProperty('-ms-writing-mode', 'lr-tb', 'important');
-        titleElement.style.setProperty('text-orientation', 'upright', 'important');
-        titleElement.style.setProperty('-webkit-text-orientation', 'upright', 'important');
+        // Try multiple approaches in sequence - more aggressive reset
+        titleElement.style.setProperty('writing-mode', 'initial', 'important');
+        titleElement.style.setProperty('-webkit-writing-mode', 'initial', 'important');
+        titleElement.style.setProperty('-ms-writing-mode', 'initial', 'important');
+        titleElement.style.setProperty('text-orientation', 'initial', 'important');
+        titleElement.style.setProperty('-webkit-text-orientation', 'initial', 'important');
+        
+        // Force horizontal after reset
+        setTimeout(() => {
+          titleElement.style.setProperty('writing-mode', 'horizontal-tb', 'important');
+          titleElement.style.setProperty('-webkit-writing-mode', 'horizontal-tb', 'important');
+          titleElement.style.setProperty('-ms-writing-mode', 'lr-tb', 'important');
+          titleElement.style.setProperty('text-orientation', 'mixed', 'important');
+          titleElement.style.setProperty('-webkit-text-orientation', 'mixed', 'important');
+        }, 10);
         titleElement.style.setProperty('direction', 'ltr', 'important');
         titleElement.style.setProperty('unicode-bidi', 'normal', 'important');
         titleElement.style.setProperty('display', 'inline-block', 'important');
         titleElement.style.setProperty('width', '100%', 'important');
         titleElement.style.setProperty('text-align', 'left', 'important');
-        titleElement.style.setProperty('transform', 'rotate(0deg)', 'important');
-        titleElement.style.setProperty('-webkit-transform', 'rotate(0deg)', 'important');
+        titleElement.style.setProperty('transform', 'rotate(0deg) scale(1) translate(0, 0)', 'important');
+        titleElement.style.setProperty('-webkit-transform', 'rotate(0deg) scale(1) translate(0, 0)', 'important');
+        titleElement.style.setProperty('transform-origin', 'left center', 'important');
+        titleElement.style.setProperty('-webkit-transform-origin', 'left center', 'important');
         titleElement.style.setProperty('position', 'relative', 'important');
         titleElement.style.setProperty('white-space', 'nowrap', 'important');
         titleElement.style.setProperty('overflow', 'visible', 'important');
@@ -214,6 +225,119 @@ function App() {
           direction: titleElement.style.direction,
           display: titleElement.style.display
         });
+        
+        // Debug parent elements to find the source of vertical text
+        let currentElement = titleElement.parentElement;
+        let level = 1;
+        while (currentElement && level <= 5) {
+          const parentComputedStyle = window.getComputedStyle(currentElement);
+          console.log(`Parent level ${level}:`, {
+            tagName: currentElement.tagName,
+            className: currentElement.className,
+            writingMode: parentComputedStyle.writingMode,
+            textOrientation: parentComputedStyle.textOrientation,
+            direction: parentComputedStyle.direction,
+            display: parentComputedStyle.display,
+            transform: parentComputedStyle.transform
+          });
+          currentElement = currentElement.parentElement;
+          level++;
+        }
+        
+        // Immediate replacement approach since standard CSS isn't working
+        setTimeout(() => {
+          console.log('Applying immediate replacement approach');
+          const text = 'Boodschappenlijst';
+          
+          // Clear the element and create a new structure
+          titleElement.innerHTML = '';
+          titleElement.style.setProperty('display', 'flex', 'important');
+          titleElement.style.setProperty('flex-direction', 'row', 'important');
+          titleElement.style.setProperty('align-items', 'center', 'important');
+          titleElement.style.setProperty('justify-content', 'flex-start', 'important');
+          
+          // Create a simple text node in a span
+          const textSpan = document.createElement('span');
+          textSpan.textContent = text;
+          textSpan.style.cssText = `
+            writing-mode: horizontal-tb !important;
+            -webkit-writing-mode: horizontal-tb !important;
+            text-orientation: mixed !important;
+            -webkit-text-orientation: mixed !important;
+            direction: ltr !important;
+            display: inline !important;
+            white-space: nowrap !important;
+            font-family: inherit !important;
+            font-size: inherit !important;
+            font-weight: inherit !important;
+            color: inherit !important;
+            line-height: inherit !important;
+          `;
+          
+          titleElement.appendChild(textSpan);
+          console.log('Text replacement completed');
+          
+          // Check if it's still vertical after 200ms, apply nuclear option
+          setTimeout(() => {
+            const spanComputedStyle = window.getComputedStyle(textSpan);
+            const stillVertical = spanComputedStyle.writingMode === 'vertical-rl' || 
+                                spanComputedStyle.writingMode === 'vertical-lr' ||
+                                spanComputedStyle.writingMode === 'tb-rl' ||
+                                spanComputedStyle.writingMode === 'tb-lr';
+                                
+            console.log('Span computed writing-mode:', spanComputedStyle.writingMode);
+            
+            if (stillVertical) {
+              console.log('Nuclear option: Creating absolute positioned replacement');
+              
+              // Get the current position and size
+              const rect = titleElement.getBoundingClientRect();
+              
+              // Create a completely separate element
+              const replacement = document.createElement('div');
+              replacement.textContent = text;
+              replacement.style.cssText = `
+                position: fixed !important;
+                top: ${rect.top}px !important;
+                left: ${rect.left}px !important;
+                width: auto !important;
+                height: auto !important;
+                z-index: 9999 !important;
+                writing-mode: horizontal-tb !important;
+                -webkit-writing-mode: horizontal-tb !important;
+                text-orientation: mixed !important;
+                -webkit-text-orientation: mixed !important;
+                direction: ltr !important;
+                display: block !important;
+                white-space: nowrap !important;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+                font-size: 1.5rem !important;
+                font-weight: bold !important;
+                color: rgb(var(--card-text)) !important;
+                background: transparent !important;
+                pointer-events: none !important;
+                transform: none !important;
+                -webkit-transform: none !important;
+              `;
+              
+              // Hide the original and add the replacement
+              titleElement.style.setProperty('visibility', 'hidden', 'important');
+              document.body.appendChild(replacement);
+              
+              console.log('Absolute positioned replacement created');
+              
+              // Update position on scroll/resize
+              const updatePosition = () => {
+                const newRect = titleElement.getBoundingClientRect();
+                replacement.style.top = newRect.top + 'px';
+                replacement.style.left = newRect.left + 'px';
+              };
+              
+              window.addEventListener('scroll', updatePosition);
+              window.addEventListener('resize', updatePosition);
+            }
+          }, 200);
+        }, 100);
       }
     };
 
