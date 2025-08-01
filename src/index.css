@@ -659,3 +659,57 @@ body {
     text-align: left !important;
   }
 }
+
+/* Ultra-aggressive iPad title fix - highest specificity */
+h1.ipad-force-horizontal-always,
+.ipad-force-horizontal-always h1,
+h1[class*="ipad-force-horizontal-always"] {
+  writing-mode: horizontal-tb !important;
+  -webkit-writing-mode: horizontal-tb !important;
+  -ms-writing-mode: lr-tb !important;
+  text-orientation: mixed !important;
+  -webkit-text-orientation: mixed !important;
+  direction: ltr !important;
+  unicode-bidi: normal !important;
+  display: block !important;
+  width: 100% !important;
+  text-align: left !important;
+  font-style: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  line-height: 1.2 !important;
+  letter-spacing: normal !important;
+  word-spacing: normal !important;
+  text-indent: 0 !important;
+  text-shadow: none !important;
+  text-decoration: none !important;
+}
+
+/* Target the specific title text content */
+h1:contains("Boodschappenlijst"),
+.ipad-heading-fix:contains("Boodschappenlijst") {
+  writing-mode: horizontal-tb !important;
+  -webkit-writing-mode: horizontal-tb !important;
+  direction: ltr !important;
+  text-orientation: mixed !important;
+  -webkit-text-orientation: mixed !important;
+}
+
+/* Additional iPad targeting with higher specificity */
+@media screen and (min-width: 768px) and (max-width: 1366px) {
+  h1.ipad-force-horizontal-always,
+  .ipad-force-horizontal-always h1,
+  h1[class*="ipad"] {
+    writing-mode: horizontal-tb !important;
+    -webkit-writing-mode: horizontal-tb !important;
+    -ms-writing-mode: lr-tb !important;
+    text-orientation: mixed !important;
+    -webkit-text-orientation: mixed !important;
+    direction: ltr !important;
+    unicode-bidi: normal !important;
+    display: block !important;
+    position: relative !important;
+    transform: none !important;
+    -webkit-transform: none !important;
+  }
+}

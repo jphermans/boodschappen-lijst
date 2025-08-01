@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Settings, Plus, List, Share2, Trash2, Check, Wifi, QrCode, Users, Database, BarChart3, Palette } from 'lucide-react';
 import { useTheme } from './context/ThemeContext';
@@ -57,11 +57,70 @@ function App() {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [listToDelete, setListToDelete] = useState(null);
 
+  // iPad text fix
+  const titleRef = useRef(null);
+
   // Make debug function available globally
   useEffect(() => {
     if (typeof window !== 'undefined') {
       window.debugThemes = debugThemes;
     }
+  }, []);
+
+  // iPad text orientation fix - apply inline styles to override any CSS issues
+  useEffect(() => {
+    const detectAndFixiPad = () => {
+      const isIPad = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) ||
+                    (window.screen.width >= 768 && window.screen.width <= 1366 && 'ontouchstart' in window);
+      
+      if (isIPad && titleRef.current) {
+        // Apply inline styles with highest specificity to force horizontal text
+        const titleElement = titleRef.current;
+        titleElement.style.setProperty('writing-mode', 'horizontal-tb', 'important');
+        titleElement.style.setProperty('-webkit-writing-mode', 'horizontal-tb', 'important');
+        titleElement.style.setProperty('-ms-writing-mode', 'lr-tb', 'important');
+        titleElement.style.setProperty('text-orientation', 'mixed', 'important');
+        titleElement.style.setProperty('-webkit-text-orientation', 'mixed', 'important');
+        titleElement.style.setProperty('direction', 'ltr', 'important');
+        titleElement.style.setProperty('unicode-bidi', 'normal', 'important');
+        titleElement.style.setProperty('display', 'block', 'important');
+        titleElement.style.setProperty('width', '100%', 'important');
+        titleElement.style.setProperty('text-align', 'left', 'important');
+        titleElement.style.setProperty('transform', 'none', 'important');
+        titleElement.style.setProperty('-webkit-transform', 'none', 'important');
+        titleElement.style.setProperty('position', 'relative', 'important');
+        
+        // Additional font properties to ensure proper rendering
+        titleElement.style.setProperty('font-style', 'normal', 'important');
+        titleElement.style.setProperty('font-variant', 'normal', 'important');
+        titleElement.style.setProperty('text-transform', 'none', 'important');
+        titleElement.style.setProperty('line-height', '1.2', 'important');
+        titleElement.style.setProperty('letter-spacing', 'normal', 'important');
+        titleElement.style.setProperty('word-spacing', 'normal', 'important');
+        
+        console.log('iPad detected - Applied horizontal text fix to title');
+      }
+    };
+
+    // Apply fix immediately and also on resize/orientation change
+    detectAndFixiPad();
+    
+    const handleResize = () => {
+      setTimeout(detectAndFixiPad, 100);
+    };
+    
+    const handleOrientationChange = () => {
+      setTimeout(detectAndFixiPad, 200);
+    };
+
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleOrientationChange);
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleOrientationChange);
+    };
   }, []);
 
   // Handle shared list URLs
@@ -601,7 +660,10 @@ function App() {
                 <List className="w-5 h-5 lg:w-6 lg:h-6 text-white" />
               </div>
               <div className="min-w-0 flex-1 pl-2 sm:pl-0">
-                <h1 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-[rgb(var(--card-text))] tracking-tight break-words ipad-heading-fix ipad-force-horizontal ipad-force-horizontal-always">
+                <h1 
+                  ref={titleRef}
+                  className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-[rgb(var(--card-text))] tracking-tight break-words ipad-heading-fix ipad-force-horizontal ipad-force-horizontal-always"
+                >
                   Boodschappenlijst
                 </h1>
                 <p className="hidden lg:block text-sm text-[rgb(var(--text-color))]/60 font-medium ipad-subtitle-fix ipad-force-horizontal">
