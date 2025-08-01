@@ -601,7 +601,7 @@ function App() {
                 <List className="w-5 h-5 lg:w-6 lg:h-6 text-white" />
               </div>
               <div className="min-w-0 flex-1 pl-2 sm:pl-0">
-                <h1 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-[rgb(var(--card-text))] tracking-tight break-words ipad-heading-fix ipad-force-horizontal">
+                <h1 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-[rgb(var(--card-text))] tracking-tight break-words ipad-heading-fix ipad-force-horizontal ipad-force-horizontal-always">
                   Boodschappenlijst
                 </h1>
                 <p className="hidden lg:block text-sm text-[rgb(var(--text-color))]/60 font-medium ipad-subtitle-fix ipad-force-horizontal">
@@ -765,7 +765,7 @@ function App() {
               >
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 lg:mb-8 ipad-flex-fix">
                   <div className="mb-4 sm:mb-0 min-w-0 flex-1">
-                    <h2 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-[rgb(var(--card-text))] mb-1 sm:mb-2 ipad-heading-fix ipad-force-horizontal">
+                    <h2 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-[rgb(var(--card-text))] mb-1 sm:mb-2 ipad-heading-fix ipad-force-horizontal ipad-force-horizontal-always">
                       Nieuwe lijst maken
                     </h2>
                     <p className="text-[rgb(var(--text-color))]/60 text-sm lg:text-base ipad-subtitle-fix ipad-force-horizontal">

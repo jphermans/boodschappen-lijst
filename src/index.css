@@ -513,80 +513,75 @@ body {
   }
 }
 
-/* iPad-specific fixes for text layout issues - Comprehensive approach */
+/* Universal iPad text fixes - Aggressive approach that works across all Safari/WebKit versions */
 
-/* iPad Mini (768px - 1024px) Portrait */
-@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
-  .ipad-text-fix,
-  .ipad-title-fix,
-  .ipad-horizontal-text,
-  .ipad-heading-fix,
-  .ipad-subtitle-fix,
-  .ipad-force-horizontal {
+/* Apply to ALL iPad-related classes regardless of media queries */
+.ipad-text-fix,
+.ipad-title-fix,
+.ipad-horizontal-text,
+.ipad-heading-fix,
+.ipad-subtitle-fix,
+.ipad-force-horizontal,
+.ipad-pro-text-fix {
+  writing-mode: horizontal-tb !important;
+  -webkit-writing-mode: horizontal-tb !important;
+  -ms-writing-mode: lr-tb !important;
+  text-orientation: mixed !important;
+  -webkit-text-orientation: mixed !important;
+  direction: ltr !important;
+  unicode-bidi: normal !important;
+  word-break: normal !important;
+  overflow-wrap: break-word !important;
+  hyphens: none !important;
+  -webkit-hyphens: none !important;
+  white-space: normal !important;
+  line-height: 1.3 !important;
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  text-align: left !important;
+  font-synthesis: none !important;
+  -webkit-font-feature-settings: normal !important;
+  font-feature-settings: normal !important;
+  text-rendering: optimizeLegibility !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+}
+
+/* Flex container fixes */
+.ipad-flex-fix {
+  flex-wrap: wrap !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* iPad-specific media queries with more aggressive targeting */
+@media screen and (min-width: 768px) and (max-width: 1366px) {
+  /* Target ALL text elements on iPad screens */
+  * {
     writing-mode: horizontal-tb !important;
+    -webkit-writing-mode: horizontal-tb !important;
     text-orientation: mixed !important;
+    -webkit-text-orientation: mixed !important;
     direction: ltr !important;
-    word-break: normal !important;
-    overflow-wrap: break-word !important;
-    hyphens: none !important;
-    white-space: normal !important;
-    line-height: 1.3 !important;
-    display: block !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    text-align: left !important;
-    font-synthesis: none !important;
-    -webkit-font-feature-settings: normal !important;
-    font-feature-settings: normal !important;
   }
   
-  .ipad-flex-fix {
-    flex-wrap: wrap !important;
-    min-width: 0 !important;
-    width: 100% !important;
-    display: flex !important;
-    flex-direction: column !important;
-  }
-}
-
-/* iPad Mini/Air (768px - 1024px) Landscape - More aggressive fixes */
-@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
-  .ipad-text-fix,
-  .ipad-title-fix,
-  .ipad-horizontal-text,
-  .ipad-heading-fix,
-  .ipad-subtitle-fix,
-  .ipad-force-horizontal {
+  /* Specific targeting for headings and text elements */
+  h1, h2, h3, h4, h5, h6, p, span, div, a, button, input, textarea, label {
     writing-mode: horizontal-tb !important;
-    text-orientation: mixed !important;
-    direction: ltr !important;
-    word-break: normal !important;
-    overflow-wrap: break-word !important;
-    hyphens: none !important;
-    white-space: normal !important;
-    line-height: 1.2 !important;
-    display: block !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    text-align: left !important;
-    font-synthesis: none !important;
-    -webkit-font-feature-settings: normal !important;
-    font-feature-settings: normal !important;
-    -webkit-text-orientation: mixed !important;
     -webkit-writing-mode: horizontal-tb !important;
-  }
-  
-  .ipad-flex-fix {
-    flex-wrap: wrap !important;
-    min-width: 0 !important;
-    width: 100% !important;
-    display: flex !important;
-    flex-direction: row !important;
+    -ms-writing-mode: lr-tb !important;
+    text-orientation: mixed !important;
+    -webkit-text-orientation: mixed !important;
+    direction: ltr !important;
+    unicode-bidi: normal !important;
   }
 }
 
-/* iPad Pro 11" (1024px - 1194px) Portrait */
-@media (min-width: 1024px) and (max-width: 1194px) and (orientation: portrait) {
+/* Safari-specific fixes for iPad */
+@media screen and (-webkit-min-device-pixel-ratio: 1) and (min-width: 768px) and (max-width: 1366px) {
   .ipad-text-fix,
   .ipad-title-fix,
   .ipad-horizontal-text,
@@ -595,137 +590,14 @@ body {
   .ipad-force-horizontal,
   .ipad-pro-text-fix {
     writing-mode: horizontal-tb !important;
-    text-orientation: mixed !important;
-    direction: ltr !important;
-    word-break: normal !important;
-    overflow-wrap: break-word !important;
-    hyphens: none !important;
-    white-space: normal !important;
-    line-height: 1.3 !important;
-    display: block !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    text-align: left !important;
-    font-synthesis: none !important;
-    -webkit-font-feature-settings: normal !important;
-    font-feature-settings: normal !important;
-    -webkit-text-orientation: mixed !important;
     -webkit-writing-mode: horizontal-tb !important;
+    text-orientation: mixed !important;
+    -webkit-text-orientation: mixed !important;
+    direction: ltr !important;
   }
 }
 
-/* iPad Pro 11" (1024px - 1194px) Landscape */
-@media (min-width: 1024px) and (max-width: 1194px) and (orientation: landscape) {
-  .ipad-text-fix,
-  .ipad-title-fix,
-  .ipad-horizontal-text,
-  .ipad-heading-fix,
-  .ipad-subtitle-fix,
-  .ipad-force-horizontal,
-  .ipad-pro-text-fix {
-    writing-mode: horizontal-tb !important;
-    text-orientation: mixed !important;
-    direction: ltr !important;
-    word-break: normal !important;
-    overflow-wrap: break-word !important;
-    hyphens: none !important;
-    white-space: normal !important;
-    line-height: 1.2 !important;
-    display: block !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    text-align: left !important;
-    font-synthesis: none !important;
-    -webkit-font-feature-settings: normal !important;
-    font-feature-settings: normal !important;
-    -webkit-text-orientation: mixed !important;
-    -webkit-writing-mode: horizontal-tb !important;
-  }
-}
-
-/* iPad Pro 12.9" (1194px - 1366px) Portrait */
-@media (min-width: 1194px) and (max-width: 1366px) and (orientation: portrait) {
-  .ipad-text-fix,
-  .ipad-title-fix,
-  .ipad-horizontal-text,
-  .ipad-heading-fix,
-  .ipad-subtitle-fix,
-  .ipad-force-horizontal,
-  .ipad-pro-text-fix {
-    writing-mode: horizontal-tb !important;
-    text-orientation: mixed !important;
-    direction: ltr !important;
-    word-break: normal !important;
-    overflow-wrap: break-word !important;
-    hyphens: none !important;
-    white-space: normal !important;
-    line-height: 1.3 !important;
-    display: block !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    text-align: left !important;
-    font-synthesis: none !important;
-    -webkit-font-feature-settings: normal !important;
-    font-feature-settings: normal !important;
-    -webkit-text-orientation: mixed !important;
-    -webkit-writing-mode: horizontal-tb !important;
-  }
-}
-
-/* iPad Pro 12.9" (1194px - 1366px) Landscape - Biggest iPad fix */
-@media (min-width: 1194px) and (max-width: 1366px) and (orientation: landscape) {
-  .ipad-text-fix,
-  .ipad-title-fix,
-  .ipad-horizontal-text,
-  .ipad-heading-fix,
-  .ipad-subtitle-fix,
-  .ipad-force-horizontal,
-  .ipad-pro-text-fix {
-    writing-mode: horizontal-tb !important;
-    text-orientation: mixed !important;
-    direction: ltr !important;
-    word-break: normal !important;
-    overflow-wrap: break-word !important;
-    hyphens: none !important;
-    white-space: normal !important;
-    line-height: 1.2 !important;
-    display: block !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    text-align: left !important;
-    font-synthesis: none !important;
-    -webkit-font-feature-settings: normal !important;
-    font-feature-settings: normal !important;
-    -webkit-text-orientation: mixed !important;
-    -webkit-writing-mode: horizontal-tb !important;
-  }
-}
-
-/* Universal iPad fix for all sizes and orientations */
-@media (min-width: 768px) and (max-width: 1366px) {
-  /* Apply to all text elements to prevent vertical display */
-  h1, h2, h3, h4, h5, h6, p, span, div {
-    writing-mode: horizontal-tb !important;
-    text-orientation: mixed !important;
-    direction: ltr !important;
-    -webkit-writing-mode: horizontal-tb !important;
-    -webkit-text-orientation: mixed !important;
-  }
-  
-  /* Specific override for known problematic elements */
-  .ipad-force-horizontal {
-    writing-mode: horizontal-tb !important;
-    text-orientation: mixed !important;
-    direction: ltr !important;
-    display: block !important;
-    width: 100% !important;
-    text-align: left !important;
-    -webkit-writing-mode: horizontal-tb !important;
-    -webkit-text-orientation: mixed !important;
-  }
-}
-
-/* Fallback for any iPad device detection */
+/* Touch device detection for iPad */
 @media (pointer: coarse) and (min-width: 768px) {
   .ipad-text-fix,
   .ipad-title-fix,
@@ -735,9 +607,55 @@ body {
   .ipad-force-horizontal,
   .ipad-pro-text-fix {
     writing-mode: horizontal-tb !important;
-    text-orientation: mixed !important;
-    direction: ltr !important;
     -webkit-writing-mode: horizontal-tb !important;
+    text-orientation: mixed !important;
     -webkit-text-orientation: mixed !important;
+    direction: ltr !important;
+  }
+}
+
+/* Hover capability detection (iPad doesn't have hover) */
+@media (hover: none) and (pointer: coarse) and (min-width: 768px) {
+  * {
+    writing-mode: horizontal-tb !important;
+    -webkit-writing-mode: horizontal-tb !important;
+    text-orientation: mixed !important;
+    -webkit-text-orientation: mixed !important;
+    direction: ltr !important;
+  }
+}
+
+/* iOS Safari specific targeting */
+@supports (-webkit-touch-callout: none) {
+  @media screen and (min-width: 768px) and (max-width: 1366px) {
+    .ipad-text-fix,
+    .ipad-title-fix,
+    .ipad-horizontal-text,
+    .ipad-heading-fix,
+    .ipad-subtitle-fix,
+    .ipad-force-horizontal,
+    .ipad-pro-text-fix {
+      writing-mode: horizontal-tb !important;
+      -webkit-writing-mode: horizontal-tb !important;
+      text-orientation: mixed !important;
+      -webkit-text-orientation: mixed !important;
+      direction: ltr !important;
+    }
+  }
+}
+
+/* Fallback for any remaining cases */
+@media screen {
+  .ipad-force-horizontal-always {
+    writing-mode: horizontal-tb !important;
+    -webkit-writing-mode: horizontal-tb !important;
+    -ms-writing-mode: lr-tb !important;
+    text-orientation: mixed !important;
+    -webkit-text-orientation: mixed !important;
+    direction: ltr !important;
+    unicode-bidi: normal !important;
+    display: block !important;
+    width: 100% !important;
+    text-align: left !important;
   }
 }
