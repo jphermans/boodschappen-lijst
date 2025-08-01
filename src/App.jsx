@@ -57,308 +57,11 @@ function App() {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [listToDelete, setListToDelete] = useState(null);
 
-  // iPad text fix
-  const titleRef = useRef(null);
-
   // Make debug function available globally
   useEffect(() => {
     if (typeof window !== 'undefined') {
       window.debugThemes = debugThemes;
     }
-  }, []);
-
-  // iPad text orientation fix - apply inline styles to override any CSS issues
-  useEffect(() => {
-    const detectAndFixiPad = () => {
-      const isIPad = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
-                    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) ||
-                    (window.screen.width >= 768 && window.screen.width <= 1366 && 'ontouchstart' in window);
-      
-      if (isIPad && titleRef.current) {
-        // Apply inline styles with highest specificity to force horizontal text
-        const titleElement = titleRef.current;
-        
-        // Try multiple approaches in sequence - more aggressive reset
-        titleElement.style.setProperty('writing-mode', 'initial', 'important');
-        titleElement.style.setProperty('-webkit-writing-mode', 'initial', 'important');
-        titleElement.style.setProperty('-ms-writing-mode', 'initial', 'important');
-        titleElement.style.setProperty('text-orientation', 'initial', 'important');
-        titleElement.style.setProperty('-webkit-text-orientation', 'initial', 'important');
-        
-        // Force horizontal after reset
-        setTimeout(() => {
-          titleElement.style.setProperty('writing-mode', 'horizontal-tb', 'important');
-          titleElement.style.setProperty('-webkit-writing-mode', 'horizontal-tb', 'important');
-          titleElement.style.setProperty('-ms-writing-mode', 'lr-tb', 'important');
-          titleElement.style.setProperty('text-orientation', 'mixed', 'important');
-          titleElement.style.setProperty('-webkit-text-orientation', 'mixed', 'important');
-        }, 10);
-        titleElement.style.setProperty('direction', 'ltr', 'important');
-        titleElement.style.setProperty('unicode-bidi', 'normal', 'important');
-        titleElement.style.setProperty('display', 'inline-block', 'important');
-        titleElement.style.setProperty('width', '100%', 'important');
-        titleElement.style.setProperty('text-align', 'left', 'important');
-        titleElement.style.setProperty('transform', 'rotate(0deg) scale(1) translate(0, 0)', 'important');
-        titleElement.style.setProperty('-webkit-transform', 'rotate(0deg) scale(1) translate(0, 0)', 'important');
-        titleElement.style.setProperty('transform-origin', 'left center', 'important');
-        titleElement.style.setProperty('-webkit-transform-origin', 'left center', 'important');
-        titleElement.style.setProperty('position', 'relative', 'important');
-        titleElement.style.setProperty('white-space', 'nowrap', 'important');
-        titleElement.style.setProperty('overflow', 'visible', 'important');
-        titleElement.style.setProperty('text-overflow', 'clip', 'important');
-        titleElement.style.setProperty('box-sizing', 'border-box', 'important');
-        titleElement.style.setProperty('flex-shrink', '0', 'important');
-        titleElement.style.setProperty('flex-grow', '0', 'important');
-        titleElement.style.setProperty('flex-basis', 'auto', 'important');
-        
-        // Additional font properties to ensure proper rendering
-        titleElement.style.setProperty('font-style', 'normal', 'important');
-        titleElement.style.setProperty('font-variant', 'normal', 'important');
-        titleElement.style.setProperty('text-transform', 'none', 'important');
-        titleElement.style.setProperty('line-height', '1.2', 'important');
-        titleElement.style.setProperty('letter-spacing', 'normal', 'important');
-        titleElement.style.setProperty('word-spacing', 'normal', 'important');
-        
-        // Force re-render by temporarily changing the text
-        const originalText = titleElement.textContent;
-        titleElement.textContent = '';
-        setTimeout(() => {
-          titleElement.textContent = originalText;
-          
-          // Last resort: If still vertical, try CSS content approach
-          setTimeout(() => {
-            const computedStyle = window.getComputedStyle(titleElement);
-            const isStillVertical = computedStyle.writingMode === 'vertical-rl' || 
-                                  computedStyle.writingMode === 'vertical-lr' ||
-                                  computedStyle.writingMode === 'tb-rl' ||
-                                  computedStyle.writingMode === 'tb-lr';
-            
-            if (isStillVertical) {
-              console.log('Standard fixes failed, applying emergency CSS content fix');
-              // Create a wrapper with CSS content
-              titleElement.style.setProperty('visibility', 'hidden', 'important');
-              titleElement.style.setProperty('position', 'relative', 'important');
-              
-              // Add pseudo-element with the text
-              const style = document.createElement('style');
-              style.textContent = `
-                h1[data-ipad-fix]::before {
-                  content: "Boodschappenlijst" !important;
-                  visibility: visible !important;
-                  position: absolute !important;
-                  top: 0 !important;
-                  left: 0 !important;
-                  writing-mode: horizontal-tb !important;
-                  -webkit-writing-mode: horizontal-tb !important;
-                  text-orientation: upright !important;
-                  -webkit-text-orientation: upright !important;
-                  direction: ltr !important;
-                  display: inline-block !important;
-                  width: 100% !important;
-                  white-space: nowrap !important;
-                }
-              `;
-              document.head.appendChild(style);
-              titleElement.setAttribute('data-ipad-fix', 'true');
-            } else {
-              console.log('Standard fixes appear to be working');
-            }
-            
-            // Ultimate fallback: Replace with individual character spans
-            setTimeout(() => {
-              const finalComputedStyle = window.getComputedStyle(titleElement);
-              const stillVertical = finalComputedStyle.writingMode === 'vertical-rl' || 
-                                  finalComputedStyle.writingMode === 'vertical-lr' ||
-                                  finalComputedStyle.writingMode === 'tb-rl' ||
-                                  finalComputedStyle.writingMode === 'tb-lr';
-              
-              if (stillVertical) {
-                console.log('All CSS fixes failed, applying character-span fallback');
-                const text = 'Boodschappenlijst';
-                titleElement.innerHTML = '';
-                
-                // Create a wrapper div
-                const wrapper = document.createElement('div');
-                wrapper.style.cssText = `
-                  display: flex !important;
-                  flex-direction: row !important;
-                  align-items: center !important;
-                  writing-mode: horizontal-tb !important;
-                  -webkit-writing-mode: horizontal-tb !important;
-                  direction: ltr !important;
-                  white-space: nowrap !important;
-                `;
-                
-                // Add each character as a span
-                for (let i = 0; i < text.length; i++) {
-                  const span = document.createElement('span');
-                  span.textContent = text[i];
-                  span.style.cssText = `
-                    display: inline-block !important;
-                    writing-mode: horizontal-tb !important;
-                    -webkit-writing-mode: horizontal-tb !important;
-                    text-orientation: upright !important;
-                    -webkit-text-orientation: upright !important;
-                    direction: ltr !important;
-                    transform: rotate(0deg) !important;
-                    -webkit-transform: rotate(0deg) !important;
-                  `;
-                  wrapper.appendChild(span);
-                }
-                
-                titleElement.appendChild(wrapper);
-              }
-            }, 200);
-          }, 100);
-        }, 50);
-        
-        // Debug: Log the computed styles to see what's actually being applied
-        const computedStyle = window.getComputedStyle(titleElement);
-        console.log('iPad detected - Applied horizontal text fix to title');
-        console.log('Computed writing-mode:', computedStyle.writingMode);
-        console.log('Computed text-orientation:', computedStyle.textOrientation);
-        console.log('Computed direction:', computedStyle.direction);
-        console.log('Computed display:', computedStyle.display);
-        console.log('Element styles:', {
-          writingMode: titleElement.style.writingMode,
-          textOrientation: titleElement.style.textOrientation,
-          direction: titleElement.style.direction,
-          display: titleElement.style.display
-        });
-        
-        // Debug parent elements to find the source of vertical text
-        let currentElement = titleElement.parentElement;
-        let level = 1;
-        while (currentElement && level <= 5) {
-          const parentComputedStyle = window.getComputedStyle(currentElement);
-          console.log(`Parent level ${level}:`, {
-            tagName: currentElement.tagName,
-            className: currentElement.className,
-            writingMode: parentComputedStyle.writingMode,
-            textOrientation: parentComputedStyle.textOrientation,
-            direction: parentComputedStyle.direction,
-            display: parentComputedStyle.display,
-            transform: parentComputedStyle.transform
-          });
-          currentElement = currentElement.parentElement;
-          level++;
-        }
-        
-        // Immediate replacement approach since standard CSS isn't working
-        setTimeout(() => {
-          console.log('Applying immediate replacement approach');
-          const text = 'Boodschappenlijst';
-          
-          // Clear the element and create a new structure
-          titleElement.innerHTML = '';
-          titleElement.style.setProperty('display', 'flex', 'important');
-          titleElement.style.setProperty('flex-direction', 'row', 'important');
-          titleElement.style.setProperty('align-items', 'center', 'important');
-          titleElement.style.setProperty('justify-content', 'flex-start', 'important');
-          
-          // Create a simple text node in a span
-          const textSpan = document.createElement('span');
-          textSpan.textContent = text;
-          textSpan.style.cssText = `
-            writing-mode: horizontal-tb !important;
-            -webkit-writing-mode: horizontal-tb !important;
-            text-orientation: mixed !important;
-            -webkit-text-orientation: mixed !important;
-            direction: ltr !important;
-            display: inline !important;
-            white-space: nowrap !important;
-            font-family: inherit !important;
-            font-size: inherit !important;
-            font-weight: inherit !important;
-            color: inherit !important;
-            line-height: inherit !important;
-          `;
-          
-          titleElement.appendChild(textSpan);
-          console.log('Text replacement completed');
-          
-          // Check if it's still vertical after 200ms, apply nuclear option
-          setTimeout(() => {
-            const spanComputedStyle = window.getComputedStyle(textSpan);
-            const stillVertical = spanComputedStyle.writingMode === 'vertical-rl' || 
-                                spanComputedStyle.writingMode === 'vertical-lr' ||
-                                spanComputedStyle.writingMode === 'tb-rl' ||
-                                spanComputedStyle.writingMode === 'tb-lr';
-                                
-            console.log('Span computed writing-mode:', spanComputedStyle.writingMode);
-            
-            if (stillVertical) {
-              console.log('Nuclear option: Creating absolute positioned replacement');
-              
-              // Get the current position and size
-              const rect = titleElement.getBoundingClientRect();
-              
-              // Create a completely separate element
-              const replacement = document.createElement('div');
-              replacement.textContent = text;
-              replacement.style.cssText = `
-                position: fixed !important;
-                top: ${rect.top}px !important;
-                left: ${rect.left}px !important;
-                width: auto !important;
-                height: auto !important;
-                z-index: 9999 !important;
-                writing-mode: horizontal-tb !important;
-                -webkit-writing-mode: horizontal-tb !important;
-                text-orientation: mixed !important;
-                -webkit-text-orientation: mixed !important;
-                direction: ltr !important;
-                display: block !important;
-                white-space: nowrap !important;
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
-                font-size: 1.5rem !important;
-                font-weight: bold !important;
-                color: rgb(var(--card-text)) !important;
-                background: transparent !important;
-                pointer-events: none !important;
-                transform: none !important;
-                -webkit-transform: none !important;
-              `;
-              
-              // Hide the original and add the replacement
-              titleElement.style.setProperty('visibility', 'hidden', 'important');
-              document.body.appendChild(replacement);
-              
-              console.log('Absolute positioned replacement created');
-              
-              // Update position on scroll/resize
-              const updatePosition = () => {
-                const newRect = titleElement.getBoundingClientRect();
-                replacement.style.top = newRect.top + 'px';
-                replacement.style.left = newRect.left + 'px';
-              };
-              
-              window.addEventListener('scroll', updatePosition);
-              window.addEventListener('resize', updatePosition);
-            }
-          }, 200);
-        }, 100);
-      }
-    };
-
-    // Apply fix immediately and also on resize/orientation change
-    detectAndFixiPad();
-    
-    const handleResize = () => {
-      setTimeout(detectAndFixiPad, 100);
-    };
-    
-    const handleOrientationChange = () => {
-      setTimeout(detectAndFixiPad, 200);
-    };
-
-    window.addEventListener('resize', handleResize);
-    window.addEventListener('orientationchange', handleOrientationChange);
-    
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      window.removeEventListener('orientationchange', handleOrientationChange);
-    };
   }, []);
 
   // Handle shared list URLs
@@ -898,13 +601,10 @@ function App() {
                 <List className="w-5 h-5 lg:w-6 lg:h-6 text-white" />
               </div>
               <div className="min-w-0 flex-1 pl-2 sm:pl-0">
-                <h1 
-                  ref={titleRef}
-                  className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-[rgb(var(--card-text))] tracking-tight break-words ipad-heading-fix ipad-force-horizontal ipad-force-horizontal-always"
-                >
+                <h1 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-[rgb(var(--card-text))] tracking-tight break-words ipad-simple-fix">
                   Boodschappenlijst
                 </h1>
-                <p className="hidden lg:block text-sm text-[rgb(var(--text-color))]/60 font-medium ipad-subtitle-fix ipad-force-horizontal">
+                <p className="hidden lg:block text-sm text-[rgb(var(--text-color))]/60 font-medium ipad-simple-fix">
                   Beheer en deel je lijsten
                 </p>
               </div>
@@ -1063,12 +763,12 @@ function App() {
                 animate={{ opacity: 1, y: 0 }}
                 className="bg-[rgb(var(--card-bg))] rounded-xl sm:rounded-2xl shadow-lg border border-[rgb(var(--border-color))]/20 p-4 sm:p-6 lg:p-8 xl:p-10 mb-6 sm:mb-8"
               >
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 lg:mb-8 ipad-flex-fix">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 lg:mb-8">
                   <div className="mb-4 sm:mb-0 min-w-0 flex-1">
-                    <h2 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-[rgb(var(--card-text))] mb-1 sm:mb-2 ipad-heading-fix ipad-force-horizontal ipad-force-horizontal-always">
+                    <h2 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-[rgb(var(--card-text))] mb-1 sm:mb-2 ipad-simple-fix">
                       Nieuwe lijst maken
                     </h2>
-                    <p className="text-[rgb(var(--text-color))]/60 text-sm lg:text-base ipad-subtitle-fix ipad-force-horizontal">
+                    <p className="text-[rgb(var(--text-color))]/60 text-sm lg:text-base ipad-simple-fix">
                       Maak een nieuwe boodschappenlijst en deel deze met anderen
                     </p>
                   </div>
@@ -1125,7 +825,7 @@ function App() {
                     {/* Header - Completely restructured for full visibility */}
                     <div className="mb-4 lg:mb-6">
                       {/* Title */}
-                      <h3 className="text-base md:text-lg lg:text-xl xl:text-2xl font-bold text-[rgb(var(--card-text))] mb-2 md:mb-3 group-hover:text-primary transition-colors duration-200 break-words leading-tight ipad-heading-fix ipad-force-horizontal">
+                      <h3 className="text-base md:text-lg lg:text-xl xl:text-2xl font-bold text-[rgb(var(--card-text))] mb-2 md:mb-3 group-hover:text-primary transition-colors duration-200 break-words leading-tight ipad-simple-fix">
                         {list.name}
                       </h3>
                       
@@ -1142,7 +842,7 @@ function App() {
                       
                       {/* Creator info */}
                       {list.creatorName && (
-                        <div className="text-xs text-[rgb(var(--text-color))]/50 mb-2 md:mb-3 break-words ipad-subtitle-fix ipad-force-horizontal">
+                        <div className="text-xs text-[rgb(var(--text-color))]/50 mb-2 md:mb-3 break-words ipad-simple-fix">
                           Gemaakt door {list.creatorName}
                         </div>
                       )}
@@ -1274,11 +974,11 @@ function App() {
                       <List className="w-10 h-10 lg:w-12 lg:h-12 text-primary" />
                     </div>
                     
-                    <h3 className="text-xl lg:text-2xl xl:text-3xl font-bold text-[rgb(var(--card-text))] mb-4 lg:mb-6 ipad-heading-fix ipad-force-horizontal">
+                    <h3 className="text-xl lg:text-2xl xl:text-3xl font-bold text-[rgb(var(--card-text))] mb-4 lg:mb-6 ipad-simple-fix">
                       Welkom bij Boodschappenlijst!
                     </h3>
                     
-                    <p className="text-[rgb(var(--text-color))]/60 mb-8 lg:mb-10 text-base lg:text-lg leading-relaxed ipad-subtitle-fix ipad-force-horizontal">
+                    <p className="text-[rgb(var(--text-color))]/60 mb-8 lg:mb-10 text-base lg:text-lg leading-relaxed ipad-simple-fix">
                       Je hebt nog geen lijsten. Begin door een nieuwe lijst aan te maken of scan een gedeelde lijst van iemand anders.
                     </p>
                     
@@ -1297,7 +997,7 @@ function App() {
                         <div className="w-12 h-px bg-[rgb(var(--border-color))]/30"></div>
                       </div>
                       
-                      <p className="text-[rgb(var(--text-color))]/60 text-sm lg:text-base ipad-subtitle-fix ipad-force-horizontal">
+                      <p className="text-[rgb(var(--text-color))]/60 text-sm lg:text-base ipad-simple-fix">
                         Maak hierboven een nieuwe lijst aan
                       </p>
                     </div>
@@ -1316,7 +1016,7 @@ function App() {
                   animate={{ opacity: 1, x: 0 }}
                   className="bg-[rgb(var(--card-bg))] rounded-xl md:rounded-2xl shadow-lg border border-[rgb(var(--border-color))]/20 p-4 md:p-6"
                 >
-                  <h3 className="text-base md:text-lg font-bold text-[rgb(var(--card-text))] mb-3 md:mb-4 flex items-center ipad-heading-fix ipad-force-horizontal">
+                  <h3 className="text-base md:text-lg font-bold text-[rgb(var(--card-text))] mb-3 md:mb-4 flex items-center ipad-simple-fix">
                     <div className="w-2 h-2 bg-primary rounded-full mr-3"></div>
                     Overzicht
                   </h3>
@@ -1350,7 +1050,7 @@ function App() {
                   transition={{ delay: 0.1 }}
                   className="bg-[rgb(var(--card-bg))] rounded-xl md:rounded-2xl shadow-lg border border-[rgb(var(--border-color))]/20 p-4 md:p-6"
                 >
-                  <h3 className="text-base md:text-lg font-bold text-[rgb(var(--card-text))] mb-3 md:mb-4 flex items-center ipad-heading-fix ipad-force-horizontal">
+                  <h3 className="text-base md:text-lg font-bold text-[rgb(var(--card-text))] mb-3 md:mb-4 flex items-center ipad-simple-fix">
                     <div className="w-2 h-2 bg-secondary rounded-full mr-3"></div>
                     Snelle acties
                   </h3>
@@ -1381,13 +1081,13 @@ function App() {
                   transition={{ delay: 0.15 }}
                   className="bg-[rgb(var(--card-bg))] rounded-xl md:rounded-2xl shadow-lg border border-[rgb(var(--border-color))]/20 p-4 md:p-6"
                 >
-                  <h3 className="text-base md:text-lg font-bold text-[rgb(var(--card-text))] mb-3 md:mb-4 flex items-center ipad-heading-fix ipad-force-horizontal">
+                  <h3 className="text-base md:text-lg font-bold text-[rgb(var(--card-text))] mb-3 md:mb-4 flex items-center ipad-simple-fix">
                     <div className="w-2 h-2 bg-purple-500 rounded-full mr-3"></div>
                     Thema Instellingen
                   </h3>
                   
                   <div className="space-y-2 md:space-y-3">
-                    <p className="text-xs md:text-sm text-[rgb(var(--text-color))]/60 ipad-subtitle-fix ipad-force-horizontal">
+                    <p className="text-xs md:text-sm text-[rgb(var(--text-color))]/60 ipad-simple-fix">
                       Pas het uiterlijk van de app aan naar jouw voorkeur
                     </p>
                     <button
@@ -1406,13 +1106,13 @@ function App() {
                   transition={{ delay: 0.2 }}
                   className="bg-[rgb(var(--card-bg))] rounded-xl md:rounded-2xl shadow-lg border border-[rgb(var(--border-color))]/20 p-4 md:p-6"
                 >
-                  <h3 className="text-base md:text-lg font-bold text-[rgb(var(--card-text))] mb-3 md:mb-4 flex items-center ipad-heading-fix ipad-force-horizontal">
+                  <h3 className="text-base md:text-lg font-bold text-[rgb(var(--card-text))] mb-3 md:mb-4 flex items-center ipad-simple-fix">
                     <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
                     Data & Backup
                   </h3>
                   
                   <div className="space-y-2 md:space-y-3">
-                    <p className="text-xs md:text-sm text-[rgb(var(--text-color))]/60 ipad-subtitle-fix ipad-force-horizontal">
+                    <p className="text-xs md:text-sm text-[rgb(var(--text-color))]/60 ipad-simple-fix">
                       Beheer je data en maak back-ups
                     </p>
                     <button
@@ -1432,7 +1132,7 @@ function App() {
                     transition={{ delay: 0.2 }}
                     className="bg-[rgb(var(--card-bg))] rounded-xl md:rounded-2xl shadow-lg border border-[rgb(var(--border-color))]/20 p-4 md:p-6"
                   >
-                    <h3 className="text-base md:text-lg font-bold text-[rgb(var(--card-text))] mb-3 md:mb-4 flex items-center ipad-heading-fix ipad-force-horizontal">
+                    <h3 className="text-base md:text-lg font-bold text-[rgb(var(--card-text))] mb-3 md:mb-4 flex items-center ipad-simple-fix">
                       <div className="w-2 h-2 bg-accent rounded-full mr-3"></div>
                       Recente activiteit
                     </h3>
@@ -1457,10 +1157,10 @@ function App() {
                           >
                             <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0"></div>
                             <div className="flex-1 min-w-0">
-                              <p className="font-medium text-[rgb(var(--card-text))] break-words text-xs md:text-sm ipad-subtitle-fix ipad-force-horizontal">
+                              <p className="font-medium text-[rgb(var(--card-text))] break-words text-xs md:text-sm ipad-simple-fix">
                                 {list.name}
                               </p>
-                              <p className="text-xs text-[rgb(var(--text-color))]/60 ipad-subtitle-fix ipad-force-horizontal">
+                              <p className="text-xs text-[rgb(var(--text-color))]/60 ipad-simple-fix">
                                 {list.items?.length || 0} items • {list.isCreator ? 'Eigenaar' : 'Gedeeld'}
                               </p>
                             </div>
@@ -1468,7 +1168,7 @@ function App() {
                         ))}
                       
                       {lists.filter(list => list.updatedAt).length === 0 && (
-                        <p className="text-xs md:text-sm text-[rgb(var(--text-color))]/60 text-center py-3 md:py-4 ipad-subtitle-fix ipad-force-horizontal">
+                        <p className="text-xs md:text-sm text-[rgb(var(--text-color))]/60 text-center py-3 md:py-4 ipad-simple-fix">
                           Geen recente activiteit
                         </p>
                       )}

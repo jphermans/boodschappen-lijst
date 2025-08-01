@@ -132,7 +132,7 @@ const AnalyticsDashboard = ({ lists, onClose }) => {
               <h2 className="text-xl font-semibold text-[rgb(var(--card-text))]">
                 Analytics Dashboard
               </h2>
-              <p className="text-sm text-[rgb(var(--text-color))]/60 ipad-force-horizontal-always">
+              <p className="text-sm text-[rgb(var(--text-color))]/60 ipad-simple-fix">
                 Overzicht van je lijsten en delen-activiteit
               </p>
             </div>
