@@ -1,4 +1,4 @@
-name: Deploy Feature Branch to GitHub Pages
+name: Build and Test Feature Branch
 
 on:
   push:
@@ -7,15 +7,9 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages-feature"
-  cancel-in-progress: false
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -30,6 +24,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Run tests (if any)
+        run: npm test --if-present
+
       - name: Build project for feature branch
         run: npm run build
         env:
@@ -41,112 +38,72 @@ jobs:
           VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
           VITE_FIREBASE_MEASUREMENT_ID: ${{ secrets.VITE_FIREBASE_MEASUREMENT_ID }}
 
-      - name: Create feature branch directory structure
+      - name: Create feature branch info
         run: |
-          mkdir -p ./dist/feature
-          cp -r ./dist/* ./dist/feature/ 2>/dev/null || true
-          # Create a simple index.html that redirects to the feature branch
-          cat > ./dist/index.html << 'EOF'
-          <!DOCTYPE html>
-          <html>
-          <head>
-            <title>Feature Branch - Code Improvements</title>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1">
-            <style>
-              body {
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                margin: 0;
-                padding: 40px 20px;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                color: white;
-                min-height: 100vh;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-              }
-              .container {
-                text-align: center;
-                max-width: 600px;
-                background: rgba(255,255,255,0.1);
-                padding: 40px;
-                border-radius: 20px;
-                backdrop-filter: blur(10px);
-                box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-              }
-              h1 { margin-bottom: 20px; font-size: 2.5em; }
-              p { margin-bottom: 30px; font-size: 1.2em; opacity: 0.9; }
-              .btn {
-                display: inline-block;
-                padding: 15px 30px;
-                background: rgba(255,255,255,0.2);
-                color: white;
-                text-decoration: none;
-                border-radius: 10px;
-                font-weight: bold;
-                transition: all 0.3s ease;
-                margin: 10px;
-              }
-              .btn:hover {
-                background: rgba(255,255,255,0.3);
-                transform: translateY(-2px);
-              }
-              .feature-info {
-                background: rgba(255,255,255,0.1);
-                padding: 20px;
-                border-radius: 10px;
-                margin: 20px 0;
-                text-align: left;
-              }
-              .feature-info h3 { margin-top: 0; color: #ffd700; }
-              .feature-info ul { margin: 10px 0; }
-              .feature-info li { margin: 5px 0; }
-            </style>
-          </head>
-          <body>
-            <div class="container">
-              <h1>🚀 Feature Branch Deployment</h1>
-              <p>Code Improvements - Point 1: Component Optimization</p>
-              
-              <div class="feature-info">
-                <h3>✨ What's New in This Branch:</h3>
-                <ul>
-                  <li><strong>Custom Hooks:</strong> useShoppingLists, useListOperations, useModals</li>
-                  <li><strong>New Components:</strong> ListCard, Navigation</li>
-                  <li><strong>App.jsx Refactoring:</strong> 28% reduction in complexity (1252 → 903 lines)</li>
-                  <li><strong>Better Code Organization:</strong> Separation of concerns and reusability</li>
-                  <li><strong>Performance Improvements:</strong> Optimized re-renders and bundle size</li>
-                </ul>
-              </div>
-              
-              <a href="./feature/boodschappen-lijst/" class="btn">🧪 Test Feature Branch</a>
-              <a href="https://jphermans.github.io/boodschappen-lijst/" class="btn">📱 View Production</a>
-              
-              <p style="margin-top: 30px; font-size: 0.9em; opacity: 0.7;">
-                Branch: feature/code-improvements<br>
-                Deployed: $(date)<br>
-                Status: Point 1 Complete - Ready for Testing
-              </p>
-            </div>
-          </body>
-          </html>
+          # Create a README for the build
+          cat > ./dist/README.md << 'EOF'
+          # 🚀 Feature Branch Build - Code Improvements
+          
+          ## Point 1: Component Optimization - COMPLETED
+          
+          ### ✨ What's New in This Branch:
+          - **Custom Hooks:** useShoppingLists, useListOperations, useModals
+          - **New Components:** ListCard, Navigation
+          - **App.jsx Refactoring:** 28% reduction in complexity (1252 → 903 lines)
+          - **Better Code Organization:** Separation of concerns and reusability
+          - **Performance Improvements:** Optimized re-renders and bundle size
+          
+          ### 🧪 Testing Instructions:
+          1. Download this artifact from GitHub Actions
+          2. Extract the files
+          3. Serve the files using a local server:
+             ```bash
+             # Using Python
+             python -m http.server 8000
+             
+             # Using Node.js
+             npx serve .
+             
+             # Using PHP
+             php -S localhost:8000
+             ```
+          4. Navigate to `http://localhost:8000/boodschappen-lijst/`
+          5. Test all functionality to verify no regressions
+          
+          ### 📊 Build Info:
+          - Branch: feature/code-improvements
+          - Build Date: $(date)
+          - Status: Ready for Testing
+          - Next Step: Point 2 - Error Handling Enhancement
           EOF
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
         with:
-          path: './dist'
+          name: feature-branch-build
+          path: ./dist
+          retention-days: 30
 
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Create deployment summary
+        run: |
+          echo "## 🚀 Feature Branch Build Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### ✅ Build Status: SUCCESS" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📦 Artifact Information:" >> $GITHUB_STEP_SUMMARY
+          echo "- **Name:** feature-branch-build" >> $GITHUB_STEP_SUMMARY
+          echo "- **Size:** $(du -sh ./dist | cut -f1)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Files:** $(find ./dist -type f | wc -l) files" >> $GITHUB_STEP_SUMMARY
+          echo "- **Retention:** 30 days" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🧪 Testing Instructions:" >> $GITHUB_STEP_SUMMARY
+          echo "1. Download the artifact from this workflow run" >> $GITHUB_STEP_SUMMARY
+          echo "2. Extract and serve locally using \`npx serve .\`" >> $GITHUB_STEP_SUMMARY
+          echo "3. Navigate to \`http://localhost:3000/boodschappen-lijst/\`" >> $GITHUB_STEP_SUMMARY
+          echo "4. Test all functionality to verify no regressions" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🎯 What's New:" >> $GITHUB_STEP_SUMMARY
+          echo "- Custom Hooks: useShoppingLists, useListOperations, useModals" >> $GITHUB_STEP_SUMMARY
+          echo "- New Components: ListCard, Navigation" >> $GITHUB_STEP_SUMMARY
+          echo "- App.jsx reduced by 28% (1252 → 903 lines)" >> $GITHUB_STEP_SUMMARY
+          echo "- Better code organization and maintainability" >> $GITHUB_STEP_SUMMARY
