@@ -100,26 +100,26 @@ const QRShareModal = ({ listId, list, onClose }) => {
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-xl w-full max-w-md max-h-[calc(100vh-2rem)] sm:max-h-[calc(100vh-88px)] flex flex-col mt-0 relative"
+        className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-xl w-full max-w-md max-h-[calc(100vh-2rem)] lg:max-h-[calc(100vh-88px)] flex flex-col mt-0 relative"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Mobile close button - visible only on small screens */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 p-2 rounded-full bg-[rgb(var(--card-bg))] shadow-lg border border-[rgb(var(--border-color))]/20 hover:bg-[rgb(var(--border-color))]/20 transition-colors sm:hidden"
+          className="absolute top-4 right-4 z-10 p-2 rounded-full bg-[rgb(var(--card-bg))] shadow-lg border border-[rgb(var(--border-color))]/20 hover:bg-[rgb(var(--border-color))]/20 transition-colors lg:hidden"
           aria-label="Sluiten"
         >
           <X className="w-5 h-5 text-[rgb(var(--text-color))]/60" />
         </button>
 
         <div className="flex items-center justify-between p-6 border-b border-[rgb(var(--border-color))]/50 flex-shrink-0">
-          <h2 className="text-xl font-semibold text-[rgb(var(--card-text))] pr-12 sm:pr-0">
+          <h2 className="text-xl font-semibold text-[rgb(var(--card-text))] pr-12 lg:pr-0">
             {isOwner ? 'Deel boodschappenlijst' : 'Doorsturen boodschappenlijst'}
           </h2>
           {/* Desktop close button - hidden on small screens */}
           <button
             onClick={onClose}
-            className="hidden sm:flex p-2 rounded-lg hover:bg-[rgb(var(--border-color))]/20 transition-colors"
+            className="hidden lg:flex p-2 rounded-lg hover:bg-[rgb(var(--border-color))]/20 transition-colors"
           >
             <X className="w-5 h-5 text-[rgb(var(--text-color))]/60" />
           </button>
