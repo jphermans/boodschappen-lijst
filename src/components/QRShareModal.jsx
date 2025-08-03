@@ -123,35 +123,44 @@ const QRShareModal = ({ listId, list, onClose }) => {
         className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-xl w-full max-w-md max-h-[calc(100vh-2rem)] lg:max-h-[calc(100vh-88px)] flex flex-col mt-0 relative"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Mobile close button - JavaScript-controlled visibility with enhanced styling */}
-        {isMobile && (
-          <button
-            onClick={onClose}
-            className="absolute top-3 right-3 z-50 p-3 rounded-full bg-white shadow-xl border-2 border-gray-300 hover:bg-gray-100 hover:border-gray-400 transition-all duration-200 transform hover:scale-110"
-            style={{
-              backgroundColor: '#ffffff',
-              borderColor: '#d1d5db',
-              boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2), 0 4px 10px rgba(0, 0, 0, 0.1)'
-            }}
-            aria-label="Sluiten"
-          >
-            <X className="w-6 h-6 text-gray-700" />
-          </button>
-        )}
+        {/* Always visible close button for mobile - multiple fallback approaches */}
+        <button
+          onClick={onClose}
+          className="absolute top-2 right-2 z-50 p-3 rounded-full bg-red-500 hover:bg-red-600 shadow-2xl border-2 border-white transition-all duration-200 transform hover:scale-110 md:hidden"
+          style={{
+            backgroundColor: '#ef4444',
+            borderColor: '#ffffff',
+            boxShadow: '0 10px 25px rgba(0, 0, 0, 0.3), 0 4px 10px rgba(0, 0, 0, 0.2)',
+            minWidth: '48px',
+            minHeight: '48px'
+          }}
+          aria-label="Sluiten"
+        >
+          <X className="w-6 h-6 text-white" />
+        </button>
+
+        {/* Backup close button - always visible on small screens */}
+        <button
+          onClick={onClose}
+          className="absolute top-2 left-2 z-50 px-3 py-2 rounded-lg bg-black bg-opacity-70 text-white text-sm font-medium hover:bg-opacity-80 transition-all duration-200 md:hidden"
+          style={{
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)'
+          }}
+        >
+          ✕ Sluiten
+        </button>
 
         <div className="flex items-center justify-between p-6 border-b border-[rgb(var(--border-color))]/50 flex-shrink-0">
-          <h2 className={`text-xl font-semibold text-[rgb(var(--card-text))] ${isMobile ? 'pr-16' : 'pr-0'}`}>
+          <h2 className="text-xl font-semibold text-[rgb(var(--card-text))] pr-20 md:pr-0">
             {isOwner ? 'Deel boodschappenlijst' : 'Doorsturen boodschappenlijst'}
           </h2>
-          {/* Desktop close button - only show when not mobile */}
-          {!isMobile && (
-            <button
-              onClick={onClose}
-              className="p-2 rounded-lg hover:bg-[rgb(var(--border-color))]/20 transition-colors"
-            >
-              <X className="w-5 h-5 text-[rgb(var(--text-color))]/60" />
-            </button>
-          )}
+          {/* Desktop close button - visible on medium screens and up */}
+          <button
+            onClick={onClose}
+            className="hidden md:flex p-2 rounded-lg hover:bg-[rgb(var(--border-color))]/20 transition-colors"
+          >
+            <X className="w-5 h-5 text-[rgb(var(--text-color))]/60" />
+          </button>
         </div>
 
         {/* Scrollable content area */}
@@ -263,8 +272,21 @@ const QRShareModal = ({ listId, list, onClose }) => {
                 <p className="text-accent">🔒 Alleen de eigenaar kan de lijst verwijderen</p>
               )}
             </div>
+
+            {/* Mobile-only close button at bottom */}
+            <div className="md:hidden mt-6 pt-4 border-t border-[rgb(var(--border-color))]/20">
+              <button
+                onClick={onClose}
+                className="w-full py-4 px-6 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl shadow-lg transition-all duration-200 transform hover:scale-105"
+              >
+                <div className="flex items-center justify-center space-x-2">
+                  <X className="w-5 h-5" />
+                  <span>Sluiten</span>
+                </div>
+              </button>
             </div>
           </div>
+        </div>
         </div>
       </motion.div>
     </motion.div>
