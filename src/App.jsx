@@ -17,9 +17,11 @@ import ConfirmationDialog from './components/ConfirmationDialog';
 import ConnectionError from './components/ConnectionError';
 import ToastContainer from './components/Toast';
 import PWAUpdateNotification from './components/PWAUpdateNotification';
+import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import { useUserState } from './hooks/usePersistentState';
 import { useUnifiedThemeContext } from './context/UnifiedThemeContext';
 import { debugThemes } from './utils/debugThemes';
+import { errorHandler } from './utils/errorHandler';
 
 // New extracted components and hooks
 import { useShoppingLists } from './hooks/useShoppingLists';
@@ -29,6 +31,13 @@ import ListCard from './components/ListCard/ListCard';
 import Navigation from './components/Navigation/Navigation';
 
 function App() {
+  // Initialize global error handlers
+  useEffect(() => {
+    errorHandler.initialize();
+    return () => {
+      // Cleanup if needed
+    };
+  }, []);
   // Enhanced state management hooks
   const { userInfo, setUserName, isLoading: userLoading, error: userError } = useUserState();
   
@@ -120,16 +129,24 @@ function App() {
     closeUserNameModal();
     
     try {
-      // Use enhanced user manager to set name
-      await setUserName(name);
+      // Use enhanced user manager to set name with retry
+      await errorHandler.withRetry(
+        () => setUserName(name),
+        {
+          operation: 'set_user_name',
+          context: { name }
+        }
+      );
       
       // Initialize lists after name is set
       await initializeLists();
       
       success(`Welkom ${name}! Je kunt nu lijsten maken en delen. 🎉`);
-    } catch (error) {
-      console.error('Error setting user name:', error);
-      error('Er ging iets mis bij het instellen van je naam');
+    } catch (err) {
+      console.error('Error setting user name:', err);
+      const userMessage = errorHandler.getUserMessage(err, 'set_user_name');
+      error(userMessage);
+      errorHandler.logError(err, 'set_user_name', { name });
     }
   };
 
@@ -238,7 +255,8 @@ function App() {
   const isOffline = !isConnected;
 
   return (
-    <div className="min-h-screen-safe bg-[rgb(var(--bg-color))] transition-colors duration-300">
+    <ErrorBoundary message="Er ging iets mis met de boodschappenlijst applicatie. Probeer het opnieuw of herlaad de pagina.">
+      <div className="min-h-screen-safe bg-[rgb(var(--bg-color))] transition-colors duration-300">
       {/* Safe area background extension */}
       <div className="fixed inset-x-0 top-0 h-[var(--safe-area-inset-top)] bg-[rgb(var(--card-bg))] z-50"></div>
       
@@ -633,9 +651,10 @@ function App() {
         />
       )}
 
-      <ToastContainer toasts={toasts} removeToast={removeToast} />
-      <PWAUpdateNotification />
-    </div>
+        <ToastContainer toasts={toasts} removeToast={removeToast} />
+        <PWAUpdateNotification />
+      </div>
+    </ErrorBoundary>
   );
 }
 

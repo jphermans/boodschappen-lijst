@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
-import { 
-  createShoppingList, 
-  deleteShoppingList, 
+import {
+  createShoppingList,
+  deleteShoppingList,
   shareListWithUser,
   removeUserFromList,
   canDeleteList,
@@ -11,6 +11,7 @@ import {
 import { useToast } from '../context/ToastContext';
 import { validateListName } from '../utils/validation';
 import { validateQRData } from '../utils/qrSecurity';
+import { errorHandler } from '../utils/errorHandler';
 
 /**
  * Custom hook for shopping list CRUD operations
@@ -51,8 +52,8 @@ export const useListOperations = (lists, userInfo) => {
       const normalizedName = validation.value.toLowerCase().trim();
       
       // Check local lists first (immediate)
-      const localDuplicate = lists.some(list => 
-        list.name.toLowerCase().trim() === normalizedName && 
+      const localDuplicate = lists.some(list =>
+        list.name.toLowerCase().trim() === normalizedName &&
         list.creatorId === userID
       );
       
@@ -63,12 +64,18 @@ export const useListOperations = (lists, userInfo) => {
         return { success: false, error: errorMsg };
       }
       
-      // Check Firebase lists (async check)
+      // Check Firebase lists (async check) with retry
       try {
         const { getShoppingLists } = await import('../firebase');
-        const firebaseLists = await getShoppingLists();
-        const firebaseDuplicate = firebaseLists.some(list => 
-          list.name.toLowerCase().trim() === normalizedName && 
+        const firebaseLists = await errorHandler.withRetry(
+          () => getShoppingLists(),
+          {
+            operation: 'duplicate_check',
+            context: { listName: validation.value }
+          }
+        );
+        const firebaseDuplicate = firebaseLists.some(list =>
+          list.name.toLowerCase().trim() === normalizedName &&
           list.creatorId === userID
         );
         
@@ -80,6 +87,7 @@ export const useListOperations = (lists, userInfo) => {
         }
       } catch (firebaseError) {
         console.warn("Could not check Firebase for duplicates, proceeding with local check only:", firebaseError);
+        errorHandler.logError(firebaseError, 'duplicate_check', { listName: validation.value });
       }
 
       const newListData = {
@@ -90,17 +98,24 @@ export const useListOperations = (lists, userInfo) => {
         creatorId: userID
       };
 
-      // Create in Firebase only - real-time subscription will update the UI
+      // Create in Firebase with retry mechanism
       console.log("Creating new list in Firebase:", newListData.name);
-      const listId = await createShoppingList(newListData);
+      const listId = await errorHandler.withRetry(
+        () => createShoppingList(newListData),
+        {
+          operation: 'create_list',
+          context: { listName: validation.value }
+        }
+      );
       
       success(`Lijst "${validation.value}" is aangemaakt! 🎉`);
       return { success: true, listId, listData: newListData };
     } catch (err) {
       console.error('Error creating shopping list:', err);
-      const errorMsg = 'Er ging iets mis bij het aanmaken van de lijst';
-      error(errorMsg);
-      return { success: false, error: errorMsg };
+      const userMessage = errorHandler.getUserMessage(err, 'create_list');
+      error(userMessage);
+      errorHandler.logError(err, 'create_list', { listName: validation.value });
+      return { success: false, error: userMessage };
     } finally {
       setIsCreatingList(false);
     }
@@ -128,17 +143,24 @@ export const useListOperations = (lists, userInfo) => {
     try {
       const listName = list.name;
       
-      // Delete from Firebase only - real-time subscription will update the UI
+      // Delete from Firebase with retry mechanism
       console.log("Deleting list:", listName);
-      await deleteShoppingList(listId);
+      await errorHandler.withRetry(
+        () => deleteShoppingList(listId),
+        {
+          operation: 'delete_list',
+          context: { listId, listName }
+        }
+      );
       
       success(`Lijst "${listName}" is verwijderd.`, 3000);
       return { success: true, listName };
     } catch (err) {
       console.error('Error deleting shopping list:', err);
-      const errorMsg = 'Er ging iets mis bij het verwijderen van de lijst';
-      error(errorMsg, 3000);
-      return { success: false, error: errorMsg };
+      const userMessage = errorHandler.getUserMessage(err, 'delete_list');
+      error(userMessage, 3000);
+      errorHandler.logError(err, 'delete_list', { listId, listName: list.name });
+      return { success: false, error: userMessage };
     }
   }, [lists, error, success]);
 
@@ -147,14 +169,21 @@ export const useListOperations = (lists, userInfo) => {
    */
   const shareList = useCallback(async (listId, userIdToShareWith) => {
     try {
-      await shareListWithUser(listId, userIdToShareWith);
+      await errorHandler.withRetry(
+        () => shareListWithUser(listId, userIdToShareWith),
+        {
+          operation: 'share_list',
+          context: { listId, userIdToShareWith }
+        }
+      );
       success('Lijst succesvol gedeeld! 🎉');
       return { success: true };
     } catch (err) {
       console.error('Error sharing list:', err);
-      const errorMsg = 'Er ging iets mis bij het delen van de lijst';
-      error(errorMsg);
-      return { success: false, error: errorMsg };
+      const userMessage = errorHandler.getUserMessage(err, 'share_list');
+      error(userMessage);
+      errorHandler.logError(err, 'share_list', { listId, userIdToShareWith });
+      return { success: false, error: userMessage };
     }
   }, [success, error]);
 
@@ -163,14 +192,21 @@ export const useListOperations = (lists, userInfo) => {
    */
   const removeUserFromSharedList = useCallback(async (listId, userIdToRemove) => {
     try {
-      await removeUserFromList(listId, userIdToRemove);
+      await errorHandler.withRetry(
+        () => removeUserFromList(listId, userIdToRemove),
+        {
+          operation: 'remove_user_access',
+          context: { listId, userIdToRemove }
+        }
+      );
       success('Gebruiker toegang ingetrokken');
       return { success: true };
     } catch (err) {
       console.error('Error removing user from list:', err);
-      const errorMsg = 'Er ging iets mis bij het intrekken van toegang';
-      error(errorMsg);
-      return { success: false, error: errorMsg };
+      const userMessage = errorHandler.getUserMessage(err, 'remove_user_access');
+      error(userMessage);
+      errorHandler.logError(err, 'remove_user_access', { listId, userIdToRemove });
+      return { success: false, error: userMessage };
     }
   }, [success, error]);
 
@@ -201,7 +237,14 @@ export const useListOperations = (lists, userInfo) => {
       
       // Step 2: Check if the list exists and get its details
       console.log('🔍 Step 3: Fetching list from Firebase...');
-      const sharedList = await getListById(listId);
+      const sharedList = await errorHandler.withRetry(
+        () => getListById(listId),
+        {
+          operation: 'get_shared_list',
+          context: { listId },
+          maxRetries: 2 // Fewer retries for QR scanning to avoid long waits
+        }
+      );
       console.log('📋 Retrieved list:', sharedList);
       
       // Handle permission denied case (expected for QR scanning)
@@ -224,22 +267,24 @@ export const useListOperations = (lists, userInfo) => {
         // Try to share the list directly (this might work if the list exists)
         console.log('🔍 Step 4: Attempting to share list with permission denied...');
         try {
-          await shareListWithUser(listId, currentUserId);
+          await errorHandler.withRetry(
+            () => shareListWithUser(listId, currentUserId),
+            {
+              operation: 'qr_share_list',
+              context: { listId, currentUserId },
+              maxRetries: 2
+            }
+          );
           console.log('✅ List shared successfully despite initial permission denial!');
           success('Lijst succesvol gedeeld! 🎉');
           info('De lijst verschijnt nu in je overzicht', 3000);
           return { success: true, listId };
         } catch (shareError) {
           console.error('❌ Failed to share list:', shareError);
-          if (shareError.code === 'not-found') {
-            const errorMsg = 'Lijst niet gevonden. De QR-code is mogelijk verlopen.';
-            error(errorMsg);
-            return { success: false, error: errorMsg };
-          } else {
-            const errorMsg = 'Geen toegang tot deze lijst. Controleer of de lijst nog bestaat.';
-            error(errorMsg);
-            return { success: false, error: errorMsg };
-          }
+          const userMessage = errorHandler.getUserMessage(shareError, 'qr_share_list');
+          error(userMessage);
+          errorHandler.logError(shareError, 'qr_share_list', { listId, currentUserId });
+          return { success: false, error: userMessage };
         }
       }
       
@@ -267,7 +312,14 @@ export const useListOperations = (lists, userInfo) => {
       console.log('🔍 Step 5: Sharing list with user...');
       console.log('🔗 Sharing list ID:', listId, 'with user:', currentUserId);
       
-      await shareListWithUser(listId, currentUserId);
+      await errorHandler.withRetry(
+        () => shareListWithUser(listId, currentUserId),
+        {
+          operation: 'qr_share_list',
+          context: { listId, currentUserId },
+          maxRetries: 2
+        }
+      );
       console.log('✅ List shared successfully!');
       
       success(`Lijst "${sharedList.name}" is gedeeld met jou! 🎉`);
@@ -278,20 +330,10 @@ export const useListOperations = (lists, userInfo) => {
     } catch (err) {
       console.error('❌ Error processing scanned QR code:', err);
       
-      // Provide more specific error messages based on error type
-      let errorMsg;
-      if (err.code === 'permission-denied') {
-        errorMsg = 'Geen toegang tot deze lijst. Controleer of de lijst nog bestaat.';
-      } else if (err.code === 'not-found') {
-        errorMsg = 'Lijst niet gevonden. De QR-code is mogelijk verlopen.';
-      } else if (err.message?.includes('network')) {
-        errorMsg = 'Netwerkfout. Controleer je internetverbinding.';
-      } else {
-        errorMsg = `Fout bij verwerken van gescande code: ${err.message || 'Onbekende fout'}`;
-      }
-      
-      error(errorMsg);
-      return { success: false, error: errorMsg };
+      const userMessage = errorHandler.getUserMessage(err, 'qr_scan');
+      error(userMessage);
+      errorHandler.logError(err, 'qr_scan', { scannedData });
+      return { success: false, error: userMessage };
     } finally {
       // Always clear the flag when done
       setIsProcessingQRScan(false);

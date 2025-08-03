@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
-import { 
-  getShoppingLists, 
-  subscribeToShoppingLists, 
+import {
+  getShoppingLists,
+  subscribeToShoppingLists,
   getCurrentUserID,
-  initializeFirebase 
+  initializeFirebase
 } from '../firebase';
 import { useToast } from '../context/ToastContext';
+import { errorHandler } from '../utils/errorHandler';
 
 /**
  * Custom hook for managing shopping lists state and Firebase synchronization
@@ -27,10 +28,19 @@ export const useShoppingLists = () => {
       setIsLoading(true);
       setFirebaseError(null);
 
-      const { error } = await initializeFirebase();
+      const { error } = await errorHandler.withRetry(
+        () => initializeFirebase(),
+        {
+          operation: 'firebase_init',
+          context: {},
+          maxRetries: 3
+        }
+      );
+      
       if (error) {
         setFirebaseError(error);
         setIsLoading(false);
+        errorHandler.logError(error, 'firebase_init');
         return { error };
       }
 
@@ -39,9 +49,15 @@ export const useShoppingLists = () => {
         try {
           const userID = getCurrentUserID();
           if (userID) {
-            // Load initial shopping lists from Firebase only
+            // Load initial shopping lists from Firebase with retry
             console.log('Loading lists from Firebase...');
-            const initialLists = await getShoppingLists();
+            const initialLists = await errorHandler.withRetry(
+              () => getShoppingLists(),
+              {
+                operation: 'load_lists',
+                context: { userID }
+              }
+            );
             setLists(initialLists);
             console.log('Loaded', initialLists.length, 'lists from Firebase');
             
@@ -59,6 +75,7 @@ export const useShoppingLists = () => {
           console.error('Error loading shopping lists:', error);
           setFirebaseError(error);
           setIsLoading(false);
+          errorHandler.logError(error, 'load_lists', { userID: getCurrentUserID() });
           return { error };
         }
       }, 1000); // Wait for auth to complete
@@ -66,6 +83,7 @@ export const useShoppingLists = () => {
       console.error('Firebase initialization error:', error);
       setFirebaseError(error);
       setIsLoading(false);
+      errorHandler.logError(error, 'firebase_init');
       return { error };
     }
   }, []);
@@ -97,7 +115,14 @@ export const useShoppingLists = () => {
         const { getListById, shareListWithUser } = await import('../firebase');
         
         console.log('🌐 Step 1: Fetching list from Firebase...');
-        const sharedList = await getListById(listId);
+        const sharedList = await errorHandler.withRetry(
+          () => getListById(listId),
+          {
+            operation: 'url_get_shared_list',
+            context: { listId },
+            maxRetries: 2
+          }
+        );
         console.log('🌐 Step 1 Result: Retrieved list:', sharedList);
         
         if (!sharedList) {
@@ -120,7 +145,14 @@ export const useShoppingLists = () => {
         }
         
         console.log('🌐 Step 3: Sharing list with user...');
-        await shareListWithUser(listId, currentUserId);
+        await errorHandler.withRetry(
+          () => shareListWithUser(listId, currentUserId),
+          {
+            operation: 'url_share_list',
+            context: { listId, currentUserId },
+            maxRetries: 2
+          }
+        );
         console.log('✅ URL Hash Handler - List shared successfully!');
         
         // Clear the hash
@@ -129,16 +161,9 @@ export const useShoppingLists = () => {
       } catch (err) {
         console.error('❌ URL Hash Handler - Error processing shared list from URL:', err);
         
-        // Provide more specific error messages based on error type
-        if (err.code === 'permission-denied') {
-          showError('Geen toegang tot deze lijst. Controleer of de lijst nog bestaat.');
-        } else if (err.code === 'not-found') {
-          showError('Lijst niet gevonden. De link is mogelijk verlopen.');
-        } else if (err.message?.includes('network')) {
-          showError('Netwerkfout. Controleer je internetverbinding.');
-        } else {
-          showError(`Fout bij verwerken van gedeelde lijst: ${err.message || 'Onbekende fout'}`);
-        }
+        const userMessage = errorHandler.getUserMessage(err, 'url_share_list');
+        showError(userMessage);
+        errorHandler.logError(err, 'url_share_list', { listId });
         
         // Clear the hash
         window.location.hash = '';
