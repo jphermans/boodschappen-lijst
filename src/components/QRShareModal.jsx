@@ -122,6 +122,10 @@ const QRShareModal = ({ listId, list, onClose }) => {
         exit={{ scale: 0.9, opacity: 0 }}
         className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-xl w-full max-w-md max-h-[calc(100vh-2rem)] lg:max-h-[calc(100vh-88px)] flex flex-col mt-0 relative"
         onClick={(e) => e.stopPropagation()}
+        style={{
+          WebkitOverflowScrolling: 'touch', // Enable smooth scrolling on iOS
+          overscrollBehavior: 'contain' // Prevent scroll chaining
+        }}
       >
         {/* Always visible close button for mobile - multiple fallback approaches */}
         <button
@@ -163,9 +167,17 @@ const QRShareModal = ({ listId, list, onClose }) => {
           </button>
         </div>
 
-        {/* Scrollable content area */}
-        <div className="flex-1 overflow-y-auto">
-          <div className="p-6 space-y-6">
+        {/* Scrollable content area with enhanced mobile scrolling */}
+        <div
+          className="flex-1 overflow-y-auto overscroll-contain"
+          style={{
+            WebkitOverflowScrolling: 'touch',
+            scrollBehavior: 'smooth',
+            overscrollBehavior: 'contain',
+            touchAction: 'pan-y' // Allow vertical scrolling only
+          }}
+        >
+          <div className="p-6 space-y-6 pb-8">
           <div className="text-center">
             <p className="text-[rgb(var(--text-color))]/80 mb-4">
               {isOwner
@@ -273,8 +285,8 @@ const QRShareModal = ({ listId, list, onClose }) => {
               )}
             </div>
 
-            {/* Mobile-only close button at bottom */}
-            <div className="md:hidden mt-6 pt-4 border-t border-[rgb(var(--border-color))]/20">
+            {/* Mobile-only close button at bottom with extra spacing */}
+            <div className="md:hidden mt-8 pt-6 border-t border-[rgb(var(--border-color))]/20">
               <button
                 onClick={onClose}
                 className="w-full py-4 px-6 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl shadow-lg transition-all duration-200 transform hover:scale-105"
@@ -284,6 +296,8 @@ const QRShareModal = ({ listId, list, onClose }) => {
                   <span>Sluiten</span>
                 </div>
               </button>
+              {/* Extra padding at bottom to ensure scrolling reaches the button */}
+              <div className="h-8"></div>
             </div>
           </div>
         </div>
