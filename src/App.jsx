@@ -21,7 +21,7 @@ import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import { useUserState } from './hooks/usePersistentState';
 import { useUnifiedThemeContext } from './context/UnifiedThemeContext';
 import { debugThemes } from './utils/debugThemes';
-import { errorHandler } from './utils/errorHandler';
+import errorHandler from './utils/errorHandler';
 
 // New extracted components and hooks
 import { useShoppingLists } from './hooks/useShoppingLists';

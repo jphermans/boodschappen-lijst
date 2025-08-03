@@ -11,7 +11,7 @@ import {
 import { useToast } from '../context/ToastContext';
 import { validateListName } from '../utils/validation';
 import { validateQRData } from '../utils/qrSecurity';
-import { errorHandler } from '../utils/errorHandler';
+import errorHandler from '../utils/errorHandler';
 
 /**
  * Custom hook for shopping list CRUD operations

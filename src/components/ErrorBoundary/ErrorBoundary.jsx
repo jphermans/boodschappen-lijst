@@ -1,5 +1,5 @@
 import React from 'react';
-import { errorHandler } from '../../utils/errorHandler';
+import errorHandler from '../../utils/errorHandler';
 
 /**
  * React Error Boundary component for catching JavaScript errors anywhere in the component tree

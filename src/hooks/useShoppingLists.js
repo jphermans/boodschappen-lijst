@@ -6,7 +6,7 @@ import {
   initializeFirebase
 } from '../firebase';
 import { useToast } from '../context/ToastContext';
-import { errorHandler } from '../utils/errorHandler';
+import errorHandler from '../utils/errorHandler';
 
 /**
  * Custom hook for managing shopping lists state and Firebase synchronization
