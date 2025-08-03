@@ -1,194 +1,221 @@
-// Comprehensive theme palettes from popular color schemes
-// Based on iTerm2 color schemes and popular VS Code themes
+// Beautiful theme palettes inspired by ColorHunt.co popular palettes
+// Each theme includes both dark and light mode variants
 
 export const themePalettes = [
   {
-    key: 'gruvbox',
-    name: 'Gruvbox',
-    description: 'Retro groove color scheme',
+    key: 'ocean-breeze',
+    name: 'Ocean Breeze',
+    description: 'Calming ocean-inspired blues and teals',
     colors: {
-      primary: '254 128 25',      // #fe8019 (orange)
-      secondary: '184 187 38',    // #b8bb26 (green)
-      accent: '251 73 52',        // #fb4934 (red)
-      background: '40 40 40',     // #282828 (dark)
-      surface: '60 56 54',        // #3c3836 (dark1)
-      text: '235 219 178',        // #ebdbb2 (light)
-      textSecondary: '168 153 132', // #a89984 (light2)
-      success: '184 187 38',      // #b8bb26 (green)
-      warning: '250 189 47',      // #fabd2f (yellow)
-      error: '251 73 52',         // #fb4934 (red)
-      info: '131 165 152'         // #83a598 (blue)
+      primary: '52 152 219',      // #3498db (bright blue)
+      secondary: '26 188 156',    // #1abc9c (turquoise)
+      accent: '155 89 182',       // #9b59b6 (purple)
+      background: '44 62 80',     // #2c3e50 (dark blue-gray)
+      surface: '52 73 94',        // #34495e (lighter blue-gray)
+      text: '236 240 241',        // #ecf0f1 (light gray)
+      textSecondary: '189 195 199', // #bdc3c7 (medium gray)
+      success: '46 204 113',      // #2ecc71 (emerald)
+      warning: '241 196 15',      // #f1c40f (yellow)
+      error: '231 76 60',         // #e74c3c (red)
+      info: '52 152 219'          // #3498db (blue)
     },
     lightMode: {
-      primary: '175 58 3',        // #af3a03 (orange)
-      secondary: '121 116 14',    // #79740e (green)
-      accent: '157 0 6',          // #9d0006 (red)
-      background: '251 241 199',  // #fbf1c7 (light)
-      surface: '242 229 188',     // #f2e5bc (light1)
-      text: '60 56 54',           // #3c3836 (dark)
-      textSecondary: '102 92 84'  // #665c54 (gray)
-    }
-  },
-  {
-    key: 'solarized',
-    name: 'Solarized',
-    description: 'Precision colors for machines and people',
-    colors: {
-      primary: '38 139 210',      // #268bd2 (blue)
-      secondary: '133 153 0',     // #859900 (green)
-      accent: '220 50 47',        // #dc322f (red)
-      background: '0 43 54',      // #002b36 (base03)
-      surface: '7 54 66',         // #073642 (base02)
-      text: '131 148 150',        // #839496 (base0)
-      textSecondary: '101 123 131', // #586e75 (base01)
-      success: '133 153 0',       // #859900 (green)
-      warning: '181 137 0',       // #b58900 (yellow)
-      error: '220 50 47',         // #dc322f (red)
-      info: '38 139 210'          // #268bd2 (blue)
-    },
-    lightMode: {
-      primary: '38 139 210',      // #268bd2 (blue)
-      secondary: '133 153 0',     // #859900 (green)
-      accent: '220 50 47',        // #dc322f (red)
-      background: '253 246 227',  // #fdf6e3 (base3)
-      surface: '238 232 213',     // #eee8d5 (base2)
-      text: '101 123 131',        // #586e75 (base01)
-      textSecondary: '131 148 150' // #839496 (base0)
-    }
-  },
-  {
-    key: 'dracula',
-    name: 'Dracula',
-    description: 'Dark theme for the cool kids',
-    colors: {
-      primary: '189 147 249',     // #bd93f9 (purple)
-      secondary: '80 250 123',    // #50fa7b (green)
-      accent: '255 85 85',        // #ff5555 (red)
-      background: '40 42 54',     // #282a36 (background)
-      surface: '68 71 90',        // #44475a (current line)
-      text: '248 248 242',        // #f8f8f2 (foreground)
-      textSecondary: '139 233 253', // #8be9fd (cyan)
-      success: '80 250 123',      // #50fa7b (green)
-      warning: '241 250 140',     // #f1fa8c (yellow)
-      error: '255 85 85',         // #ff5555 (red)
-      info: '139 233 253'         // #8be9fd (cyan)
-    },
-    lightMode: {
-      primary: '189 147 249',     // #bd93f9 (purple)
-      secondary: '80 250 123',    // #50fa7b (green)
-      accent: '255 85 85',        // #ff5555 (red)
-      background: '248 248 242',  // #f8f8f2 (light background)
+      primary: '41 128 185',      // #2980b9 (darker blue)
+      secondary: '22 160 133',    // #16a085 (darker turquoise)
+      accent: '142 68 173',       // #8e44ad (darker purple)
+      background: '236 240 241',  // #ecf0f1 (light gray)
       surface: '255 255 255',     // #ffffff (white)
-      text: '40 42 54',           // #282a36 (dark text)
-      textSecondary: '68 71 90'   // #44475a (gray)
+      text: '44 62 80',           // #2c3e50 (dark blue-gray)
+      textSecondary: '127 140 141' // #7f8c8d (gray)
     }
   },
   {
-    key: 'nord',
-    name: 'Nord',
-    description: 'Arctic, north-bluish color palette',
+    key: 'sunset-glow',
+    name: 'Sunset Glow',
+    description: 'Warm sunset colors with orange and pink tones',
     colors: {
-      primary: '129 161 193',     // #81a1c1 (nord9)
-      secondary: '163 190 140',   // #a3be8c (nord14)
-      accent: '191 97 106',       // #bf616a (nord11)
-      background: '46 52 64',     // #2e3440 (nord0)
-      surface: '59 66 82',        // #3b4252 (nord1)
-      text: '216 222 233',        // #d8dee9 (nord4)
-      textSecondary: '129 161 193', // #81a1c1 (nord9)
-      success: '163 190 140',     // #a3be8c (nord14)
-      warning: '235 203 139',     // #ebcb8b (nord13)
-      error: '191 97 106',        // #bf616a (nord11)
-      info: '136 192 208'         // #88c0d0 (nord8)
+      primary: '255 107 107',     // #ff6b6b (coral red)
+      secondary: '255 159 67',    // #ff9f43 (orange)
+      accent: '255 107 129',      // #ff6b81 (pink)
+      background: '47 54 64',     // #2f3640 (dark gray)
+      surface: '64 75 88',        // #404b58 (lighter gray)
+      text: '255 255 255',        // #ffffff (white)
+      textSecondary: '223 230 233', // #dfe6e9 (light gray)
+      success: '85 239 196',      // #55efc4 (mint)
+      warning: '253 203 110',     // #fdcb6e (yellow)
+      error: '255 107 107',       // #ff6b6b (coral)
+      info: '116 185 255'         // #74b9ff (blue)
     },
     lightMode: {
-      primary: '94 129 172',      // #5e81ac (nord10)
-      secondary: '136 192 208',   // #88c0d0 (nord8)
-      accent: '191 97 106',       // #bf616a (nord11)
-      background: '229 233 240',  // #e5e9f0 (nord6)
-      surface: '236 239 244',     // #eceff4 (nord5)
-      text: '46 52 64',           // #2e3440 (nord0)
-      textSecondary: '76 86 106'  // #4c566a (nord3)
-    }
-  },
-  {
-    key: 'monokai',
-    name: 'Monokai Pro',
-    description: 'Professional dark theme with vibrant colors',
-    colors: {
-      primary: '120 220 232',     // #78dce8 (cyan)
-      secondary: '169 220 118',   // #a9dc76 (green)
-      accent: '255 97 136',       // #ff6188 (pink)
-      background: '45 42 46',     // #2d2a2e (background)
-      surface: '60 56 61',        // #3c3c3d (selection)
-      text: '252 252 250',        // #fcfcfa (foreground)
-      textSecondary: '120 220 232', // #78dce8 (cyan)
-      success: '169 220 118',     // #a9dc76 (green)
-      warning: '255 214 102',     // #ffd666 (yellow)
-      error: '255 97 136',        // #ff6188 (pink)
-      info: '171 157 242'         // #ab9df2 (purple)
-    },
-    lightMode: {
-      primary: '120 220 232',     // #78dce8 (cyan)
-      secondary: '169 220 118',   // #a9dc76 (green)
-      accent: '255 97 136',       // #ff6188 (pink)
-      background: '252 252 250',  // #fcfcfa (light background)
+      primary: '214 48 49',       // #d63031 (darker red)
+      secondary: '230 126 34',    // #e67e22 (darker orange)
+      accent: '253 121 168',      // #fd79a8 (pink)
+      background: '253 251 251',  // #fdfbfb (off-white)
       surface: '255 255 255',     // #ffffff (white)
-      text: '45 42 46',           // #2d2a2e (dark text)
-      textSecondary: '60 56 61'   // #3c3c3d (gray)
+      text: '47 54 64',           // #2f3640 (dark gray)
+      textSecondary: '99 110 114' // #636e72 (medium gray)
     }
   },
   {
-    key: 'onedark',
-    name: 'One Dark',
-    description: 'Atom One Dark theme for everyone',
+    key: 'forest-mint',
+    name: 'Forest Mint',
+    description: 'Fresh forest greens with mint accents',
     colors: {
-      primary: '97 175 239',      // #61afef (blue)
-      secondary: '152 195 121',   // #98c379 (green)
-      accent: '224 108 117',      // #e06c75 (red)
-      background: '40 44 52',     // #282c34 (background)
-      surface: '53 59 69',        // #353b45 (current line)
-      text: '171 178 191',        // #abb2bf (foreground)
-      textSecondary: '171 178 191', // #abb2bf (foreground)
-      success: '152 195 121',     // #98c379 (green)
-      warning: '229 192 123',     // #e5c07b (yellow)
-      error: '224 108 117',       // #e06c75 (red)
-      info: '97 175 239'          // #61afef (blue)
+      primary: '85 239 196',      // #55efc4 (mint)
+      secondary: '0 184 148',     // #00b894 (emerald)
+      accent: '129 236 236',      // #81ecec (cyan)
+      background: '45 52 54',     // #2d3436 (dark green-gray)
+      surface: '99 110 114',      // #636e72 (medium gray)
+      text: '253 251 251',        // #fdfbfb (off-white)
+      textSecondary: '223 230 233', // #dfe6e9 (light gray)
+      success: '0 184 148',       // #00b894 (emerald)
+      warning: '253 203 110',     // #fdcb6e (yellow)
+      error: '255 107 107',       // #ff6b6b (coral)
+      info: '116 185 255'         // #74b9ff (blue)
     },
     lightMode: {
-      primary: '97 175 239',      // #61afef (blue)
-      secondary: '152 195 121',   // #98c379 (green)
-      accent: '224 108 117',      // #e06c75 (red)
-      background: '250 251 252',  // #fafbfc (light background)
+      primary: '0 150 136',       // #009688 (teal)
+      secondary: '76 175 80',     // #4caf50 (green)
+      accent: '0 188 212',        // #00bcd4 (cyan)
+      background: '245 245 245',  // #f5f5f5 (light gray)
       surface: '255 255 255',     // #ffffff (white)
-      text: '40 44 52',           // #282c34 (dark text)
-      textSecondary: '92 99 112'  // #5c6370 (comment)
+      text: '33 37 41',           // #212529 (dark)
+      textSecondary: '108 117 125' // #6c757d (gray)
     }
   },
   {
-    key: 'tokyonight',
-    name: 'Tokyo Night',
-    description: 'Dark theme inspired by Tokyo at night',
+    key: 'lavender-dream',
+    name: 'Lavender Dream',
+    description: 'Soft purples and pinks with dreamy pastels',
     colors: {
-      primary: '122 162 247',     // #7aa2f7 (blue)
-      secondary: '158 206 106',   // #9ece6a (green)
-      accent: '247 118 142',      // #f7768e (red)
-      background: '26 27 38',     // #1a1b26 (background)
-      surface: '36 40 59',        // #24283b (current line)
-      text: '192 202 245',        // #c0caf5 (foreground)
-      textSecondary: '169 177 214', // #a9b1d6 (comment)
-      success: '158 206 106',     // #9ece6a (green)
-      warning: '255 203 107',     // #ffcb6b (yellow)
-      error: '247 118 142',       // #f7768e (red)
-      info: '122 162 247'         // #7aa2f7 (blue)
+      primary: '162 155 254',     // #a29bfe (light purple)
+      secondary: '253 121 168',   // #fd79a8 (pink)
+      accent: '255 118 117',      // #ff7675 (coral)
+      background: '45 52 54',     // #2d3436 (dark gray)
+      surface: '99 110 114',      // #636e72 (medium gray)
+      text: '253 251 251',        // #fdfbfb (off-white)
+      textSecondary: '223 230 233', // #dfe6e9 (light gray)
+      success: '85 239 196',      // #55efc4 (mint)
+      warning: '253 203 110',     // #fdcb6e (yellow)
+      error: '255 118 117',       // #ff7675 (coral)
+      info: '116 185 255'         // #74b9ff (blue)
     },
     lightMode: {
-      primary: '122 162 247',     // #7aa2f7 (blue)
-      secondary: '158 206 106',   // #9ece6a (green)
-      accent: '247 118 142',      // #f7768e (red)
-      background: '223 225 239',  // #dfe1ef (light background)
-      surface: '241 243 255',     // #f1f3ff (light surface)
-      text: '26 27 38',           // #1a1b26 (dark text)
-      textSecondary: '76 79 105'  // #4c4f69 (gray)
+      primary: '124 77 255',      // #7c4dff (deep purple)
+      secondary: '233 30 99',     // #e91e63 (pink)
+      accent: '255 64 129',       // #ff4081 (hot pink)
+      background: '250 250 250',  // #fafafa (light gray)
+      surface: '255 255 255',     // #ffffff (white)
+      text: '33 33 33',           // #212121 (dark)
+      textSecondary: '117 117 117' // #757575 (gray)
+    }
+  },
+  {
+    key: 'golden-hour',
+    name: 'Golden Hour',
+    description: 'Warm golden yellows and rich browns',
+    colors: {
+      primary: '255 193 7',       // #ffc107 (amber)
+      secondary: '255 152 0',     // #ff9800 (orange)
+      accent: '255 87 34',        // #ff5722 (deep orange)
+      background: '62 39 35',     // #3e2723 (dark brown)
+      surface: '93 64 55',        // #5d4037 (medium brown)
+      text: '255 248 225',        // #fff8e1 (cream)
+      textSecondary: '255 224 178', // #ffe0b2 (light orange)
+      success: '139 195 74',      // #8bc34a (light green)
+      warning: '255 193 7',       // #ffc107 (amber)
+      error: '244 67 54',         // #f44336 (red)
+      info: '33 150 243'          // #2196f3 (blue)
+    },
+    lightMode: {
+      primary: '255 143 0',       // #ff8f00 (dark orange)
+      secondary: '230 81 0',      // #e65100 (darker orange)
+      accent: '191 54 12',        // #bf360c (deep red-orange)
+      background: '255 253 245',  // #fffdf5 (cream)
+      surface: '255 255 255',     // #ffffff (white)
+      text: '62 39 35',           // #3e2723 (dark brown)
+      textSecondary: '121 85 72'  // #795548 (brown)
+    }
+  },
+  {
+    key: 'midnight-blue',
+    name: 'Midnight Blue',
+    description: 'Deep blues with silver accents for elegance',
+    colors: {
+      primary: '63 81 181',       // #3f51b5 (indigo)
+      secondary: '103 58 183',    // #673ab7 (deep purple)
+      accent: '156 39 176',       // #9c27b0 (purple)
+      background: '21 32 43',     // #15202b (dark blue)
+      surface: '32 47 60',        // #202f3c (medium blue)
+      text: '255 255 255',        // #ffffff (white)
+      textSecondary: '176 190 197', // #b0bec5 (blue gray)
+      success: '76 175 80',       // #4caf50 (green)
+      warning: '255 193 7',       // #ffc107 (amber)
+      error: '244 67 54',         // #f44336 (red)
+      info: '33 150 243'          // #2196f3 (blue)
+    },
+    lightMode: {
+      primary: '48 63 159',       // #303f9f (dark indigo)
+      secondary: '81 45 168',     // #512da8 (dark purple)
+      accent: '123 31 162',       // #7b1fa2 (dark purple)
+      background: '245 245 245',  // #f5f5f5 (light gray)
+      surface: '255 255 255',     // #ffffff (white)
+      text: '33 33 33',           // #212121 (dark)
+      textSecondary: '97 97 97'   // #616161 (gray)
+    }
+  },
+  {
+    key: 'cherry-blossom',
+    name: 'Cherry Blossom',
+    description: 'Soft pinks and whites inspired by spring',
+    colors: {
+      primary: '255 182 193',     // #ffb6c1 (light pink)
+      secondary: '255 105 180',   // #ff69b4 (hot pink)
+      accent: '219 112 147',      // #db7093 (pale violet red)
+      background: '47 47 47',     // #2f2f2f (dark gray)
+      surface: '64 64 64',        // #404040 (medium gray)
+      text: '255 255 255',        // #ffffff (white)
+      textSecondary: '192 192 192', // #c0c0c0 (silver)
+      success: '144 238 144',     // #90ee90 (light green)
+      warning: '255 215 0',       // #ffd700 (gold)
+      error: '255 99 71',         // #ff6347 (tomato)
+      info: '135 206 235'         // #87ceeb (sky blue)
+    },
+    lightMode: {
+      primary: '199 21 133',      // #c71585 (medium violet red)
+      secondary: '255 20 147',    // #ff1493 (deep pink)
+      accent: '186 85 211',       // #ba55d3 (medium orchid)
+      background: '255 240 245',  // #fff0f5 (lavender blush)
+      surface: '255 255 255',     // #ffffff (white)
+      text: '47 47 47',           // #2f2f2f (dark gray)
+      textSecondary: '105 105 105' // #696969 (dim gray)
+    }
+  },
+  {
+    key: 'arctic-frost',
+    name: 'Arctic Frost',
+    description: 'Cool whites and icy blues for a clean look',
+    colors: {
+      primary: '70 130 180',      // #4682b4 (steel blue)
+      secondary: '95 158 160',    // #5f9ea0 (cadet blue)
+      accent: '176 196 222',      // #b0c4de (light steel blue)
+      background: '25 25 25',     // #191919 (very dark gray)
+      surface: '45 45 45',        // #2d2d2d (dark gray)
+      text: '248 248 255',        // #f8f8ff (ghost white)
+      textSecondary: '220 220 220', // #dcdcdc (gainsboro)
+      success: '32 178 170',      // #20b2aa (light sea green)
+      warning: '255 215 0',       // #ffd700 (gold)
+      error: '220 20 60',         // #dc143c (crimson)
+      info: '30 144 255'          // #1e90ff (dodger blue)
+    },
+    lightMode: {
+      primary: '25 25 112',       // #191970 (midnight blue)
+      secondary: '72 61 139',     // #483d8b (dark slate blue)
+      accent: '106 90 205',       // #6a5acd (slate blue)
+      background: '248 248 255',  // #f8f8ff (ghost white)
+      surface: '255 255 255',     // #ffffff (white)
+      text: '25 25 25',           // #191919 (very dark gray)
+      textSecondary: '105 105 105' // #696969 (dim gray)
     }
   }
 ];
