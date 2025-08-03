@@ -1,9 +1,29 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { X, Copy, Download, Share2, MessageCircle, Send } from 'lucide-react';
 import QRCode from 'react-qr-code';
 
 const QRShareModal = ({ listId, list, onClose }) => {
+  // JavaScript-based mobile detection for more reliable results
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      // Multiple detection methods for better reliability
+      const userAgent = navigator.userAgent.toLowerCase();
+      const isMobileUA = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
+      const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      const isSmallScreen = window.innerWidth < 1024; // Less than desktop size
+      
+      // Consider it mobile if any of these conditions are true
+      const mobile = isMobileUA || isTouchDevice || isSmallScreen;
+      setIsMobile(mobile);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
   const shareUrl = `${window.location.origin}${window.location.pathname}#/shared/${listId}`;
   const isOwner = list?.isCreator || false;
   const listName = list?.name || 'Boodschappenlijst';
@@ -103,26 +123,35 @@ const QRShareModal = ({ listId, list, onClose }) => {
         className="bg-[rgb(var(--card-bg))] rounded-2xl shadow-xl w-full max-w-md max-h-[calc(100vh-2rem)] lg:max-h-[calc(100vh-88px)] flex flex-col mt-0 relative"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Mobile close button - visible only on small screens */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 z-10 p-2 rounded-full bg-[rgb(var(--card-bg))] shadow-lg border border-[rgb(var(--border-color))]/20 hover:bg-[rgb(var(--border-color))]/20 transition-colors lg:hidden"
-          aria-label="Sluiten"
-        >
-          <X className="w-5 h-5 text-[rgb(var(--text-color))]/60" />
-        </button>
-
-        <div className="flex items-center justify-between p-6 border-b border-[rgb(var(--border-color))]/50 flex-shrink-0">
-          <h2 className="text-xl font-semibold text-[rgb(var(--card-text))] pr-12 lg:pr-0">
-            {isOwner ? 'Deel boodschappenlijst' : 'Doorsturen boodschappenlijst'}
-          </h2>
-          {/* Desktop close button - hidden on small screens */}
+        {/* Mobile close button - JavaScript-controlled visibility with enhanced styling */}
+        {isMobile && (
           <button
             onClick={onClose}
-            className="hidden lg:flex p-2 rounded-lg hover:bg-[rgb(var(--border-color))]/20 transition-colors"
+            className="absolute top-3 right-3 z-50 p-3 rounded-full bg-white shadow-xl border-2 border-gray-300 hover:bg-gray-100 hover:border-gray-400 transition-all duration-200 transform hover:scale-110"
+            style={{
+              backgroundColor: '#ffffff',
+              borderColor: '#d1d5db',
+              boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2), 0 4px 10px rgba(0, 0, 0, 0.1)'
+            }}
+            aria-label="Sluiten"
           >
-            <X className="w-5 h-5 text-[rgb(var(--text-color))]/60" />
+            <X className="w-6 h-6 text-gray-700" />
           </button>
+        )}
+
+        <div className="flex items-center justify-between p-6 border-b border-[rgb(var(--border-color))]/50 flex-shrink-0">
+          <h2 className={`text-xl font-semibold text-[rgb(var(--card-text))] ${isMobile ? 'pr-16' : 'pr-0'}`}>
+            {isOwner ? 'Deel boodschappenlijst' : 'Doorsturen boodschappenlijst'}
+          </h2>
+          {/* Desktop close button - only show when not mobile */}
+          {!isMobile && (
+            <button
+              onClick={onClose}
+              className="p-2 rounded-lg hover:bg-[rgb(var(--border-color))]/20 transition-colors"
+            >
+              <X className="w-5 h-5 text-[rgb(var(--text-color))]/60" />
+            </button>
+          )}
         </div>
 
         {/* Scrollable content area */}
