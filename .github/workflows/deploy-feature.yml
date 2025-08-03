@@ -1,0 +1,152 @@
+name: Deploy Feature Branch to GitHub Pages
+
+on:
+  push:
+    branches: [ feature/code-improvements ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages-feature"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project for feature branch
+        run: npm run build
+        env:
+          VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
+          VITE_FIREBASE_MEASUREMENT_ID: ${{ secrets.VITE_FIREBASE_MEASUREMENT_ID }}
+
+      - name: Create feature branch directory structure
+        run: |
+          mkdir -p ./dist/feature
+          cp -r ./dist/* ./dist/feature/ 2>/dev/null || true
+          # Create a simple index.html that redirects to the feature branch
+          cat > ./dist/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>Feature Branch - Code Improvements</title>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <style>
+              body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                margin: 0;
+                padding: 40px 20px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              }
+              .container {
+                text-align: center;
+                max-width: 600px;
+                background: rgba(255,255,255,0.1);
+                padding: 40px;
+                border-radius: 20px;
+                backdrop-filter: blur(10px);
+                box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+              }
+              h1 { margin-bottom: 20px; font-size: 2.5em; }
+              p { margin-bottom: 30px; font-size: 1.2em; opacity: 0.9; }
+              .btn {
+                display: inline-block;
+                padding: 15px 30px;
+                background: rgba(255,255,255,0.2);
+                color: white;
+                text-decoration: none;
+                border-radius: 10px;
+                font-weight: bold;
+                transition: all 0.3s ease;
+                margin: 10px;
+              }
+              .btn:hover {
+                background: rgba(255,255,255,0.3);
+                transform: translateY(-2px);
+              }
+              .feature-info {
+                background: rgba(255,255,255,0.1);
+                padding: 20px;
+                border-radius: 10px;
+                margin: 20px 0;
+                text-align: left;
+              }
+              .feature-info h3 { margin-top: 0; color: #ffd700; }
+              .feature-info ul { margin: 10px 0; }
+              .feature-info li { margin: 5px 0; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <h1>🚀 Feature Branch Deployment</h1>
+              <p>Code Improvements - Point 1: Component Optimization</p>
+              
+              <div class="feature-info">
+                <h3>✨ What's New in This Branch:</h3>
+                <ul>
+                  <li><strong>Custom Hooks:</strong> useShoppingLists, useListOperations, useModals</li>
+                  <li><strong>New Components:</strong> ListCard, Navigation</li>
+                  <li><strong>App.jsx Refactoring:</strong> 28% reduction in complexity (1252 → 903 lines)</li>
+                  <li><strong>Better Code Organization:</strong> Separation of concerns and reusability</li>
+                  <li><strong>Performance Improvements:</strong> Optimized re-renders and bundle size</li>
+                </ul>
+              </div>
+              
+              <a href="./feature/boodschappen-lijst/" class="btn">🧪 Test Feature Branch</a>
+              <a href="https://jphermans.github.io/boodschappen-lijst/" class="btn">📱 View Production</a>
+              
+              <p style="margin-top: 30px; font-size: 0.9em; opacity: 0.7;">
+                Branch: feature/code-improvements<br>
+                Deployed: $(date)<br>
+                Status: Point 1 Complete - Ready for Testing
+              </p>
+            </div>
+          </body>
+          </html>
+          EOF
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './dist'
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
