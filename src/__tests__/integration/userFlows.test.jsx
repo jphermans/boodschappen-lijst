@@ -7,38 +7,52 @@ import { renderWithProviders, createMockList, createMockItem } from '../utils/te
 const MockApp = ({ initialState }) => {
   const [lists, setLists] = React.useState(initialState?.lists || []);
   const [currentList, setCurrentList] = React.useState(initialState?.currentList || null);
+  const [itemCounter, setItemCounter] = React.useState(1);
+  const [listCounter, setListCounter] = React.useState(1);
+
+  // Update currentList when lists change
+  React.useEffect(() => {
+    if (currentList) {
+      const updatedCurrentList = lists.find(list => list.id === currentList.id);
+      if (updatedCurrentList) {
+        setCurrentList(updatedCurrentList);
+      }
+    }
+  }, [lists, currentList]);
 
   const addList = (name) => {
     const newList = {
-      id: `list-${Date.now()}`,
+      id: `list-${listCounter}`,
       name,
       items: [],
       createdAt: new Date(),
     };
     setLists(prev => [...prev, newList]);
+    setListCounter(prev => prev + 1);
     return newList;
   };
 
   const addItem = (listId, itemName) => {
     const newItem = {
-      id: `item-${Date.now()}`,
+      id: `item-${itemCounter}`,
       name: itemName,
       completed: false,
       addedAt: new Date(),
     };
     
-    setLists(prev => prev.map(list => 
-      list.id === listId 
+    setLists(prev => prev.map(list =>
+      list.id === listId
         ? { ...list, items: [...list.items, newItem] }
         : list
     ));
     
+    setItemCounter(prev => prev + 1);
     return newItem;
   };
 
   const toggleItem = (listId, itemId) => {
-    setLists(prev => prev.map(list => 
-      list.id === listId 
+    setLists(prev => prev.map(list =>
+      list.id === listId
         ? {
             ...list,
             items: list.items.map(item =>

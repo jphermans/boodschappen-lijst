@@ -109,4 +109,5 @@ const ToastContainer = ({ toasts, removeToast }) => {
   );
 };
 
-export default ToastContainer; 
+export { Toast };
+export default ToastContainer;
