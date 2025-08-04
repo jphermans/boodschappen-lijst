@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, List, Wifi, Settings, BarChart3, Palette, Database, QrCode, Check, Share2, Users, Trash2 } from 'lucide-react';
 import { useTheme } from './context/ThemeContext';
@@ -23,7 +23,10 @@ import { useUnifiedThemeContext } from './context/UnifiedThemeContext';
 import { debugThemes } from './utils/debugThemes';
 import errorHandler from './utils/errorHandler';
 
-// New extracted components and hooks
+// Enhanced state management
+import useAppState from './hooks/useAppState';
+
+// Existing extracted components and hooks
 import { useShoppingLists } from './hooks/useShoppingLists';
 import { useListOperations } from './hooks/useListOperations';
 import { useModals } from './hooks/useModals';
@@ -38,6 +41,56 @@ function App() {
       // Cleanup if needed
     };
   }, []);
+
+  // Enhanced state management with reducers
+  const {
+    // App state
+    getCurrentPage,
+    getSelectedList,
+    getNewListName,
+    isNewListNameValid,
+    getIsLoading,
+    getError,
+    hasError,
+    isCreatingList,
+    
+    // List state
+    getLists,
+    getListsLoading,
+    getListsError,
+    getStats,
+    
+    // Actions
+    setCurrentPage,
+    setSelectedList,
+    navigateToList,
+    navigateToOverview,
+    setNewListName,
+    clearNewListName,
+    setLoadingState,
+    setErrorState,
+    clearErrorState,
+    setLists,
+    addList,
+    updateList,
+    removeList,
+    setListsLoading,
+    setListsError,
+    clearListsError,
+    
+    // Optimistic updates
+    optimisticListCreateStart,
+    optimisticListCreateSuccess,
+    optimisticListCreateFailure,
+    optimisticAddList,
+    optimisticRemoveList,
+    revertOptimisticAdd,
+    revertOptimisticRemove,
+    
+    // Utilities
+    getDebugInfo
+  } = useAppState();
+
   // Enhanced state management hooks
   const { userInfo, setUserName, isLoading: userLoading, error: userError } = useUserState();
   
@@ -61,7 +114,7 @@ function App() {
   } = useShoppingLists();
   
   const {
-    isCreatingList,
+    isCreatingList: legacyIsCreatingList,
     isProcessingQRScan,
     createList,
     deleteList,
@@ -89,11 +142,11 @@ function App() {
     openDeleteConfirmation,
     closeDeleteConfirmation
   } = useModals();
-  
-  // UI state
-  const [newListName, setNewListName] = useState('');
-  const [selectedList, setSelectedList] = useState(null);
-  const [currentPage, setCurrentPage] = useState('overview'); // 'overview', 'settings', 'analytics', 'theme', 'persistence', 'list'
+
+  // Get state values from reducers
+  const currentPage = getCurrentPage;
+  const selectedList = getSelectedList;
+  const newListName = getNewListName;
 
   // Make debug function available globally
   useEffect(() => {
@@ -153,9 +206,21 @@ function App() {
   const handleCreateList = async () => {
     if (!newListName.trim()) return;
     
-    const result = await createList(newListName);
-    if (result.success) {
-      setNewListName('');
+    // Start optimistic update
+    optimisticListCreateStart(newListName);
+    
+    try {
+      const result = await createList(newListName);
+      if (result.success) {
+        // Success - the optimistic update will be cleared automatically
+        optimisticListCreateSuccess();
+      } else {
+        // Failure - revert optimistic update
+        optimisticListCreateFailure(result.error);
+      }
+    } catch (err) {
+      // Error - revert optimistic update
+      optimisticListCreateFailure(err.message || 'Failed to create list');
     }
   };
 
@@ -174,13 +239,23 @@ function App() {
   const confirmDeleteList = async () => {
     if (!listToDelete) return;
     
-    const result = await deleteList(listToDelete.id);
-    if (result.success) {
-      // Clear selected list if it's the one being deleted
-      if (selectedList?.id === listToDelete.id) {
-        setSelectedList(null);
+    // Start optimistic update
+    optimisticRemoveList(listToDelete.id);
+    
+    try {
+      const result = await deleteList(listToDelete.id);
+      if (result.success) {
+        // Success - optimistic update is already applied
+        closeDeleteConfirmation();
+      } else {
+        // Failure - revert optimistic update
+        revertOptimisticRemove(listToDelete.id);
+        error(result.error || 'Failed to delete list');
       }
-      closeDeleteConfirmation();
+    } catch (err) {
+      // Error - revert optimistic update
+      revertOptimisticRemove(listToDelete.id);
+      error(err.message || 'Failed to delete list');
     }
   };
 
@@ -267,10 +342,7 @@ function App() {
         lists={lists}
         theme={theme}
         onPageChange={setCurrentPage}
-        onOverviewClick={() => {
-          setSelectedList(null);
-          setCurrentPage('overview');
-        }}
+        onOverviewClick={navigateToOverview}
         onThemeToggle={toggleTheme}
         onScannerOpen={openScannerModal}
       />
@@ -352,7 +424,7 @@ function App() {
                   </div>
                   <button
                     onClick={handleCreateList}
-                    disabled={!newListName.trim() || isCreatingList}
+                    disabled={!isNewListNameValid || isCreatingList}
                     className="flex items-center justify-center px-4 sm:px-6 lg:px-8 xl:px-10 py-3 lg:py-4 bg-[rgb(var(--color-primary-button))] hover:opacity-90 text-white rounded-lg sm:rounded-xl lg:rounded-2xl shadow-lg hover:shadow-xl transform active:scale-95 sm:hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:hover:shadow-lg transition-all duration-200 font-semibold text-sm sm:text-base lg:text-lg whitespace-nowrap touch-manipulation"
                   >
                     <Plus className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 mr-2 lg:mr-3" />
@@ -367,10 +439,7 @@ function App() {
                   <ListCard
                     key={list.id}
                     list={list}
-                    onOpen={(list) => {
-                      setSelectedList(list);
-                      setCurrentPage('list');
-                    }}
+                    onOpen={navigateToList}
                     onShare={handleShare}
                     onUserManagement={handleUserManagement}
                     onDelete={handleDeleteList}
@@ -567,10 +636,7 @@ function App() {
                           <div
                             key={list.id}
                             className="flex items-center space-x-2 md:space-x-3 p-2 md:p-3 rounded-lg md:rounded-xl bg-[rgb(var(--border-color))]/10 hover:bg-[rgb(var(--border-color))]/20 transition-colors cursor-pointer"
-                            onClick={() => {
-                            setSelectedList(list);
-                            setCurrentPage('list');
-                          }}
+                            onClick={() => navigateToList(list)}
                           >
                             <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0"></div>
                             <div className="flex-1 min-w-0">
