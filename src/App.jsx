@@ -738,7 +738,7 @@ function App() {
 
         <ToastContainer toasts={toasts} removeToast={removeToast} />
         <PWAUpdateNotification />
-        {/* <PerformanceDashboard /> */}
+        <PerformanceDashboard />
       </div>
     </ErrorBoundary>
   );

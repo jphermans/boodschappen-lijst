@@ -13,7 +13,7 @@ export default defineConfig({
       brotliSize: true
     })
   ],
-  // base: '/boodschappen-lijst/', // Temporarily commented for local testing
+  base: '/boodschappen-lijst/',
   server: {
     host: true,
     port: 5173
