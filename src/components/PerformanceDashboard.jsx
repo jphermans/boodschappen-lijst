@@ -17,8 +17,12 @@ const PerformanceDashboard = React.memo(() => {
   const [budgetStatus, setBudgetStatus] = useState(null);
   const [refreshInterval, setRefreshInterval] = useState(5000);
 
-  // Only show in development
-  if (process.env.NODE_ENV !== 'development') {
+  // Only show in development or when dev=true parameter is present
+  const isDevelopment = process.env.NODE_ENV === 'development';
+  const hasDevParam = typeof window !== 'undefined' &&
+    new URLSearchParams(window.location.search).get('dev') === 'true';
+  
+  if (!isDevelopment && !hasDevParam) {
     return null;
   }
 
