@@ -4,14 +4,21 @@ import { Plus, List, Wifi, Settings, BarChart3, Palette, Database, QrCode, Check
 import { useTheme } from './context/ThemeContext';
 import { useToast } from './context/ToastContext';
 import { isConnected } from './firebase';
-import SettingsPage from './pages/Settings';
-import AnalyticsPage from './pages/Analytics';
-import ThemePage from './pages/ThemePage';
-import PersistencePage from './pages/Persistence';
-import ShoppingListPage from './pages/ShoppingListPage';
-import QRShareModal from './components/QRShareModal';
-import QRScannerModal from './components/QRScannerModal';
-import UserManagementModal from './components/UserManagementModal';
+
+// Lazy-loaded page components for code splitting
+import {
+  SettingsPage,
+  AnalyticsPage,
+  ThemePage,
+  PersistencePage,
+  ShoppingListPage,
+  QRShareModal,
+  QRScannerModal,
+  UserManagementModal,
+  preloadCriticalComponents
+} from './components/LazyComponents';
+
+// Non-lazy components (critical for initial load)
 import UserNameModal from './components/UserNameModal';
 import ConfirmationDialog from './components/ConfirmationDialog';
 import ConnectionError from './components/ConnectionError';
@@ -40,6 +47,16 @@ function App() {
     return () => {
       // Cleanup if needed
     };
+  }, []);
+
+  // Preload critical components after initial render
+  useEffect(() => {
+    // Preload components that are likely to be used soon
+    const timer = setTimeout(() => {
+      preloadCriticalComponents();
+    }, 2000); // Preload after 2 seconds to not interfere with initial load
+
+    return () => clearTimeout(timer);
   }, []);
 
   // Enhanced state management with reducers
