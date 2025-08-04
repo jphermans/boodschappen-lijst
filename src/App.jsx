@@ -24,6 +24,7 @@ import ConfirmationDialog from './components/ConfirmationDialog';
 import ConnectionError from './components/ConnectionError';
 import ToastContainer from './components/Toast';
 import PWAUpdateNotification from './components/PWAUpdateNotification';
+import PerformanceDashboard from './components/PerformanceDashboard';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import { useUserState } from './hooks/usePersistentState';
 import { useUnifiedThemeContext } from './context/UnifiedThemeContext';
@@ -41,9 +42,10 @@ import ListCard from './components/ListCard/ListCard';
 import Navigation from './components/Navigation/Navigation';
 
 function App() {
-  // Initialize global error handlers
+  // Initialize global error handlers (errorHandler initializes itself)
   useEffect(() => {
-    errorHandler.initialize();
+    // errorHandler is already initialized when imported
+    console.log('ErrorHandler is ready:', !!errorHandler);
     return () => {
       // Cleanup if needed
     };
@@ -736,6 +738,7 @@ function App() {
 
         <ToastContainer toasts={toasts} removeToast={removeToast} />
         <PWAUpdateNotification />
+        <PerformanceDashboard />
       </div>
     </ErrorBoundary>
   );
