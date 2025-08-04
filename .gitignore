@@ -37,3 +37,6 @@ dist-ssr
 .firebase/
 firestore-debug.log
 ui-debug.log
+
+# Test coverage
+coverage/
