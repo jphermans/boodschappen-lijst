@@ -145,6 +145,11 @@ function App() {
     closeDeleteConfirmation
   } = useModals();
 
+  // Performance Dashboard state
+  const [showPerformanceDashboard, setShowPerformanceDashboard] = React.useState(false);
+  const openPerformanceDashboard = () => setShowPerformanceDashboard(true);
+  const closePerformanceDashboard = () => setShowPerformanceDashboard(false);
+
   // Initialize global error handlers (errorHandler initializes itself)
   useEffect(() => {
     // errorHandler is already initialized when imported
@@ -314,9 +319,36 @@ function App() {
       return (
         <ErrorBoundary message="Er ging iets mis met de boodschappenlijst applicatie. Probeer het opnieuw of herlaad de pagina.">
           <div className="min-h-screen-safe bg-[rgb(var(--bg-color))] transition-colors duration-300">
-            <ConnectionError error={firebaseError} onRetry={retryConnection} />
-            {/* Always render PerformanceDashboard even when there's a Firebase error */}
-            <PerformanceDashboard />
+            {/* Safe area background extension */}
+            <div className="fixed inset-x-0 top-0 h-[var(--safe-area-inset-top)] bg-[rgb(var(--card-bg))] z-50"></div>
+            
+            {/* Navigation Component - Available even during Firebase errors */}
+            <div className="fixed inset-x-0 top-0 z-50 bg-[rgb(var(--card-bg))] border-b border-[rgb(var(--border-color))]/20 px-4 py-3">
+              <div className="flex items-center justify-between max-w-7xl mx-auto">
+                <div className="flex items-center space-x-4">
+                  <h1 className="text-lg font-bold text-[rgb(var(--card-text))]">Boodschappenlijst</h1>
+                </div>
+                <Navigation
+                  currentPage={currentPage}
+                  onNavigate={setCurrentPage}
+                  onToggleTheme={toggleTheme}
+                  onOpenScanner={openScannerModal}
+                  onOpenPerformanceDashboard={openPerformanceDashboard}
+                  theme={theme || 'light'}
+                  listsCount={lists.length}
+                />
+              </div>
+            </div>
+            
+            {/* Main Content Area with Connection Error */}
+            <main className="w-full max-w-[1920px] mx-auto px-3 sm:px-4 lg:px-8 xl:px-12 py-4 sm:py-6 lg:py-8 xl:py-12 safe-area-x content-safe-area overflow-x-hidden" style={{ paddingTop: 'calc(var(--header-height) + 1rem)' }}>
+              <ConnectionError error={firebaseError} onRetry={retryConnection} />
+            </main>
+            
+            {/* Performance Dashboard - Controlled by state even during Firebase errors */}
+            {showPerformanceDashboard && (
+              <PerformanceDashboard onClose={closePerformanceDashboard} />
+            )}
           </div>
         </ErrorBoundary>
       );
@@ -367,13 +399,12 @@ function App() {
       {/* Navigation Component */}
       <Navigation
         currentPage={currentPage}
-        selectedList={selectedList}
-        lists={lists}
+        onNavigate={setCurrentPage}
+        onToggleTheme={toggleTheme}
+        onOpenScanner={openScannerModal}
+        onOpenPerformanceDashboard={openPerformanceDashboard}
         theme={theme}
-        onPageChange={setCurrentPage}
-        onOverviewClick={navigateToOverview}
-        onThemeToggle={toggleTheme}
-        onScannerOpen={openScannerModal}
+        listsCount={lists.length}
       />
 
       {/* Main Content Area - Mobile Optimized */}
@@ -748,7 +779,11 @@ function App() {
 
         <ToastContainer toasts={toasts} removeToast={removeToast} />
         <PWAUpdateNotification />
-        <PerformanceDashboard />
+        
+        {/* Performance Dashboard - Controlled by state */}
+        {showPerformanceDashboard && (
+          <PerformanceDashboard onClose={closePerformanceDashboard} />
+        )}
       </div>
     </ErrorBoundary>
   );

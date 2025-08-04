@@ -1,20 +1,24 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Settings, List, QrCode, BarChart3, Palette, Database } from 'lucide-react';
+import { Settings, List, QrCode, BarChart3, Palette, Database, Activity } from 'lucide-react';
 import { EventHandlerType, createEnumValidator } from '../../types';
 
 /**
  * Navigation component - Extracted from App.jsx
  * Handles both desktop and mobile navigation
  */
-const Navigation = ({ 
-  currentPage, 
-  onNavigate, 
-  onToggleTheme, 
-  onOpenScanner, 
-  theme, 
-  listsCount 
+const Navigation = ({
+  currentPage,
+  onNavigate,
+  onToggleTheme,
+  onOpenScanner,
+  onOpenPerformanceDashboard,
+  theme,
+  listsCount
 }) => {
+  // Check if dev mode is enabled
+  const isDevMode = typeof window !== 'undefined' &&
+    new URLSearchParams(window.location.search).get('dev') === 'true';
   const navigationItems = [
     {
       id: 'overview',
@@ -80,6 +84,18 @@ const Navigation = ({
           QR Scanner
         </button>
         
+        {/* Performance Dashboard Button - Only visible in dev mode */}
+        {isDevMode && onOpenPerformanceDashboard && (
+          <button
+            onClick={onOpenPerformanceDashboard}
+            className="px-4 xl:px-6 py-2.5 rounded-xl font-medium text-blue-400 hover:bg-blue-500/20 hover:text-blue-300 transition-all duration-200 border border-blue-500/30"
+            title="Open Performance Dashboard (Dev Mode)"
+          >
+            <Activity className="w-4 h-4 inline mr-2" />
+            Performance
+          </button>
+        )}
+        
         <div className="w-px h-8 bg-[rgb(var(--border-color))]/30"></div>
         
         <div className="flex items-center space-x-1 xl:space-x-2">
@@ -92,6 +108,18 @@ const Navigation = ({
 
       {/* Mobile Action Buttons */}
       <div className="flex items-center space-x-2 sm:space-x-2 lg:space-x-3 flex-shrink-0 pr-2 sm:pr-0 lg:hidden">
+        {/* Mobile Performance Dashboard - Only visible in dev mode */}
+        {isDevMode && onOpenPerformanceDashboard && (
+          <button
+            onClick={onOpenPerformanceDashboard}
+            className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg transform active:scale-95 transition-all duration-200"
+            aria-label="Performance Dashboard"
+            title="Performance Dashboard (Dev Mode)"
+          >
+            <Activity className="w-4 h-4 sm:w-5 sm:h-5" />
+          </button>
+        )}
+        
         {/* Mobile QR Scanner */}
         <button
           onClick={onOpenScanner}
@@ -124,6 +152,18 @@ const Navigation = ({
 
       {/* Desktop Action Buttons */}
       <div className="hidden lg:flex items-center space-x-3 flex-shrink-0">
+        {/* Performance Dashboard - Only visible in dev mode */}
+        {isDevMode && onOpenPerformanceDashboard && (
+          <button
+            onClick={onOpenPerformanceDashboard}
+            className="flex items-center justify-center w-12 h-12 rounded-lg bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 group"
+            aria-label="Performance Dashboard"
+            title="Performance Dashboard (Dev Mode)"
+          >
+            <Activity className="w-6 h-6 group-hover:scale-110 transition-transform duration-200" />
+          </button>
+        )}
+        
         {/* Theme Toggle */}
         <button
           onClick={onToggleTheme}
@@ -154,6 +194,7 @@ Navigation.propTypes = {
   onNavigate: EventHandlerType.isRequired,
   onToggleTheme: EventHandlerType.isRequired,
   onOpenScanner: EventHandlerType.isRequired,
+  onOpenPerformanceDashboard: PropTypes.func,
   theme: createEnumValidator(['light', 'dark']).isRequired,
   listsCount: PropTypes.number.isRequired
 };

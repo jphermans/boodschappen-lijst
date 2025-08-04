@@ -1,17 +1,17 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Activity, Clock, Zap, AlertTriangle, CheckCircle, X } from 'lucide-react';
-import performanceMonitor, { 
-  logPerformanceDashboard, 
-  checkPerformanceBudget 
+import performanceMonitor, {
+  logPerformanceDashboard,
+  checkPerformanceBudget
 } from '../utils/performanceMonitor';
 
 /**
  * Performance Dashboard - Development tool for monitoring app performance
  * Only renders in development mode
  */
-const PerformanceDashboard = React.memo(() => {
-  const [isVisible, setIsVisible] = useState(false);
+const PerformanceDashboard = React.memo(({ onClose }) => {
   const [metrics, setMetrics] = useState(null);
   const [coreWebVitals, setCoreWebVitals] = useState(null);
   const [budgetStatus, setBudgetStatus] = useState(null);
@@ -239,7 +239,7 @@ const PerformanceDashboard = React.memo(() => {
         </button>
       </div>
       <button
-        onClick={() => setIsVisible(false)}
+        onClick={onClose}
         className="text-gray-400 hover:text-white"
       >
         <X className="w-5 h-5" />
@@ -248,78 +248,62 @@ const PerformanceDashboard = React.memo(() => {
   );
 
   return (
-    <>
-      {/* Toggle Button */}
-      {!isVisible && (
-        <motion.button
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          onClick={() => setIsVisible(true)}
-          className="fixed bottom-4 right-4 bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full shadow-lg z-50 border-2 border-blue-500"
-          title="Open Performance Dashboard"
-        >
-          <Activity className="w-6 h-6" />
-        </motion.button>
-      )}
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+    >
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.9, y: 20 }}
+        className="bg-gray-900 rounded-xl shadow-2xl border border-gray-700 w-full max-w-6xl max-h-[90vh] overflow-hidden"
+      >
+        <div className="p-6 border-b border-gray-700">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-bold text-white flex items-center">
+              <Activity className="w-7 h-7 mr-3 text-blue-500" />
+              Performance Dashboard
+            </h2>
+            <div className="text-sm text-gray-400">
+              Development Mode Only
+            </div>
+          </div>
+        </div>
 
-      {/* Dashboard Modal */}
-      <AnimatePresence>
-        {isVisible && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-          >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="bg-gray-900 rounded-xl shadow-2xl border border-gray-700 w-full max-w-6xl max-h-[90vh] overflow-hidden"
-            >
-              <div className="p-6 border-b border-gray-700">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-2xl font-bold text-white flex items-center">
-                    <Activity className="w-7 h-7 mr-3 text-blue-500" />
-                    Performance Dashboard
-                  </h2>
-                  <div className="text-sm text-gray-400">
-                    Development Mode Only
-                  </div>
-                </div>
+        <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)] space-y-8">
+          <ControlsSection />
+          
+          {coreWebVitals && <CoreWebVitalsSection />}
+          
+          {metrics && <PerformanceMetricsSection />}
+          
+          {budgetStatus && <BudgetViolationsSection />}
+
+          {/* Raw Data Section */}
+          {metrics && (
+            <details className="bg-gray-800 rounded-lg border border-gray-700">
+              <summary className="p-4 cursor-pointer text-white font-medium hover:bg-gray-750">
+                Raw Performance Data
+              </summary>
+              <div className="p-4 border-t border-gray-700">
+                <pre className="text-xs text-gray-300 overflow-auto max-h-64 bg-gray-900 p-3 rounded">
+                  {JSON.stringify({ metrics, coreWebVitals, budgetStatus }, null, 2)}
+                </pre>
               </div>
-
-              <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)] space-y-8">
-                <ControlsSection />
-                
-                {coreWebVitals && <CoreWebVitalsSection />}
-                
-                {metrics && <PerformanceMetricsSection />}
-                
-                {budgetStatus && <BudgetViolationsSection />}
-
-                {/* Raw Data Section */}
-                {metrics && (
-                  <details className="bg-gray-800 rounded-lg border border-gray-700">
-                    <summary className="p-4 cursor-pointer text-white font-medium hover:bg-gray-750">
-                      Raw Performance Data
-                    </summary>
-                    <div className="p-4 border-t border-gray-700">
-                      <pre className="text-xs text-gray-300 overflow-auto max-h-64 bg-gray-900 p-3 rounded">
-                        {JSON.stringify({ metrics, coreWebVitals, budgetStatus }, null, 2)}
-                      </pre>
-                    </div>
-                  </details>
-                )}
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
+            </details>
+          )}
+        </div>
+      </motion.div>
+    </motion.div>
   );
 });
 
 PerformanceDashboard.displayName = 'PerformanceDashboard';
+
+PerformanceDashboard.propTypes = {
+  onClose: PropTypes.func.isRequired
+};
 
 export default PerformanceDashboard;
