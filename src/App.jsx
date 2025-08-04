@@ -311,7 +311,15 @@ function App() {
     // For testing purposes, allow bypassing Firebase error to test themes
     const isTestMode = window.location.search.includes('test=true');
     if (!isTestMode) {
-      return <ConnectionError error={firebaseError} onRetry={retryConnection} />;
+      return (
+        <ErrorBoundary message="Er ging iets mis met de boodschappenlijst applicatie. Probeer het opnieuw of herlaad de pagina.">
+          <div className="min-h-screen-safe bg-[rgb(var(--bg-color))] transition-colors duration-300">
+            <ConnectionError error={firebaseError} onRetry={retryConnection} />
+            {/* Always render PerformanceDashboard even when there's a Firebase error */}
+            <PerformanceDashboard />
+          </div>
+        </ErrorBoundary>
+      );
     }
     // In test mode, continue with mock lists for testing
     if (isTestMode && lists.length === 0) {
