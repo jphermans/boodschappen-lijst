@@ -1,6 +1,6 @@
 // React hook for persistent state management with iOS Safari compatibility
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { stateManager, useAppState } from '../utils/stateManager';
+import { stateManager } from '../utils/stateManager';
 import { enhancedUserManager } from '../utils/enhancedUserManager';
 
 // Custom hook for persistent state management

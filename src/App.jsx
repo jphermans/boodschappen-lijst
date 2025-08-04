@@ -42,25 +42,11 @@ import ListCard from './components/ListCard/ListCard';
 import Navigation from './components/Navigation/Navigation';
 
 function App() {
-  // Initialize global error handlers (errorHandler initializes itself)
-  useEffect(() => {
-    // errorHandler is already initialized when imported
-    console.log('ErrorHandler is ready:', !!errorHandler);
-    return () => {
-      // Cleanup if needed
-    };
-  }, []);
-
-  // Preload critical components after initial render
-  useEffect(() => {
-    // Preload components that are likely to be used soon
-    const timer = setTimeout(() => {
-      preloadCriticalComponents();
-    }, 2000); // Preload after 2 seconds to not interfere with initial load
-
-    return () => clearTimeout(timer);
-  }, []);
-
+  // ALL HOOKS MUST BE CALLED AT THE TOP LEVEL IN THE SAME ORDER EVERY TIME
+  
+  // Enhanced state management hooks - MOVED TO TOP
+  const { userInfo, setUserName, isLoading: userLoading, error: userError } = useUserState();
+  
   // Enhanced state management with reducers
   const {
     // App state
@@ -109,9 +95,6 @@ function App() {
     // Utilities
     getDebugInfo
   } = useAppState();
-
-  // Enhanced state management hooks
-  const { userInfo, setUserName, isLoading: userLoading, error: userError } = useUserState();
   
   // Unified theme context
   const { mode: theme, toggleMode: toggleTheme, isLoading: themeLoading } = useUnifiedThemeContext();
@@ -161,6 +144,25 @@ function App() {
     openDeleteConfirmation,
     closeDeleteConfirmation
   } = useModals();
+
+  // Initialize global error handlers (errorHandler initializes itself)
+  useEffect(() => {
+    // errorHandler is already initialized when imported
+    console.log('ErrorHandler is ready:', !!errorHandler);
+    return () => {
+      // Cleanup if needed
+    };
+  }, []);
+
+  // Preload critical components after initial render
+  useEffect(() => {
+    // Preload components that are likely to be used soon
+    const timer = setTimeout(() => {
+      preloadCriticalComponents();
+    }, 2000); // Preload after 2 seconds to not interfere with initial load
+
+    return () => clearTimeout(timer);
+  }, []);
 
   // Get state values from reducers
   const currentPage = getCurrentPage;
