@@ -1,55 +1,67 @@
-import React from 'react';
+import React, { useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
 import { Check, Share2, Users, Trash2 } from 'lucide-react';
 import { canDeleteList } from '../../firebase';
 import { ShoppingListType, EventHandlerType } from '../../types';
+import { usePerformanceMonitoring } from '../../utils/performanceMonitor';
 
 /**
  * ListCard component - Extracted from App.jsx
  * Renders a single shopping list card with all its actions and information
  */
-const ListCard = ({ 
-  list, 
-  onOpenList, 
-  onShare, 
-  onUserManagement, 
-  onDelete 
+const ListCard = React.memo(({
+  list,
+  onOpenList,
+  onShare,
+  onUserManagement,
+  onDelete
 }) => {
-  const handleCardClick = () => {
-    onOpenList(list);
-  };
+  const { measureRender } = usePerformanceMonitoring('ListCard');
 
-  const handleShare = (e) => {
+  // Memoized event handlers to prevent unnecessary re-renders
+  const handleCardClick = useCallback(() => {
+    onOpenList(list);
+  }, [onOpenList, list]);
+
+  const handleShare = useCallback((e) => {
     e.stopPropagation();
     onShare(list.id);
-  };
+  }, [onShare, list.id]);
 
-  const handleUserManagement = (e) => {
+  const handleUserManagement = useCallback((e) => {
     e.stopPropagation();
     onUserManagement(list.id);
-  };
+  }, [onUserManagement, list.id]);
 
-  const handleDelete = (e) => {
+  const handleDelete = useCallback((e) => {
     e.stopPropagation();
     onDelete(list.id);
-  };
+  }, [onDelete, list.id]);
 
-  const handleOpenList = (e) => {
+  const handleOpenList = useCallback((e) => {
     e.stopPropagation();
     onOpenList(list);
-  };
+  }, [onOpenList, list]);
 
-  // Calculate progress percentage
-  const completedItems = list.items?.filter(item => item.completed).length || 0;
-  const totalItems = list.items?.length || 0;
-  const progressPercentage = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
-
-  // Format timestamp
-  const formatTimestamp = (timestamp) => {
-    if (!timestamp) return '';
+  // Memoized calculations to avoid recalculating on every render
+  const { completedItems, totalItems, progressPercentage } = useMemo(() => {
+    const completed = list.items?.filter(item => item.completed).length || 0;
+    const total = list.items?.length || 0;
+    const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
     
-    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+    return {
+      completedItems: completed,
+      totalItems: total,
+      progressPercentage: percentage
+    };
+  }, [list.items]);
+
+  // Memoized timestamp formatting
+  const formattedTimestamp = useMemo(() => {
+    if (!list.updatedAt) return '';
+    
+    const date = list.updatedAt.toDate ? list.updatedAt.toDate() : new Date(list.updatedAt);
     const now = new Date();
     const diffMs = now - date;
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
@@ -60,9 +72,21 @@ const ListCard = ({
     if (diffDays === 1) return 'Gisteren';
     if (diffDays < 7) return `${diffDays} dagen geleden`;
     return date.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' });
-  };
+  }, [list.updatedAt]);
 
-  return (
+  // Memoized status badge classes
+  const statusBadgeClasses = useMemo(() => {
+    return `px-3 py-1.5 text-xs font-semibold rounded-full inline-block ${
+      list.isCreator
+        ? 'bg-[rgb(var(--primary-color))]/20 text-[rgb(var(--primary-color))] border border-[rgb(var(--primary-color))]/20'
+        : 'bg-[rgb(var(--secondary-color))]/20 text-[rgb(var(--secondary-color))] border border-[rgb(var(--secondary-color))]/20'
+    }`;
+  }, [list.isCreator]);
+
+  // Memoized permission checks
+  const canDelete = useMemo(() => canDeleteList(list), [list]);
+
+  return measureRender(() => (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
@@ -103,16 +127,12 @@ const ListCard = ({
           
           {/* Status and timestamp - full width row */}
           <div className="flex items-center justify-between gap-2 md:gap-3 mb-2">
-            <span className={`px-3 py-1.5 text-xs font-semibold rounded-full inline-block ${
-              list.isCreator
-                ? 'bg-[rgb(var(--primary-color))]/20 text-[rgb(var(--primary-color))] border border-[rgb(var(--primary-color))]/20'
-                : 'bg-[rgb(var(--secondary-color))]/20 text-[rgb(var(--secondary-color))] border border-[rgb(var(--secondary-color))]/20'
-            }`}>
+            <span className={statusBadgeClasses}>
               {list.isCreator ? 'Eigenaar' : 'Gedeeld'}
             </span>
             {list.updatedAt && (
               <span className="text-xs text-[rgb(var(--text-color))]/40 whitespace-nowrap">
-                {formatTimestamp(list.updatedAt)}
+                {formattedTimestamp}
               </span>
             )}
           </div>
@@ -160,7 +180,7 @@ const ListCard = ({
           </button>
           
           {/* Other Actions */}
-          {(list.isCreator || canDeleteList(list)) && (
+          {(list.isCreator || canDelete) && (
             <div className="flex flex-col md:flex-row gap-2 md:gap-3">
               {list.isCreator && (
                 <button
@@ -173,7 +193,7 @@ const ListCard = ({
                 </button>
               )}
               
-              {canDeleteList(list) && (
+              {canDelete && (
                 <button
                   onClick={handleDelete}
                   className="flex-1 flex items-center justify-center px-3 md:px-4 py-2 md:py-2.5 lg:py-3 bg-[rgb(var(--color-error-button))] hover:opacity-90 text-white rounded-lg lg:rounded-xl shadow-md hover:shadow-lg transform active:scale-95 sm:hover:scale-105 transition-all duration-200 font-medium text-xs md:text-sm lg:text-base touch-manipulation"
@@ -188,8 +208,11 @@ const ListCard = ({
         </div>
       </div>
     </motion.div>
-  );
-};
+  ));
+});
+
+// Display name for debugging
+ListCard.displayName = 'ListCard';
 
 // PropTypes for ListCard component
 ListCard.propTypes = {
