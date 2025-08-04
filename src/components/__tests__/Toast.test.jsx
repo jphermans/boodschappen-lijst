@@ -9,6 +9,7 @@ describe('Toast Component', () => {
     message: 'Test message',
     type: 'success',
     duration: 2500,
+    timestamp: Date.now()
   };
 
   beforeEach(() => {

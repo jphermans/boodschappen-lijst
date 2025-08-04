@@ -1,5 +1,7 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import errorHandler from '../../utils/errorHandler';
+import { ChildrenType } from '../../types';
 
 /**
  * React Error Boundary component for catching JavaScript errors anywhere in the component tree
@@ -165,5 +167,13 @@ class ErrorBoundary extends React.Component {
     return this.props.children;
   }
 }
+
+// PropTypes for ErrorBoundary component
+ErrorBoundary.propTypes = {
+  children: ChildrenType.isRequired,
+  fallback: PropTypes.func,
+  fallbackComponent: PropTypes.string,
+  message: PropTypes.string
+};
 
 export default ErrorBoundary;

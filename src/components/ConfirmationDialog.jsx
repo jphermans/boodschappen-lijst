@@ -1,6 +1,8 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertTriangle, X, Check } from 'lucide-react';
+import { EventHandlerType, createEnumValidator } from '../types';
 
 const ConfirmationDialog = ({ 
   isOpen, 
@@ -115,6 +117,24 @@ const ConfirmationDialog = ({
       </div>
     </AnimatePresence>
   );
+};
+
+// PropTypes for ConfirmationDialog component
+ConfirmationDialog.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: EventHandlerType.isRequired,
+  onConfirm: EventHandlerType.isRequired,
+  title: PropTypes.string.isRequired,
+  message: PropTypes.string.isRequired,
+  confirmText: PropTypes.string,
+  cancelText: PropTypes.string,
+  type: createEnumValidator(['danger', 'warning', 'info'])
+};
+
+ConfirmationDialog.defaultProps = {
+  confirmText: "Bevestigen",
+  cancelText: "Annuleren",
+  type: "danger"
 };
 
 export default ConfirmationDialog;

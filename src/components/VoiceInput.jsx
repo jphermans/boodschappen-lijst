@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mic, MicOff, AlertCircle } from 'lucide-react';
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
 import { useToast } from '../context/ToastContext';
+import { EventHandlerType, ClassNameType } from '../types';
 
 const VoiceInput = ({ 
   onTranscript, 
@@ -280,4 +282,20 @@ const VoiceInput = ({
   );
 };
 
-export default VoiceInput; 
+// PropTypes for VoiceInput component
+VoiceInput.propTypes = {
+  onTranscript: EventHandlerType.isRequired,
+  placeholder: PropTypes.string,
+  language: PropTypes.string,
+  className: ClassNameType,
+  autoSubmit: PropTypes.bool
+};
+
+VoiceInput.defaultProps = {
+  placeholder: "Spreek uit...",
+  language: 'nl-NL',
+  className: "",
+  autoSubmit: false
+};
+
+export default VoiceInput;

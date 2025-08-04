@@ -1,5 +1,7 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Settings, List, QrCode, BarChart3, Palette, Database } from 'lucide-react';
+import { EventHandlerType, createEnumValidator } from '../../types';
 
 /**
  * Navigation component - Extracted from App.jsx
@@ -144,6 +146,16 @@ const Navigation = ({
       </div>
     </>
   );
+};
+
+// PropTypes for Navigation component
+Navigation.propTypes = {
+  currentPage: PropTypes.string,
+  onNavigate: EventHandlerType.isRequired,
+  onToggleTheme: EventHandlerType.isRequired,
+  onOpenScanner: EventHandlerType.isRequired,
+  theme: createEnumValidator(['light', 'dark']).isRequired,
+  listsCount: PropTypes.number.isRequired
 };
 
 export default Navigation;

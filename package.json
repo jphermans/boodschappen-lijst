@@ -22,6 +22,7 @@
     "framer-motion": "^10.16.16",
     "lucide-react": "^0.303.0",
     "playwright": "^1.54.1",
+    "prop-types": "^15.8.1",
     "qr-scanner": "^1.4.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

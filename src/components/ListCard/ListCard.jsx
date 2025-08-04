@@ -1,7 +1,9 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
 import { Check, Share2, Users, Trash2 } from 'lucide-react';
 import { canDeleteList } from '../../firebase';
+import { ShoppingListType, EventHandlerType } from '../../types';
 
 /**
  * ListCard component - Extracted from App.jsx
@@ -187,6 +189,15 @@ const ListCard = ({
       </div>
     </motion.div>
   );
+};
+
+// PropTypes for ListCard component
+ListCard.propTypes = {
+  list: ShoppingListType.isRequired,
+  onOpenList: EventHandlerType.isRequired,
+  onShare: EventHandlerType.isRequired,
+  onUserManagement: EventHandlerType.isRequired,
+  onDelete: EventHandlerType.isRequired
 };
 
 export default ListCard;

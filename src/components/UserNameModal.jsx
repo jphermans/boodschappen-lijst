@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
 import { User, Check } from 'lucide-react';
 import { userManager } from '../utils/userManager';
 import { useToast } from '../context/ToastContext';
+import { EventHandlerType } from '../types';
 
 const UserNameModal = ({ onNameSet }) => {
   const [name, setName] = useState('');
@@ -107,6 +109,11 @@ const UserNameModal = ({ onNameSet }) => {
       </motion.div>
     </motion.div>
   );
+};
+
+// PropTypes for UserNameModal component
+UserNameModal.propTypes = {
+  onNameSet: EventHandlerType.isRequired
 };
 
 export default UserNameModal;

@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, X, AlertCircle, Info, Trash2 } from 'lucide-react';
+import { ToastType, EventHandlerType } from '../types';
 
 const Toast = ({ toast, onRemove }) => {
   const { id, type, message, duration = 2500 } = toast;
@@ -95,6 +97,12 @@ const Toast = ({ toast, onRemove }) => {
   );
 };
 
+// PropTypes for Toast component
+Toast.propTypes = {
+  toast: ToastType.isRequired,
+  onRemove: EventHandlerType.isRequired
+};
+
 const ToastContainer = ({ toasts, removeToast }) => {
   return (
     <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[100] pointer-events-none">
@@ -107,6 +115,12 @@ const ToastContainer = ({ toasts, removeToast }) => {
       </div>
     </div>
   );
+};
+
+// PropTypes for ToastContainer component
+ToastContainer.propTypes = {
+  toasts: PropTypes.arrayOf(ToastType).isRequired,
+  removeToast: EventHandlerType.isRequired
 };
 
 export { Toast };
