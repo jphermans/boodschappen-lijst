@@ -322,12 +322,17 @@ function App() {
             {/* Safe area background extension */}
             <div className="fixed inset-x-0 top-0 h-[var(--safe-area-inset-top)] bg-[rgb(var(--card-bg))] z-50"></div>
             
-            {/* Navigation Component - Available even during Firebase errors */}
-            <div className="fixed inset-x-0 top-0 z-50 bg-[rgb(var(--card-bg))] border-b border-[rgb(var(--border-color))]/20 px-4 py-3">
+            {/* Unified Navigation Header - Available even during Firebase errors */}
+            <div className="fixed inset-x-0 top-0 z-50 bg-[rgb(var(--card-bg))] border-b border-[rgb(var(--border-color))]/20 px-3 sm:px-4 lg:px-6 py-3">
               <div className="flex items-center justify-between max-w-7xl mx-auto">
-                <div className="flex items-center space-x-4">
-                  <h1 className="text-lg font-bold text-[rgb(var(--card-text))]">Boodschappenlijst</h1>
+                {/* Left side - Title */}
+                <div className="flex items-center space-x-4 min-w-0 flex-shrink-0">
+                  <h1 className="text-lg sm:text-xl font-bold text-[rgb(var(--card-text))] truncate">
+                    Boodschappenlijst
+                  </h1>
                 </div>
+                
+                {/* Right side - Navigation buttons */}
                 <Navigation
                   currentPage={currentPage}
                   onNavigate={setCurrentPage}
@@ -396,16 +401,28 @@ function App() {
       {/* Safe area background extension */}
       <div className="fixed inset-x-0 top-0 h-[var(--safe-area-inset-top)] bg-[rgb(var(--card-bg))] z-50"></div>
       
-      {/* Navigation Component */}
-      <Navigation
-        currentPage={currentPage}
-        onNavigate={setCurrentPage}
-        onToggleTheme={toggleTheme}
-        onOpenScanner={openScannerModal}
-        onOpenPerformanceDashboard={openPerformanceDashboard}
-        theme={theme}
-        listsCount={lists.length}
-      />
+      {/* Unified Navigation Header */}
+      <div className="fixed inset-x-0 top-0 z-50 bg-[rgb(var(--card-bg))] border-b border-[rgb(var(--border-color))]/20 px-3 sm:px-4 lg:px-6 py-3">
+        <div className="flex items-center justify-between max-w-7xl mx-auto">
+          {/* Left side - Title */}
+          <div className="flex items-center space-x-4 min-w-0 flex-shrink-0">
+            <h1 className="text-lg sm:text-xl font-bold text-[rgb(var(--card-text))] truncate">
+              Boodschappenlijst
+            </h1>
+          </div>
+          
+          {/* Right side - Navigation buttons */}
+          <Navigation
+            currentPage={currentPage}
+            onNavigate={setCurrentPage}
+            onToggleTheme={toggleTheme}
+            onOpenScanner={openScannerModal}
+            onOpenPerformanceDashboard={openPerformanceDashboard}
+            theme={theme}
+            listsCount={lists.length}
+          />
+        </div>
+      </div>
 
       {/* Main Content Area - Mobile Optimized */}
       <main className="w-full max-w-[1920px] mx-auto px-3 sm:px-4 lg:px-8 xl:px-12 py-4 sm:py-6 lg:py-8 xl:py-12 safe-area-x content-safe-area overflow-x-hidden" style={{ paddingTop: 'calc(var(--header-height) + 1rem)' }}>
