@@ -323,7 +323,20 @@ export function useAppState() {
     }, [])
   }), []);
   
-  // Combined selectors
+  // Combined selectors - moved useMemo hooks outside to avoid nesting
+  const getSelectedListData = useMemo(() => {
+    const selectedList = appSelectors.getSelectedList(appState);
+    if (!selectedList) return null;
+    return listSelectors.getListById(selectedList.id)(listState);
+  }, [appState.selectedList, listState.lists]);
+  
+  const getNavigationContext = useMemo(() => ({
+    currentPage: appSelectors.getCurrentPage(appState),
+    selectedList: appSelectors.getSelectedList(appState),
+    canGoBack: appSelectors.canGoBack(appState),
+    previousPage: appSelectors.getPreviousPage(appState)
+  }), [appState.currentPage, appState.selectedList, appState.navigationHistory]);
+  
   const selectors = useMemo(() => ({
     // App selectors
     ...Object.keys(appSelectors).reduce((acc, key) => {
@@ -344,19 +357,9 @@ export function useAppState() {
     }, {}),
     
     // Combined selectors
-    getSelectedListData: useMemo(() => {
-      const selectedList = appSelectors.getSelectedList(appState);
-      if (!selectedList) return null;
-      return listSelectors.getListById(selectedList.id)(listState);
-    }, [appState.selectedList, listState.lists]),
-    
-    getNavigationContext: useMemo(() => ({
-      currentPage: appSelectors.getCurrentPage(appState),
-      selectedList: appSelectors.getSelectedList(appState),
-      canGoBack: appSelectors.canGoBack(appState),
-      previousPage: appSelectors.getPreviousPage(appState)
-    }), [appState.currentPage, appState.selectedList, appState.navigationHistory])
-  }), [appState, listState]);
+    getSelectedListData,
+    getNavigationContext
+  }), [appState, listState, getSelectedListData, getNavigationContext]);
   
   // Utility functions
   const utilities = useMemo(() => ({
