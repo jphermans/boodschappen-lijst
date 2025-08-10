@@ -8,7 +8,8 @@ import {
   shareListWithUser,
   removeUserFromList,
   canDeleteList,
-  canEditList
+  canEditList,
+  subscribeToList
 } from '../firebase';
 import { getCurrentUserID } from '../firebase';
 import { getPopularItems } from '../utils/groceryItems';
@@ -37,32 +38,25 @@ const ShoppingListPage = ({ list, onBack, onListUpdate }) => {
   useEffect(() => {
     if (!list?.id) return;
 
-    const loadListData = async () => {
-      try {
-        console.log('Loading list data from Firebase for list:', list.id);
-        const updatedList = await getListById(list.id);
-        if (updatedList) {
-          console.log('Received updated list from Firebase:', updatedList.name, 'with', updatedList.items?.length || 0, 'items');
-          // Always use Firebase data directly - no local caching
-          setItems(updatedList.items || []);
-          setListName(updatedList.name);
-          setTempListName(updatedList.name);
-          if (onListUpdate) {
-            onListUpdate(updatedList);
-          }
+    // Use real-time listener instead of polling
+    const unsubscribe = subscribeToList(list.id, (updatedList) => {
+      if (updatedList) {
+        console.log('Received real-time update for list:', updatedList.name, 'with', updatedList.items?.length || 0, 'items');
+        // Always use Firebase data directly - no local caching
+        setItems(updatedList.items || []);
+        setListName(updatedList.name);
+        setTempListName(updatedList.name);
+        if (onListUpdate) {
+          onListUpdate(updatedList);
         }
-      } catch (err) {
-        console.error('Error loading list from Firebase:', err);
+      }
+    });
+
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
       }
     };
-
-    // Load data on mount and when list changes - always from Firebase
-    loadListData();
-    
-    // Set up periodic refresh to ensure we have the latest data
-    const refreshInterval = setInterval(loadListData, 5000); // Refresh every 5 seconds
-    
-    return () => clearInterval(refreshInterval);
   }, [list?.id, onListUpdate]);
 
   const addItem = async () => {
@@ -89,12 +83,6 @@ const ShoppingListPage = ({ list, onBack, onListUpdate }) => {
       const updatedItems = [...items, newItem];
       // Update Firebase directly - real-time sync will update UI
       await updateShoppingList(list.id, { items: updatedItems });
-      
-      // Immediately refresh from Firebase to ensure consistency
-      const refreshedList = await getListById(list.id);
-      if (refreshedList) {
-        setItems(refreshedList.items || []);
-      }
       setNewItemName('');
       success(`"${newItem.name}" toegevoegd!`, 2000);
     } catch (err) {
@@ -119,12 +107,6 @@ const ShoppingListPage = ({ list, onBack, onListUpdate }) => {
       // Update Firebase directly - real-time sync will update UI
       await updateShoppingList(list.id, { items: updatedItems });
       
-      // Immediately refresh from Firebase to ensure consistency
-      const refreshedList = await getListById(list.id);
-      if (refreshedList) {
-        setItems(refreshedList.items || []);
-      }
-      
       const updatedItem = updatedItems.find(i => i.id === itemId);
       success(updatedItem.completed ? `✅ "${updatedItem.name}" voltooid` : `⏪ "${updatedItem.name}" ongedaan gemaakt`);
     } catch (err) {
@@ -145,12 +127,6 @@ const ShoppingListPage = ({ list, onBack, onListUpdate }) => {
       const updatedItems = items.filter(item => item.id !== itemId);
       // Update Firebase directly - real-time sync will update UI
       await updateShoppingList(list.id, { items: updatedItems });
-      
-      // Immediately refresh from Firebase to ensure consistency
-      const refreshedList = await getListById(list.id);
-      if (refreshedList) {
-        setItems(refreshedList.items || []);
-      }
       success(`"${itemToDelete.name}" verwijderd`, 2000);
     } catch (err) {
       error('Kon item niet verwijderen');
@@ -170,12 +146,6 @@ const ShoppingListPage = ({ list, onBack, onListUpdate }) => {
       
       // Update Firebase directly - real-time sync will update UI
       await updateShoppingList(list.id, { items: updatedItems });
-      
-      // Immediately refresh from Firebase to ensure consistency
-      const refreshedList = await getListById(list.id);
-      if (refreshedList) {
-        setItems(refreshedList.items || []);
-      }
       setEditingItemId(null);
       setEditingItemName('');
       success('Item bijgewerkt');
@@ -193,13 +163,6 @@ const ShoppingListPage = ({ list, onBack, onListUpdate }) => {
     try {
       // Update Firebase directly - real-time sync will update UI
       await updateShoppingList(list.id, { name: tempListName.trim() });
-      
-      // Immediately refresh from Firebase to ensure consistency
-      const refreshedList = await getListById(list.id);
-      if (refreshedList) {
-        setListName(refreshedList.name);
-        setTempListName(refreshedList.name);
-      }
       setIsEditingName(false);
       success('Lijstnaam bijgewerkt');
     } catch (err) {
@@ -235,6 +198,30 @@ const ShoppingListPage = ({ list, onBack, onListUpdate }) => {
       <div className="min-h-screen-safe flex items-center justify-center bg-[rgb(var(--bg-color))]">
         <div className="text-center">
           <h2 className="text-xl font-bold text-[rgb(var(--card-text))] mb-2">Lijst niet gevonden</h2>
+          <button
+            onClick={onBack}
+            className="px-4 py-2 bg-[rgb(var(--color-primary-button))] text-white rounded-lg hover:opacity-90"
+          >
+            Terug naar overzicht
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!canEdit && items.length === 0) {
+    return (
+      <div className="min-h-screen-safe flex items-center justify-center bg-[rgb(var(--bg-color))]">
+        <div className="text-center max-w-md mx-auto p-6">
+          <div className="w-16 h-16 bg-[rgb(var(--primary-color))]/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Users className="w-8 h-8 text-[rgb(var(--primary-color))]" />
+          </div>
+          <h2 className="text-xl font-bold text-[rgb(var(--card-text))] mb-2">Geen toegang of lijst leeg</h2>
+          <p className="text-[rgb(var(--text-color))]/60 mb-4">
+            {list?.permissionDenied 
+              ? "Je hebt geen toegang tot deze lijst. Vraag de eigenaar om toegang."
+              : "Deze lijst bevat nog geen items."}
+          </p>
           <button
             onClick={onBack}
             className="px-4 py-2 bg-[rgb(var(--color-primary-button))] text-white rounded-lg hover:opacity-90"

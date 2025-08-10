@@ -44,41 +44,31 @@ export const useShoppingLists = () => {
         return { error };
       }
 
-      // Wait a moment for authentication to complete
-      setTimeout(async () => {
+      // Use proper auth state listener instead of timeout
+      const userID = getCurrentUserID();
+      if (userID) {
         try {
-          const userID = getCurrentUserID();
-          if (userID) {
-            // Load initial shopping lists from Firebase with retry
-            console.log('Loading lists from Firebase...');
-            const initialLists = await errorHandler.withRetry(
-              () => getShoppingLists(),
-              {
-                operation: 'load_lists',
-                context: { userID }
-              }
-            );
-            setLists(initialLists);
-            console.log('Loaded', initialLists.length, 'lists from Firebase');
-            
-            // Subscribe to real-time updates - Firebase only, no local caching
-            const unsubscribe = subscribeToShoppingLists((firebaseLists) => {
-              console.log('Real-time update received:', firebaseLists.length, 'lists');
-              // Directly set the Firebase lists - no local merging or caching
-              setLists(firebaseLists);
-            });
-            
-            setIsLoading(false);
-            return { unsubscribe };
-          }
+          console.log('Loading lists from Firebase...');
+          const initialLists = await errorHandler.withRetry(
+            () => getShoppingLists(),
+            {
+              operation: 'load_lists',
+              context: { userID }
+            }
+          );
+          setLists(initialLists);
+          console.log('Loaded', initialLists.length, 'lists from Firebase');
+          setIsLoading(false);
         } catch (error) {
           console.error('Error loading shopping lists:', error);
           setFirebaseError(error);
           setIsLoading(false);
-          errorHandler.logError(error, 'load_lists', { userID: getCurrentUserID() });
+          errorHandler.logError(error, 'load_lists', { userID });
           return { error };
         }
-      }, 1000); // Wait for auth to complete
+      } else {
+        setIsLoading(false);
+      }
     } catch (error) {
       console.error('Firebase initialization error:', error);
       setFirebaseError(error);

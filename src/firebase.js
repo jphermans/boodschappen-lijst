@@ -283,6 +283,47 @@ const getListById = async (listId) => {
   }
 };
 
+// Subscribe to real-time updates for a single list
+const subscribeToList = (listId, callback) => {
+  try {
+    if (!db || !currentUser) {
+      console.warn('Firebase not initialized or user not authenticated');
+      callback(null);
+      return () => {};
+    }
+    
+    console.log('Subscribing to list:', listId, 'for user:', currentUser.uid);
+    
+    const listRef = doc(db, 'shoppingLists', listId);
+    const unsubscribe = onSnapshot(listRef, (doc) => {
+      if (doc.exists()) {
+        const data = doc.data();
+        callback({
+          id: doc.id,
+          ...data,
+          isCreator: (data.deviceUID === currentUser?.uid) || (data.creatorId === currentUser?.uid)
+        });
+      } else {
+        console.log('List document does not exist for ID:', listId);
+        callback(null);
+      }
+    }, (error) => {
+      console.error('Error in list subscription:', error);
+      if (error.code === 'permission-denied') {
+        callback({ permissionDenied: true, listId, error: 'permission-denied' });
+      } else {
+        callback(null);
+      }
+    });
+    
+    return unsubscribe;
+  } catch (error) {
+    console.error('Error subscribing to list:', error);
+    callback(null);
+    return () => {};
+  }
+};
+
 // Check if current user can delete a list (only creator can delete)
 const canDeleteList = (list) => {
   return list.deviceUID === currentUser?.uid;
@@ -371,7 +412,8 @@ export {
   removeUserFromList,
   canDeleteList,
   canEditList,
-  getListById
+  getListById,
+  subscribeToList
 };
 
 // Firestore security rules voorbeeld (plaats in firestore.rules):
