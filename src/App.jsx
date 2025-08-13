@@ -48,53 +48,57 @@ function App() {
   const { userInfo, setUserName, isLoading: userLoading, error: userError } = useUserState();
   
   // Enhanced state management with reducers
-  const {
-    // App state
-    getCurrentPage,
-    getSelectedList,
-    getNewListName,
-    isNewListNameValid,
-    getIsLoading,
-    getError,
-    hasError,
-    isCreatingList,
+  // const {
+  //   // App state
+  //   getCurrentPage,
+  //   getSelectedList,
+  //   getNewListName,
+  //   isNewListNameValid,
+  //   getIsLoading,
+  //   getError,
+  //   hasError,
+  //   isCreatingList,
     
-    // List state
-    getLists,
-    getListsLoading,
-    getListsError,
-    getStats,
+  //   // List state
+  //   getLists,
+  //   getListsLoading,
+  //   getListsError,
+  //   getStats,
     
-    // Actions
-    setCurrentPage,
-    setSelectedList,
-    navigateToList,
-    navigateToOverview,
-    setNewListName,
-    clearNewListName,
-    setLoadingState,
-    setErrorState,
-    clearErrorState,
-    setLists,
-    addList,
-    updateList,
-    removeList,
-    setListsLoading,
-    setListsError,
-    clearListsError,
+  //   // Actions
+  //   setCurrentPage,
+  //   setSelectedList,
+  //   navigateToList,
+  //   navigateToOverview,
+  //   setNewListName,
+  //   clearNewListName,
+  //   setLoadingState,
+  //   setErrorState,
+  //   clearErrorState,
+  //   setLists,
+  //   addList,
+  //   updateList,
+  //   removeList,
+  //   setListsLoading,
+  //   setListsError,
+  //   clearListsError,
     
-    // Optimistic updates
-    optimisticListCreateStart,
-    optimisticListCreateSuccess,
-    optimisticListCreateFailure,
-    optimisticAddList,
-    optimisticRemoveList,
-    revertOptimisticAdd,
-    revertOptimisticRemove,
+  //   // Optimistic updates
+  //   optimisticListCreateStart,
+  //   optimisticListCreateSuccess,
+  //   optimisticListCreateFailure,
+  //   optimisticAddList,
+  //   optimisticRemoveList,
+  //   revertOptimisticAdd,
+  //   revertOptimisticRemove,
     
-    // Utilities
-    getDebugInfo
-  } = useAppState();
+  //   // Utilities
+  //   getDebugInfo
+  // } = useAppState();
+
+  const [currentPage, setCurrentPage] = React.useState('overview');
+  const [selectedList, setSelectedList] = React.useState(null);
+  const [newListName, setNewListName] = React.useState('');
   
   // Unified theme context
   const { mode: theme, toggleMode: toggleTheme, isLoading: themeLoading } = useUnifiedThemeContext();
@@ -170,9 +174,9 @@ function App() {
   }, []);
 
   // Get state values from reducers
-  const currentPage = getCurrentPage;
-  const selectedList = getSelectedList;
-  const newListName = getNewListName;
+  // const currentPage = getCurrentPage;
+  // const selectedList = getSelectedList;
+  // const newListName = getNewListName;
 
   // Make debug function available globally
   useEffect(() => {
@@ -231,22 +235,9 @@ function App() {
 
   const handleCreateList = async () => {
     if (!newListName.trim()) return;
-    
-    // Start optimistic update
-    optimisticListCreateStart(newListName);
-    
-    try {
-      const result = await createList(newListName);
-      if (result.success) {
-        // Success - the optimistic update will be cleared automatically
-        optimisticListCreateSuccess();
-      } else {
-        // Failure - revert optimistic update
-        optimisticListCreateFailure(result.error);
-      }
-    } catch (err) {
-      // Error - revert optimistic update
-      optimisticListCreateFailure(err.message || 'Failed to create list');
+    const result = await createList(newListName);
+    if (result.success) {
+      setNewListName('');
     }
   };
 
@@ -264,25 +255,8 @@ function App() {
 
   const confirmDeleteList = async () => {
     if (!listToDelete) return;
-    
-    // Start optimistic update
-    optimisticRemoveList(listToDelete.id);
-    
-    try {
-      const result = await deleteList(listToDelete.id);
-      if (result.success) {
-        // Success - optimistic update is already applied
-        closeDeleteConfirmation();
-      } else {
-        // Failure - revert optimistic update
-        revertOptimisticRemove(listToDelete.id);
-        error(result.error || 'Failed to delete list');
-      }
-    } catch (err) {
-      // Error - revert optimistic update
-      revertOptimisticRemove(listToDelete.id);
-      error(err.message || 'Failed to delete list');
-    }
+    await deleteList(listToDelete.id);
+    closeDeleteConfirmation();
   };
 
   const handleShare = (listId) => {
@@ -297,6 +271,11 @@ function App() {
 
   const handleScanSuccess = async (scannedData) => {
     await handleQRScan(scannedData);
+  };
+
+  const navigateToList = (list) => {
+    setSelectedList(list);
+    setCurrentPage('list');
   };
 
   if (isLoading) {
@@ -501,11 +480,11 @@ function App() {
                   </div>
                   <button
                     onClick={handleCreateList}
-                    disabled={!isNewListNameValid || isCreatingList}
+                    disabled={!newListName.trim() || legacyIsCreatingList}
                     className="flex items-center justify-center px-4 sm:px-6 lg:px-8 xl:px-10 py-3 lg:py-4 bg-[rgb(var(--color-primary-button))] hover:opacity-90 text-white rounded-lg sm:rounded-xl lg:rounded-2xl shadow-lg hover:shadow-xl transform active:scale-95 sm:hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:hover:shadow-lg transition-all duration-200 font-semibold text-sm sm:text-base lg:text-lg whitespace-nowrap touch-manipulation"
                   >
                     <Plus className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 mr-2 lg:mr-3" />
-                    <span>{isCreatingList ? 'Bezig...' : 'Lijst Aanmaken'}</span>
+                    <span>{legacyIsCreatingList ? 'Bezig...' : 'Lijst Aanmaken'}</span>
                   </button>
                 </div>
               </motion.div>
