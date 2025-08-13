@@ -15,7 +15,8 @@ export default defineConfig({
   ],
   // Use the repository name as base so built assets resolve on GitHub Pages
   // For local development, use '/' instead of '/Boodschappenlijst/'
-  base: process.env.NODE_ENV === 'production' ? '/Boodschappenlijst/' : '/',
+  // Use GITHUB_PAGES env var to detect GitHub Actions build
+  base: process.env.GITHUB_PAGES === 'true' ? '/Boodschappenlijst/' : '/',
   server: {
     host: true,
     port: 5173
