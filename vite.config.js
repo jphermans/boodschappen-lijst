@@ -13,7 +13,8 @@ export default defineConfig({
       brotliSize: true
     })
   ],
-  base: '/boodschappen-lijst/',
+  // Use the repository name as base so built assets resolve on GitHub Pages
+  base: '/Boodschappenlijst/',
   server: {
     host: true,
     port: 5173
