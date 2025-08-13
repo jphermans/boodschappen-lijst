@@ -4,6 +4,7 @@ import { ArrowLeft, Plus, Check, X, Edit3, Share2, Trash2, Users, Save, RotateCc
 import { useToast } from '../context/ToastContext';
 import { 
   updateShoppingList,
+  deleteShoppingList,
   getListById,
   shareListWithUser,
   removeUserFromList,
@@ -104,14 +105,31 @@ const ShoppingListPage = ({ list, onBack, onListUpdate }) => {
         item.id === itemId ? { ...item, completed: !item.completed } : item
       );
       
-      // Update Firebase directly - real-time sync will update UI
+      // Update Firebase directly
       await updateShoppingList(list.id, { items: updatedItems });
       
       const updatedItem = updatedItems.find(i => i.id === itemId);
-      success(updatedItem.completed ? `✅ "${updatedItem.name}" voltooid` : `⏪ "${updatedItem.name}" ongedaan gemaakt`);
+      const allItemsCompleted = updatedItems.length > 0 && updatedItems.every(i => i.completed);
+
+      if (allItemsCompleted) {
+        success(`🎉 Lijst "${list.name}" voltooid! Deze wordt nu verwijderd.`);
+        setTimeout(async () => {
+          try {
+            await deleteShoppingList(list.id);
+            info(`Lijst "${list.name}" is verwijderd.`);
+            onBack();
+          } catch (deleteError) {
+            console.error("Error deleting completed list:", deleteError);
+            error('Fout bij het verwijderen van de voltooide lijst.');
+            setIsLoading(false); // Stop loading only if deletion fails
+          }
+        }, 1500);
+      } else {
+        success(updatedItem.completed ? `✅ "${updatedItem.name}" voltooid` : `⏪ "${updatedItem.name}" ongedaan gemaakt`);
+        setIsLoading(false); // Stop loading if list is not being deleted
+      }
     } catch (err) {
       error('Kon item niet bijwerken');
-    } finally {
       setIsLoading(false);
     }
   };
