@@ -169,7 +169,7 @@ Navigation.propTypes = {
   onToggleTheme: EventHandlerType.isRequired,
   onOpenScanner: EventHandlerType.isRequired,
   onOpenPerformanceDashboard: PropTypes.func,
-  theme: createEnumValidator(['light', 'dark']).isRequired,
+  theme: PropTypes.oneOf(['light', 'dark']).isRequired,
   listsCount: PropTypes.number.isRequired
 };
 

@@ -14,7 +14,8 @@ export default defineConfig({
     })
   ],
   // Use the repository name as base so built assets resolve on GitHub Pages
-  base: '/Boodschappenlijst/',
+  // For local development, use '/' instead of '/Boodschappenlijst/'
+  base: process.env.NODE_ENV === 'production' ? '/Boodschappenlijst/' : '/',
   server: {
     host: true,
     port: 5173
